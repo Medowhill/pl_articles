@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Articles</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="main.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   <script>
+     axios.get('https://ch30tnydq2.execute-api.ap-northeast-2.amazonaws.com/default/articles')
+     .then(res => {
+       $('.loading-msg').hide();
+       $('.list-title').show();
+       res.data.articles.sort((a, b) => parseInt(a.article_num.N) - parseInt(b.article_num.N)).forEach(a => {
+         if (a.kr_title)
+           $('#kr-articles-list').append(`<li><a href="./kr_${a.article_num.N}_${a.kr_latest.N}">${a.kr_title.S}</a></li>`);
+         if (a.en_title)
+           $('#kr-articles-list').append(`<li><a href="./en_${a.article_num.N}_${a.en_latest.N}">${a.en_title.S}</a></li>`);
+       });
+     });
+   </script>
+</head>
+<body>
+<h3 class="loading-msg">글 목록을 불러오는 중입니다. 잠시만 기다려주세요.</h3>
+<h3 class="loading-msg">Loading articles. Please wait.</h3>
+<h2 class="list-title" hidden>한국어 글</h3>
+<ul id="kr-articles-list"></ul>
+<h2 class="list-title" hidden>English Articles</h3>
+<ul id="en-articles-list"></ul>
+<hr />
+<p><code>jaemin.hong@kaist.ac.kr</code></p>
+</body>
+</html>
