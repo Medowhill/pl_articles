@@ -101,7 +101,7 @@ s"""<script type="text/x-mathjax-config">
    |axios.get('https://ch30tnydq2.execute-api.ap-northeast-2.amazonaws.com/default/article/?num=$num')
    |.then(res => {
    |  let latest = parseInt(res.data.${if (kr) "kr" else "en"}_latest.N);
-   |  if (latest > 0)
+   |  if (latest > $ver)
    |    $$('#version-alert').append(`<p style="color:red;">${if (kr) "글이 최신 판이 아닙니다" else "Not the latest version"}.&nbsp;<a href="./${if (kr) "kr" else "en"}_${num}_$${latest}">${if (kr) "최신 판 보러가기" else "Go to the latest"}</a></p>`);
    |});
    |</script>
