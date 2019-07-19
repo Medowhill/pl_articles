@@ -20,7 +20,8 @@ object Format {
 
   def main(args: Array[String]): Unit = args.toList match {
     case name :: tail =>
-      val preview = tail.nonEmpty
+      val preview = tail.contains("-p")
+      val supervision = tail.contains("-s")
       val List(num, ver, title, lang) =
         List("num", "ver", "title", "lang").map(read)
       val kr = lang == "kr"
@@ -32,7 +33,7 @@ object Format {
       val mdFile = write(tempMd,
         header(title, time, current, kr) +
         from.replaceAll("\\\\", "\\\\\\\\") +
-        footer(kr)
+        footer(supervision, kr)
       )
       Process(s"pandoc -s --css $lang.css -o $tempHtml $tempMd").!
 
@@ -67,21 +68,21 @@ s"""% $title
    |---
    |
    |""".stripMargin
-  private def footer(kr: Boolean) =
+  private def footer(supervision: Boolean, kr: Boolean) =
     if (kr)
-"""|
+s"""|
    |
    |---
    |
-   |감수: 류석영 교수님 (``sryu.cs@kaist.ac.kr``)
+   |${if (supervision) "감수: 류석영 교수님 (``sryu.cs@kaist.ac.kr``)" else ""}
    |
    |글에 대한 질문과 의견은 ``jaemin.hong@kaist.ac.kr``로 부탁드립니다.""".stripMargin
     else
-"""|
+s"""|
    |
    |---
    |
-   |Edited under the supervision of Prof. Sukyoung Ryu (``sryu.cs@kaist.ac.kr``).
+   |${if (supervision) "Edited under the supervision of Prof. Sukyoung Ryu (``sryu.cs@kaist.ac.kr``)" else ""}.
    |
    |If you have any question or opinion, please send an email to ``jaemin.hong@kaist.ac.kr``.""".stripMargin
 
