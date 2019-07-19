@@ -9,7 +9,7 @@ html {
 
 body {
   color: #444;
-  font-family: 'Nanum Gothic', sans-serif;
+  font-family: 'Nanum Gothic', 'Helvetica', sans-serif;
   font-size: 12px;
   line-height: 1.7;
   padding: 1em;

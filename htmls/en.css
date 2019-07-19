@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
 html {
   font-size: 100%;
   overflow-y: scroll;
@@ -7,7 +9,7 @@ html {
 
 body {
   color: #444;
-  font-family: 'Helvetica', sans-serif;
+  font-family: 'Helvetica', 'Nanum Gothic', sans-serif;
   font-size: 12px;
   line-height: 1.7;
   padding: 1em;
