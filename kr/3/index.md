@@ -350,13 +350,22 @@ def length(l: List): Int = l match {
 
 빈 리스트의 길이는 0이고 비어있지 않은 리스트의 길이는 꼬리의 길이보다 1 크다.
 
-위 코드를 바탕으로 리스트가 가진 원소들의 합을 구하는 `sum` 함수를 만들어 보자.
+위 코드를 바탕으로 리스트가 가진 원소들의 합과 곱을 구하는 `sum`, `product` 함수를 만들어 보자. 빈 리스트인 경우, 합은 0, 곱은 1이라 생각하자.
 
 <details><summary>`sum` 코드 보기</summary>
 ```scala
 def sum(l: List): Int = l match {
   case Nil => 0
   case Cons(h, t) => h + sum(t)
+}
+```
+</details>
+
+<details><summary>`product` 코드 보기</summary>
+```scala
+def product(l: List): Int = l match {
+  case Nil => 1
+  case Cons(h, t) => h * product(t)
 }
 ```
 </details>
@@ -499,7 +508,7 @@ def length(l: List): Int = {
 }
 ```
 
-마찬가지로 `sum`도 바꿀 수 있으므로 스스로 해보자.
+마찬가지로 `sum`과 `product`도 바꿀 수 있으므로 스스로 해보자.
 
 <details><summary>`sum` 코드 보기</summary>
 ```scala
@@ -509,6 +518,18 @@ def sum(l: List): Int = {
     case Cons(h, t) => aux(t, inter + h)
   }
   aux(l, 0)
+}
+```
+</details>
+
+<details><summary>`product` 코드 보기</summary>
+```scala
+def product(l: List): Int = l match {
+  @tailrec def aux(l: List, inter: Int): Int = l match {
+    case Nil => inter
+    case Cons(h, t) => aux(t, inter * h)
+  }
+  aux(l, 1)
 }
 ```
 </details>
