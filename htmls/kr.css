@@ -323,3 +323,66 @@ table td {
     page-break-after: avoid;
   }
 }
+
+input, textarea {
+    width: 100%;
+    font-size: 1.1em;
+	border: 1px solid #000;
+	padding: 5px;
+	margin: 5px 0px 5px 0px;
+    outline: none;
+	background: none;
+    resize: none;
+    overflow: auto;
+}
+
+button {
+    display: inline-block;
+    border: none;
+    padding: 1em 2em;
+    margin: 0;
+    text-decoration: none;
+    background: #0069ed;
+    color: #ffffff;
+    font-size: 1.1em;
+    cursor: pointer;
+    text-align: center;
+    transition: background 250ms ease-in-out,
+                transform 150ms ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+button:hover,button:focus {
+    background: #0053ba;
+}
+button:focus {
+    outline: 1px solid #fff;
+    outline-offset: -4px;
+}
+button:active {
+    transform: scale(0.99);
+}
+
+.comment-name {
+  color: #111;
+  line-height: 140%;
+  margin: 1em 0em 0em 0em;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.comment-time {
+  color: #888;
+  line-height: 140%;
+  margin: 0em;
+  font-weight: normal;
+  font-size: 0.8em;
+}
+
+.comment-content {
+  color: #111;
+  line-height: 140%;
+  margin: 0em;
+  font-weight: normal;
+  font-size: 1em;
+}
