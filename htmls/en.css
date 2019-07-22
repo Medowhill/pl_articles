@@ -9,8 +9,8 @@ html {
 
 body {
   color: #444;
-  font-family: 'Helvetica', 'Nanum Gothic', sans-serif;
   font-size: 12px;
+  font-family: 'Helvetica', 'Nanum Gothic', sans-serif;
   line-height: 1.7;
   padding: 1em;
   margin: auto;
@@ -308,11 +308,11 @@ table td {
 
   @page :left {
     margin: 15mm 20mm 15mm 10mm;
-}
+  }
 
   @page :right {
     margin: 15mm 10mm 15mm 20mm;
-}
+  }
 
   p, h2, h3 {
     orphans: 3;
@@ -325,42 +325,42 @@ table td {
 }
 
 input, textarea {
-    width: 100%;
-    font-size: 1.1em;
-	border: 1px solid #000;
-	padding: 5px;
-	margin: 5px 0px 5px 0px;
-    outline: none;
-	background: none;
-    resize: none;
-    overflow: auto;
+  width: 100%;
+  font-size: 1.1em;
+  border: 1px solid #000;
+  padding: 5px;
+  margin: 5px 0px 5px 0px;
+  outline: none;
+  background: none;
+  resize: none;
+  overflow: auto;
 }
 
 button {
-    display: inline-block;
-    border: none;
-    padding: 1em 2em;
-    margin: 0;
-    text-decoration: none;
-    background: #0069ed;
-    color: #ffffff;
-    font-size: 1.1em;
-    cursor: pointer;
-    text-align: center;
-    transition: background 250ms ease-in-out,
-                transform 150ms ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+  display: inline-block;
+  border: none;
+  padding: 1em 2em;
+  margin: 0;
+  text-decoration: none;
+  background: #0069ed;
+  color: #ffffff;
+  font-size: 1.1em;
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out,
+              transform 150ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 button:hover,button:focus {
-    background: #0053ba;
+  background: #0053ba;
 }
 button:focus {
-    outline: 1px solid #fff;
-    outline-offset: -4px;
+  outline: 1px solid #fff;
+  outline-offset: -4px;
 }
 button:active {
-    transform: scale(0.99);
+  transform: scale(0.99);
 }
 
 .comment-name {

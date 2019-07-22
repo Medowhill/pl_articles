@@ -16,7 +16,6 @@ object Format {
     out.close()
     file
   }
-    
 
   def main(args: Array[String]): Unit = args.toList match {
     case name :: tail =>
@@ -32,10 +31,9 @@ object Format {
       val from = Source.fromFile(s"$name.md").mkString
       val mdFile = write(tempMd,
         header(title, time, current, kr) +
-        from.replaceAll("\\\\", "\\\\\\\\") +
-        footer(supervision, kr)
+        from.replaceAll("\\\\", "\\\\\\\\")
       )
-      Process(s"pandoc -s --css $lang.css -o $tempHtml $tempMd").!
+      Process(s"pandoc -s --css article.v1.css --css $lang-article.v1.css -o $tempHtml $tempMd").!
 
       val htmlFile = new File(tempHtml)
       val html = Source.fromFile(htmlFile).mkString
@@ -68,23 +66,6 @@ s"""% $title
    |---
    |
    |""".stripMargin
-  private def footer(supervision: Boolean, kr: Boolean) =
-    if (kr)
-s"""|
-   |
-   |---
-   |
-   |${if (supervision) "감수: 류석영 교수님 (``sryu.cs@kaist.ac.kr``)" else ""}
-   |
-   |글에 대한 질문과 의견은 ``jaemin.hong@kaist.ac.kr``로 부탁드립니다.""".stripMargin
-    else
-s"""|
-   |
-   |---
-   |
-   |${if (supervision) "Edited under the supervision of Prof. Sukyoung Ryu (``sryu.cs@kaist.ac.kr``)" else ""}.
-   |
-   |If you have any question or opinion, please send an email to ``jaemin.hong@kaist.ac.kr``.""".stripMargin
 
   private def scripts(num: String, ver: String, kr: Boolean): String =
 s"""<script type="text/x-mathjax-config">
@@ -98,12 +79,13 @@ s"""<script type="text/x-mathjax-config">
    |</script>
    |<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
    |<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   |<script src="article.v1.js"></script>
    |<script>
-   |axios.get('https://ch30tnydq2.execute-api.ap-northeast-2.amazonaws.com/default/article/?num=$num')
-   |.then(res => {
-   |  let latest = parseInt(res.data.${if (kr) "kr" else "en"}_latest.N);
-   |  if (latest > $ver)
-   |    $$('#version-alert').append(`<p style="color:red;">${if (kr) "글이 최신 판이 아닙니다" else "Not the latest version"}.&nbsp;<a href="./${if (kr) "kr" else "en"}_${num}_$${latest}">${if (kr) "최신 판 보러가기" else "Go to the latest"}</a></p>`);
+   |$$(document).ready(() => {
+   |  set(${num}, ${ver}, ${kr});
+   |  latest();
+   |  comments();
+   |  others();
    |});
    |</script>
    |</head>""".stripMargin
