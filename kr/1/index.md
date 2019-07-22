@@ -40,3 +40,7 @@ PLDI(Programming Language Design and Implementation)는 프로그래밍 언어�
 
 ### 프로그램 합성 및 자동 디버깅
 *프로그램* *합성*(program synthesis)은 주어진 명세(specification)를 만족하는 프로그램을 자동으로 만드는 것을 목표로 하며, *자동* *디버깅*(automatic debugging)은 말 그대로 프로그램의 버그를 자동으로 고치는 것이다. 연구자들은 확률적 모델이나 문법(syntax)으로부터 도움을 받는 등 다양한 새로운 방법을 제안했다.
+
+## 감사의 말
+
+글을 확인하고 의견을 주신 류석영 교수님과 연구학개론 과목을 진행하신 김주호, 유신, 이성주 교수님께 감사드립니다.
