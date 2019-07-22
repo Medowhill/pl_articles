@@ -5,12 +5,8 @@ if [ "$#" -ne 3 ] ; then
 fi
 
 mkdir $1/$2
-if [ "$2" -lt 1000 ] ; then
-  cp template/Makefile $1/$2/Makefile
-else
-  cp template/Makefile1 $1/$2/Makefile
-fi
-cp template/$1.css $1/$2
+cp template/Makefile $1/$2
+cp template/*.css $1/$2
 echo 0 > $1/$2/ver
 echo $1 > $1/$2/lang
 echo $2 > $1/$2/num

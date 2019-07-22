@@ -1,7 +1,7 @@
 html: index.md
-	scala -classpath ../../format Format index -s
+	scala -classpath ../../format Format index
 preview: index.md
-	scala -classpath ../../format Format index -p -s
+	scala -classpath ../../format Format index -p
 copy:
 	cp *_* ../../htmls
 deploy:

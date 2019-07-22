@@ -20,7 +20,6 @@ object Format {
   def main(args: Array[String]): Unit = args.toList match {
     case name :: tail =>
       val preview = tail.contains("-p")
-      val supervision = tail.contains("-s")
       val List(num, ver, title, lang) =
         List("num", "ver", "title", "lang").map(read)
       val kr = lang == "kr"
