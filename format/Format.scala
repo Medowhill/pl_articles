@@ -36,8 +36,10 @@ object Format {
 
       val htmlFile = new File(tempHtml)
       val html = Source.fromFile(htmlFile).mkString
+      val i = html.indexOf("<style>")
+      val j = html.lastIndexOf("</style>")
       write(s"${lang}_${num}_${ver}",
-        html
+        (html.substring(0, i) + html.substring(j + "</style>".length))
         .replace("</head>", scripts(num, ver, kr))
         .replace("</header>", alertDiv)
       )

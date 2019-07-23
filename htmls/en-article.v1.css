@@ -1,5 +1,5 @@
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap');
 
 body {
-  font-family: 'Helvetica', 'Nanum Gothic', sans-serif;
+  font-family: 'Helvetica', 'Noto Sans KR', sans-serif;
 }
