@@ -7,7 +7,7 @@ import java.util.{Calendar, Date}
 
 object Format {
   private def read(name: String): String =
-    Source.fromFile(name).mkString.filter(c => c.isLetter || c.isDigit || c == ' ' || c == ':')
+    Source.fromFile(name).mkString.filter(c => c.isLetter || c.isDigit || " :[](){}.,!?-_".toSet(c))
 
   private def write(name: String, content: String): File = {
     val file = new File(name)
