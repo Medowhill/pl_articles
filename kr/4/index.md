@@ -569,7 +569,7 @@ def option_map(opt: Option, f: Int => Int): Option = opt match {
 
 `option_map` 함수는 예외 상황이 발생할 수 있는 계산을 한 후에, 정상적인 결과가 나왔다면 추가로 어떤 작업을 하고, 예외 상황이 발생했다면 가만히 있도록 하기 위해서 사용할 수 있는 함수이다. 옵션 값 하나와 함수 하나를 인자로 받은 뒤 옵션 값이 `Some`인 경우에만 가지고 있는 정숫값에 함수를 적용한 결과를 `Some`으로 감싼다.
 
-리스트 하나와 정수 `n`를 인자로 받은 뒤 리스트의 `n` 번째 원소를 제곱한 값을 결과로 내는 함수 `getSquare`를 옵션 타입과 `list_getOption`, `option_map` 함수를 사용하여 안전하게 구현해보자.
+리스트 하나와 정수 `n`을 인자로 받은 뒤 리스트의 `n` 번째 원소를 제곱한 값을 결과로 내는 함수 `getSquare`를 옵션 타입과 `list_getOption`, `option_map` 함수를 사용하여 안전하게 구현해보자.
 
 <details><summary>`getSquare` 코드 보기</summary>
 ```scala
@@ -587,7 +587,7 @@ def option_flatMap(opt: Option, f: Int => Option): Option = opt match {
 
 `option_flatMap`은 `option_map`과 유사하지만, 예외 상황이 발생할 수 있는 작업을 한 후에 또 예외 상황이 발생할 수 있는 작업을 하는 경우에 사용할 수 있는 함수이다. 따라서, `option_flatMap`이 인자로 받는 함수의 결과 타입은 옵션이다. 두 계산 중 한 번이라도 예외 상황이 발생한다면 `None`이 결과이고 아니라면 `Some` 안에 어떤 값이 들어있을 것이다.
 
-리스트 하나와 정수 `n`를 인자로 받은 뒤 100을 리스트의 `n` 번째 원소로 나눈 값을 결과로 내는 함수 `getAndDiv100`을 옵션 타입과 `list_getOption`, `div100`, `option_flatMap` 함수를 사용하여 안전하게 구현해보자.
+리스트 하나와 정수 `n`을 인자로 받은 뒤 100을 리스트의 `n` 번째 원소로 나눈 값을 결과로 내는 함수 `getAndDiv100`을 옵션 타입과 `list_getOption`, `div100`, `option_flatMap` 함수를 사용하여 안전하게 구현해보자.
 
 <details><summary>`getAndDiv100` 코드 보기</summary>
 ```scala
