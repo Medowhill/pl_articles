@@ -41,7 +41,6 @@ object Format {
       write(s"${lang}_${num}_${ver}",
         (html.substring(0, i) + html.substring(j + "</style>".length))
         .replace("</head>", scripts(num, ver, kr))
-        .replace("</header>", alertDiv)
       )
 
       mdFile.delete()
@@ -90,7 +89,4 @@ s"""<script type="text/x-mathjax-config">
    |});
    |</script>
    |</head>""".stripMargin
-  private val alertDiv =
-s"""<div id="version-alert"></div>
-   |</header>""".stripMargin
 }

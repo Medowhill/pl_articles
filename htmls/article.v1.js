@@ -37,7 +37,15 @@ function latest() {
     const msg1 = kr ? '최신 판 보러가기' : 'Go to the latest';
     const lang = kr ? 'kr' : 'en';
     if (latest > ver)
-      $('#version-alert').append(`<p style="color:red;">${msg0}&nbsp;<a href="./${lang}_${num}_${latest}">${msg1}</a></p>`);
+      $('body').append(`
+      <div id="version-modal" class="w3-modal">
+        <div class="w3-modal-content">
+          <div class="w3-container">
+            <span onclick="document.getElementById('version-modal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+            <p style="color:red;">${msg0}&nbsp;<a href="./${lang}_${num}_${latest}">${msg1}</a></p>
+           </div>
+        </div>
+      </div>`);
   });
 }
 
