@@ -10,7 +10,7 @@ function set(_n, _v, _k) {
   kr = _k;
 
   let m0 = kr ? '다른 글 읽기' : 'Read other articles';
-  let m1 = kr ? '전체 글 목록' : 'A list of all articles';
+  let m1 = kr ? '전체 글 목록' : 'Go to the page of all articles';
   let m2 = kr ? '댓글' : 'Comments';
   let m3 = kr ? '이름' : 'Name';
   let m4 = kr ? '내용' : 'Content';
@@ -32,7 +32,7 @@ function set(_n, _v, _k) {
 function latest() {
   axios.get(`${api}/article?num=${num}`)
   .then(res => {
-    const latest = parseInt(res.data.kr_latest.N);
+    const latest = parseInt(kr ? res.data.kr_latest.N : res.data.en_latest.N);
     const msg0 = kr ? '글이 최신 판이 아닙니다.' : 'Not the latest version.';
     const msg1 = kr ? '최신 판 보러가기' : 'Go to the latest';
     const lang = kr ? 'kr' : 'en';
