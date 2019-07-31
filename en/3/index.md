@@ -1,4 +1,4 @@
-The article and the next three articles cover basic functional programming. For those who are unfamiliar with functional programming, I highly recommend reading the four articles carefully for the homework of the course. People who are familiar with functional programming can skip or lightly skim through the four articles. The article is based on the first Scala seminar, "Introduction to Functional Programming", of the fall semester in 2018. [The slides](/files/scala/18f/1_itfp.pdf) and [the code](/files/scala/18f/1_itfp.zip) used in the seminar are available on-line and [the video](https://youtu.be/vGaWV_qs0yg) of the seminar can be found on Youtube.
+The article and the next three articles cover basic functional programming. For those who are unfamiliar with functional programming, I highly recommend reading the four articles carefully for the homework of the course. People who are familiar with functional programming can skip or lightly skim through the four articles. The article is based on the first Scala seminar, "Introduction to Functional Programming," of the fall semester in 2018. [The slides](/files/scala/18f/1_itfp.pdf) and [the code](/files/scala/18f/1_itfp.zip) used in the seminar are available on-line and [the video](https://youtu.be/vGaWV_qs0yg) of the seminar can be found on Youtube.
 
 ## The Definition of Functional Programming
 
@@ -557,4 +557,4 @@ def inc1(l: List): List = {
 
 ## Acknowledgement
 
-I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated the seminar.
+I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar.
