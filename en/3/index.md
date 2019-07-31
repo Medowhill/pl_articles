@@ -1,4 +1,4 @@
-The article and the next three articles cover basic functional programming. For those, who are unfamiliar with functional programming, I highly recommend reading the four articles carefully for the homework of the course. People, who are familiar with functional programming, can skip or lightly skim through the four articles. The article is based on the first Scala seminar, "Introduction to Functional Programming", of the fall semester in 2018. [The slides](/files/scala/18f/1_itfp.pdf) and [the code](/files/scala/18f/1_itfp.zip) used in the seminar are available on-line and [the video](https://youtu.be/vGaWV_qs0yg) of the seminar can be found on Youtube.
+The article and the next three articles cover basic functional programming. For those who are unfamiliar with functional programming, I highly recommend reading the four articles carefully for the homework of the course. People who are familiar with functional programming can skip or lightly skim through the four articles. The article is based on the first Scala seminar, "Introduction to Functional Programming", of the fall semester in 2018. [The slides](/files/scala/18f/1_itfp.pdf) and [the code](/files/scala/18f/1_itfp.zip) used in the seminar are available on-line and [the video](https://youtu.be/vGaWV_qs0yg) of the seminar can be found on Youtube.
 
 ## The Definition of Functional Programming
 
@@ -71,7 +71,7 @@ According to [the official OCaml web site](http://ocaml.org/learn/companies.html
 
 Erlang is a functional language for concurrent and parallel computing. Elixir operates on Erlang virtual machines and is used for the same purpose as Erlang. [An article from Code Sync](https://codesync.global/media/successful-companies-using-elixir-and-erlang/) introduced companies including WhatsApp, Pinterest, and Goldman Sachs using Erlang and Elixir.
 
-Programs, whose input has complicated and abstract structures like source code, and programs, which have to be trustworthy or targets concurrent and parallel computing, are typically written in functional languages.
+Programs whose input has complicated and abstract structures like source code and programs that have to be trustworthy or targets concurrent and parallel computing are typically written in functional languages.
 
 ## The Advantages of Immutability
 
@@ -97,7 +97,7 @@ f(x)
 
 On the other hand, if `x` is a mutable variable, one should read every line of code in the middle to find the value of `x` at the time when the function call happens.
 
-For small programs written by one person, whether `x` is immutable or mutable is unimportant. If the program does not expect any future usages, mutable `x` is fine. However, suppose the situation reading the code without any prior knowledge about the code. A big difference between immutable and mutable `x` exists even though there is no person, who reads only the first and the last line, of course. When `x` is mutable, without tracking every modification of `x` throughout the code, the value of `x` at the last line is unknown. It makes programmers feel difficulties to understand the code so possibly leads to more bugs. The program with immutable `x` does not suffer from such a problem. Remembering only one line of the code is enough to track the value of `x`.
+For small programs written by one person, whether `x` is immutable or mutable is unimportant. If the program does not expect any future usages, mutable `x` is fine. However, suppose the situation reading the code without any prior knowledge about the code. A big difference between immutable and mutable `x` exists even though there is no person who reads only the first and the last line of course. When `x` is mutable, without tracking every modification of `x` throughout the code, the value of `x` at the last line is unknown. It makes programmers feel difficulties to understand the code so possibly leads to more bugs. The program with immutable `x` does not suffer from such a problem. Remembering only one line of the code is enough to track the value of `x`.
 
 Mutable data structures cause similar problems.
 
@@ -193,7 +193,7 @@ Immutability has several clear advantages. Immutability is important in function
 
 ## Recursion
 
-Repeating the same computation multiple times is a common pattern in programming. Loops allow concise code expressing such cases. However, if everything is immutable, going back to the beginnings of loops does not change any states and therefore it is impossible to apply the same operation on different values for each iteration or to terminate the loops. As a consequence, loops are useless in functional programming. Functional programs use recursive functions instead of loops to rerun computation. A recursive function is a function, which calls itself. To do more computation, the function calls itself with proper arguments. Otherwise, it terminates with some return value.
+Repeating the same computation multiple times is a common pattern in programming. Loops allow concise code expressing such cases. However, if everything is immutable, going back to the beginnings of loops does not change any states and therefore it is impossible to apply the same operation on different values for each iteration or to terminate the loops. As a consequence, loops are useless in functional programming. Functional programs use recursive functions instead of loops to rerun computation. A recursive function is a function that calls itself. To do more computation, the function calls itself with proper arguments. Otherwise, it terminates with some return value.
 
 The below `factorial` functions calculate the factorial of a given integral argument. For simplicity, assume that the functions return one for negative integers. The former uses a loop and the latter uses *recursion*.
 
@@ -218,7 +218,7 @@ Recursive functions usually reveal their mathematical definitions more clearly t
 
 The implementation of the `factorial` function using recursion is identical to the mathematical definition of factorial. Recursion allows not only repetitive computation but also concise and intuitive descriptions of mathematical functions. Recursive functions are easier to be verified that they are correct than imperative versions of the functions. Even if mathematical verification is unnecessary, recursion is better for intuitive reasoning of functions than loops. However, some functions become efficient when their implementation uses loops rather than recursion. Selecting an appropriate implementation strategy is crucial.
 
-Recursion has disadvantages: overheads of function calls and *stack overflow*. Most modern CPUs have enough computing power to ignore function call overheads but loops are ideal for functions with short computation time in programs, whose performance is extremely important. Stack overflow happens when a stack lacks space due to repetitive function calls. It is a critical problem since it causes immediate termination of execution without yielding meaningful output. Moreover, programs like web servers do not finish their execution so that stack overflow must happen. To resolve the problem, many functional languages try *tail call optimization* to prevent stack overflow. The last part of the article deals with tail call optimization in detail.
+Recursion has disadvantages: overheads of function calls and *stack overflow*. Most modern CPUs have enough computing power to ignore function call overheads but loops are ideal for functions with short computation time in programs whose performance is extremely important. Stack overflow happens when a stack lacks space due to repetitive function calls. It is a critical problem since it causes immediate termination of execution without yielding meaningful output. Moreover, programs like web servers do not finish their execution so that stack overflow must happen. To resolve the problem, many functional languages try *tail call optimization* to prevent stack overflow. The last part of the article deals with tail call optimization in detail.
 
 ## Lists
 
@@ -287,7 +287,7 @@ def f(l: List) = l match {
 
 Scala requires form `[expression] match { case [pattern] => [expression] … }` for pattern matching. Firstly, the first expression is evaluated. The result is compared to the patterns. The result of the whole expression is the result of an expression corresponding to the first matching pattern. If `l` is `Nil`, the return value is `"The empty list"`. Otherwise, the return value is `"A pair of an integer and a list"`. `h` and `t` respectively refer to the head and tail of `l`. The expression corresponding to the `Cons` pattern may use `h` and `t`.
 
-The `inc1` function takes a list as an argument and returns a list, whose elements are one larger than the elements of the given list.
+The `inc1` function takes a list as an argument and returns a list whose elements are one larger than the elements of the given list.
 
 ```scala
 def inc1(l: List): List = l match {
@@ -296,9 +296,9 @@ def inc1(l: List): List = l match {
 }
 ```
 
-For the given empty list, the function returns the empty list. Otherwise, the return value is a list, whose head is one larger than the head of the given list and tail has elements, which are one larger than the elements of the tail of the given list.
+For the given empty list, the function returns the empty list. Otherwise, the return value is a list whose head is one larger than the head of the given list and tail has elements that are one larger than the elements of the tail of the given list.
 
-Define function `square`, which takes a list as an argument and returns a list, whose elements are the squares of the elements of the given list. Check the below code after trying to find an answer.
+Define function `square`, which takes a list as an argument and returns a list whose elements are the squares of the elements of the given list. Check the below code after trying to find an answer.
 
 <details><summary>`square` code</summary>
 ```scala
@@ -309,7 +309,7 @@ def square(l: List): List = l match {
 ```
 </details>
 
-The `odd` function takes a list as an argument and returns a list, whose every element is an odd integer.
+The `odd` function takes a list as an argument and returns a list whose every element is an odd integer.
 
 ```scala
 def odd(l: List): List = l match {
@@ -322,7 +322,7 @@ def odd(l: List): List = l match {
 
 For a nonempty list, the function checks whether the head is odd or not. If the head is odd, the resulting list contains the head and its tail is the tail with only odd integers. Otherwise, the head is removed.
 
-Define function `positive`, which takes a list as an argument and returns a list, whose every element is a positive integer.
+Define function `positive`, which takes a list as an argument and returns a list whose every element is a positive integer.
 
 <details><summary>`positive` code</summary>
 ```scala
@@ -381,7 +381,7 @@ Adding an element at the end of a list requires *time complexity* of \(O(n)\). *
 
 ## Tail Call Optimization
 
-If the last action of a function is calling a function, then the call is a tail call. When a tail call happens, after the call, the *callee* does every computation and thus the local variables of the *caller* have no need to remain. The stack frame of the caller can be destroyed. Most functional languages optimize tail calls. At compile time, compilers check whether calls are tail calls. If a call is a tail call, the compilers generate code, which eliminates the stack frame of the caller before the call. They do not optimize non-tail function calls because the local variables of the callers can be used after returning from the callees. If every function call in a program is a tail call, a stack never grows so that the program is safe from stack overflow.
+If the last action of a function is calling a function, then the call is a tail call. When a tail call happens, after the call, the *callee* does every computation and thus the local variables of the *caller* have no need to remain. The stack frame of the caller can be destroyed. Most functional languages optimize tail calls. At compile time, compilers check whether calls are tail calls. If a call is a tail call, the compilers generate code that eliminates the stack frame of the caller before the call. They do not optimize non-tail function calls because the local variables of the callers can be used after returning from the callees. If every function call in a program is a tail call, a stack never grows so that the program is safe from stack overflow.
 
 ```scala
 def factorial(n: Int): Int = if (n <= 0) 1 else n * factorial(n - 1)
@@ -419,7 +419,7 @@ To implement the function using a tail call, instead of multiplying `n` and `fac
 * `factorial(0, intermediate result = 6)`
 * `6`
 
-There is no need to return to the caller. The below code shows the `factorial` function with a tail call. The function needs one more parameter, which takes an intermediate result. `factorial(n, i)` computes \(n!\times i\).
+There is no need to return to the caller. The below code shows the `factorial` function with a tail call. The function needs one more parameter that takes an intermediate result. `factorial(n, i)` computes \(n!\times i\).
 
 ```scala
 def factorial(n: Int, inter: Int): Int =
@@ -557,4 +557,4 @@ def inc1(l: List): List = {
 
 ## Acknowledgement
 
-I thank professor Ryu for giving feedback on the article. I also thank students, who give feedback on the seminar or participate the seminar.
+I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated the seminar.

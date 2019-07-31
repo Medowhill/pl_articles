@@ -1,4 +1,4 @@
-The article introduces Scala. Readers, who have already experienced Scala before, can skip the article.
+The article introduces Scala. Readers who have already experienced Scala before can skip the article.
 
 ## Scala
 
@@ -10,7 +10,7 @@ Professor Odersky and his students in LAMP at EPFL have developed Scala. Scala s
 
 *Compilers* and *interpreters* are out of the topic but I believe that it is the best point to discuss them.
 
-Compilers are programs, which translate one programming language into another language. Usually, the term "compilers " is used for a narrower range of programs: compilers get code written in high-level languages, whom people can easily understand, as input and generate code written in low-level languages like *machine languages* and *bytecode*. Physical machines can directly interpret machine languages and *virtual machines* can directly interpret bytecode. For example, GCC translates C and C++ into machine languages and `javac` translates Java into Java bytecode. Since machines can directly interpret the low-level languages, compiled forms of programs guarantee fast execution. However, when programmers modify their code, they must re-compile the code to execute programs so that checking results immediately after changing the code takes a long time.
+Compilers are programs that translate one programming language into another language. Usually, the term "compilers " is used for a narrower range of programs: compilers get code written in high-level languages, whom people can easily understand, as input and generate code written in low-level languages like *machine languages* and *bytecode*. Physical machines can directly interpret machine languages and *virtual machines* can directly interpret bytecode. For example, GCC translates C and C++ into machine languages and `javac` translates Java into Java bytecode. Since machines can directly interpret the low-level languages, compiled forms of programs guarantee fast execution. However, when programmers modify their code, they must re-compile the code to execute programs so that checking results immediately after changing the code takes a long time.
 
 On the other hand, interpreters directly interpret code given as input and show results instead of generating new code. Python and JavaScript are typical languages using interpreters. Since given code is a *string*, interpreters do complex procedures including *parsing* at run time and therefore execution takes a long time. However, because changing code does not require compiling, checking results after changing the code takes a short time.
 
@@ -34,7 +34,7 @@ In another point of view, Scala is valuable since it is a good introduction to f
 
 ### Scala REPL
 
-After installing Scala, type `scala` in a command line to execute the Scala REPL. The term "REPL" stands for "**r**ead, **e**val, **p**rint, and **l**oop." It is a program, which reads a line from a user, evaluates the code, prints the result, and goes back to the first. Languages with interpreters used to support REPLs but, nowadays, languages with compilers also supports REPLs. In the Scala REPL, for every line of input, the Scala compiler compiles the code and the REPL shows the result of the execution.
+After installing Scala, type `scala` in a command line to execute the Scala REPL. The term "REPL" stands for "**r**ead, **e**val, **p**rint, and **l**oop." It is a program that reads a line from a user, evaluates the code, prints the result, and goes back to the first. Languages with interpreters used to support REPLs but, nowadays, languages with compilers also supports REPLs. In the Scala REPL, for every line of input, the Scala compiler compiles the code and the REPL shows the result of the execution.
 
 ```scala
 scala> 0
