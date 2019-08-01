@@ -584,6 +584,6 @@ def getAndDiv100(l: List, n: Int): Option =
 
 Option types are powerful tools to handle erroneous cases in a functional way. Functional programming uses lists, first-class functions, anonymous functions, and optional values a lot.
 
-## Acknowledgement
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar.

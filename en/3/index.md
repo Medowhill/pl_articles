@@ -555,6 +555,6 @@ def inc1(l: List): List = {
 ```
 </details>
 
-## Acknowledgement
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar.

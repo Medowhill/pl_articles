@@ -8,6 +8,6 @@ For fairness, I will try hard to include the same amount of technical detail in 
 
 I wish that every student taking the course enjoys the course and the articles.
 
-## Acknowledgement
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article. I also thank students who wrote reviews of the course in OTL.

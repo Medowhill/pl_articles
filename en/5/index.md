@@ -314,6 +314,6 @@ for (x <- f(0);
   yield g(x, y, z, w)
 ```
 
-## Acknowledgements
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar.

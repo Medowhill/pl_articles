@@ -229,6 +229,6 @@ Like Java, the `main` *method* is the entry point of every Scala program. The `m
 
 In practice, like other languages, programmers use build tools for their Scala projects. Like CMake for C and C++ and Ant, Maven, and Gradle for Java, Scala projects usually use SBT.
 
-## Acknowledgement
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article.

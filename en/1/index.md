@@ -50,6 +50,6 @@ Some researchers suggested new verification or proof techniques.
 
 A portion of researchers was working on *program synthesis*, which generates new programs automatically according to given specifications. They tried many novel approaches including probabilistic model and guidance by syntax. 
 
-## Acknowledgement
+## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article. I also thank professor Kim, Lee, and Yoo, who gave the *Introduction to Research* course.

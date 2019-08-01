@@ -6,5 +6,7 @@ copy:
 	cp *_* ../../htmls
 deploy:
 	../../deploy.sh
+all: index.md
+	make html && make copy && make deploy
 clean:
 	rm *_*
