@@ -30,7 +30,8 @@ object Format {
       val from = Source.fromFile(s"$name.md").mkString
       val mdFile = write(tempMd,
         header(title, time, current, kr) +
-        from.replaceAll("\\\\", "\\\\\\\\")
+        //from.replaceAll("\\\\", "\\\\\\\\")
+        escapeBackslash(from)
       )
       Process(s"pandoc -s --css article.v1.css --css $lang-article.v1.css -o $tempHtml $tempMd").!
 
@@ -51,6 +52,14 @@ object Format {
         if (time.isEmpty)
           write("time", current)
       }
+  }
+
+  def escapeBackslash(s: String): String = {
+    var code = false
+    (for (c <- s) yield {
+      if (c == '`') code = !code
+      if (c == '\\' && !code) "\\\\" else c.toString
+    }).mkString
   }
 
   private val tempMd = "temp.md"
