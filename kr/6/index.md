@@ -45,13 +45,13 @@
 
 산술식은
 
-* 수이거나,
+* 정수이거나,
 * 두 산술식의 합이다.
 
-이때, `산술식` 타입은
+이때, `AE` 타입(산술식 타입)은
 
-* **수**라고 이름 붙인 `수` 타입과
-* **합**이라고 이름 붙인 `산술식 * 산술식` 타입(`산술식` 타입과 `산술식` 타입의 곱 타입),
+* `Num`이라고 이름 붙인 `Int` 타입과
+* `Sum`이라고 이름 붙인 `AE * AE` 타입(`AE` 타입과 `AE` 타입의 곱 타입),
 
 이 두 타입의 합 타입이다.
 
@@ -166,7 +166,7 @@ def interpret(e: AE): Int = {
   else if (...) // 이항 연산자 +가 사이에 있는 식인 경우
     interpret(e.e0) + interpret(e.e1)
   else
-    throws new Exception
+    throw new Exception
 }
 ```
 
@@ -181,7 +181,7 @@ def interpret(e: AE): Int = {
   else if (e.isInstanceOf[BinOp] && e.op == "+")
     interpret(e.e0) + interpret(e.e1)
   else
-    throws new Exception
+    throw new Exception
 }
 ```
 
@@ -770,6 +770,7 @@ def toSum(l: List[(Int, Int)]): List[Int] =
 def toSum(l: List[(Int, Int)]): List[Int] =
   l.map { case (n, m) => n + m }
 ```
+
 마침표도 생략할 수 있다. 위와 달리, 이는 특별한 경우는 아니고, Scala에서 메서드를 중위 연산자로 사용하는 것을 허용하기 때문이다. `Nil.::(0)`을 `0 :: Nil`이라 쓸 수 있는 것과 같다.
 
 ```scala
