@@ -40,8 +40,9 @@ object Format {
       val i = html.indexOf("<style>")
       val j = html.lastIndexOf("</style>")
       write(s"${lang}_${num}_${ver}",
-        (html.substring(0, i) + html.substring(j + "</style>".length))
-        .replace("</head>", scripts(num, ver, kr))
+        normalizeQuotation(
+          (html.substring(0, i) + html.substring(j + "</style>".length))
+        ).replace("</head>", scripts(num, ver, kr))
       )
 
       mdFile.delete()
@@ -60,6 +61,20 @@ object Format {
       if (c == '`') code = !code
       if (c == '\\' && !code) "\\\\" else c.toString
     }).mkString
+  }
+
+  def normalizeQuotation(s: String): String = {
+    var escape, formula, close = false
+    for (c <- s) yield {
+      if (escape && (c == '(' || c == '[')) formula = true
+      if (escape && (c == ')' || c == ']')) formula = false
+      escape = c == '\\'
+      if (formula && (c == '“' || c == '”' || c == '\"')) {
+        val ch = if (close) '”' else '“'
+        close = !close
+        ch
+      } else c
+    }
   }
 
   private val tempMd = "temp.md"
