@@ -1,0 +1,3 @@
+.chart { }
+.node { width: 50px; height: 50px; border: 1px solid; border-radius: 25px; text-align: center; }
+.node p { padding: 3px; margin: 7px 0 0 0; }
