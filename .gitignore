@@ -1,4 +1,9 @@
 *.sw[op]
 .DS_Store
 *.class
-*_*
+kr_*_*
+en_*_*
+htmls/*_*_*
+*/*/*.js
+*/*/*.css
+*/*/Makefile
