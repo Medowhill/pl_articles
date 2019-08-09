@@ -1,4 +1,4 @@
-It is the second article about functional programming. The previous article discussed immutability, recursion, functional lists, and tail call optimization. This article focuses on functions. It defines a *first-class function* and a way to use *anonymous functions* in Scala. Besides, it generalizes the functions defined in the previous article by using first-class functions. It also introduces *option types*, which handle erroneous situations in a functional way. I write the article based on the second Scala seminar, "First-Class Functions," of the fall semester in 2018. [The slides](/files/scala/18f/2_fcf.pdf), [the code](/files/scala/18f/2_fcf.zip), and [the video](https://youtu.be/5JhkobMgAj0) of the seminar are available on-line.
+It is the second article about functional programming. The last article discussed immutability, recursion, functional lists, and tail call optimization. This article focuses on functions. It defines a *first-class function* and a way to use *anonymous functions* in Scala. Besides, it generalizes the functions defined in the last article by using first-class functions. It also introduces *option types*, which handle erroneous situations in a functional way. I write the article based on the second Scala seminar, "First-Class Functions," of the fall semester in 2018. [The slides](/files/scala/18f/2_fcf.pdf), [the code](/files/scala/18f/2_fcf.zip), and [the video](https://youtu.be/5JhkobMgAj0) of the seminar are available on-line.
 
 ## First-Class Functions
 
@@ -205,7 +205,7 @@ In the course, students learn how to implement interpreters for languages with c
 
 ## First-Class Functions and Lists
 
-The section shows how first-class functions allow generalization of the functions defined in the previous article.
+The section shows how first-class functions allow generalization of the functions defined in the last article.
 
 ### map
 

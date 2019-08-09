@@ -1,4 +1,4 @@
-It is the fourth article about functional programming. The previous article dealt with the `List` and `Option` types of the Scala standard library and `for` expressions of Scala. This article is about pattern matching. The previous articles have already used pattern matching for lists and options, but the form of the pattern matching was simple. The article discusses the benefits of pattern matching and various patterns available in Scala. The homework of the course requires pattern matching, and understanding the article thus is crucial for the homework. I write the article based on the fifth Scala seminar, "Pattern Matching," of the fall semester in 2018. [The slides](/files/scala/18f/5_pattern.pdf) and [the code](/files/scala/18f/5_pattern.zip) of the Seminar are accessible on-line.
+It is the fourth article about functional programming. The last article dealt with the `List` and `Option` types of the Scala standard library and `for` expressions of Scala. This article is about pattern matching. The previous articles have already used pattern matching for lists and options, but the form of the pattern matching was simple. The article discusses the benefits of pattern matching and various patterns available in Scala. The homework of the course requires pattern matching, and understanding the article thus is crucial for the homework. I write the article based on the fifth Scala seminar, "Pattern Matching," of the fall semester in 2018. [The slides](/files/scala/18f/5_pattern.pdf) and [the code](/files/scala/18f/5_pattern.zip) of the Seminar are accessible on-line.
 
 ## Algebraic Data Types
 
@@ -598,7 +598,7 @@ Although the type of the argument is `List[String]`, it matches the first patter
 
 ### Tuple Patterns
 
-The previous article has already used tuple patterns. They are in the form of `([pattern], … )`. The `equals` function uses tuple patterns and checks whether two lists are identical.
+The last article has already used tuple patterns. They are in the form of `([pattern], … )`. The `equals` function uses tuple patterns and checks whether two lists are identical.
 
 ```scala
 def equal(l0: List[Int], l1: List[Int]): Boolean =

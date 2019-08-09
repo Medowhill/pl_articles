@@ -12,7 +12,7 @@ According to the book "Functional Programming in Scala":
 
 It is the first sentence of the first chapter.
 
-The above two sentences are enough to describe functional programming. Firstly, consider the phrase 'the evaluation of mathematical functions.' In the previous article, I mentioned that everything is an expression in Scala and an expression is evaluated into a value. In the perspective of functional programming, a program is a single (mathematical) expression and the execution of the program is finding a value denoted by the expression. The following code shows how functional programming is different from imperative programming.
+The above two sentences are enough to describe functional programming. Firstly, consider the phrase 'the evaluation of mathematical functions.' In the last article, I mentioned that everything is an expression in Scala and an expression is evaluated into a value. In the perspective of functional programming, a program is a single (mathematical) expression and the execution of the program is finding a value denoted by the expression. The following code shows how functional programming is different from imperative programming.
 
 ```c
 int x = 1;
@@ -47,7 +47,7 @@ The second code is written in OCaml, which represents functional languages. A pr
 
 Since the programs are simple, two programs look similar but it is important to understand two different perspectives of what a program is.
 
-Secondly, look at the phrases 'avoids changing-state and mutable data' and 'using only pure functions.' The previous article said that functional programming avoids mutable variables. Functional programming does not modify data including variables and objects. States, which change throughout the execution of programs, do not exist. Due to the lack of states, a function always does the same stuff and for given the same argument, always returns the same value. Such functions are called *pure functions*.
+Secondly, look at the phrases 'avoids changing-state and mutable data' and 'using only pure functions.' The last article said that functional programming avoids mutable variables. Functional programming does not modify data including variables and objects. States, which change throughout the execution of programs, do not exist. Due to the lack of states, a function always does the same stuff and for given the same argument, always returns the same value. Such functions are called *pure functions*.
 
 In practice, especially for large-scale projects, using only immutable things in the whole code is usually inefficient. Most real-world functional languages provide mutable variables or structures like `var` of Scala, `ref` of OCaml, and `set!` and `box` of Racket. However, during the course, you will see that functional programming uses immutable things in most cases but can still express a lot of programs without difficulties. I discuss the advantages of immutability in a later section of the article.
 

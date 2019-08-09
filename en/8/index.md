@@ -14,7 +14,7 @@ The above explanation contains words not introduced by the course. It is enough 
 
 ## Natural Semantics
 
-The previous article defined the abstract syntax of AE.
+The last article defined the abstract syntax of AE.
 
 \[
 \begin{array}{lrcl}
