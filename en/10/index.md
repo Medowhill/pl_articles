@@ -52,7 +52,7 @@ Evaluating an expression requires not only values denoted by variables but also 
 
 \[
 \begin{array}{lrcl}
-\text{Function Environment} & \phi & \in & \mathit{Id}\hookrightarrow (\text{Id}\times\text{Expression})
+\text{Function Environment} & \phi & \in & \mathit{Id}\hookrightarrow (\mathit{Id}\times\text{Expression})
 \end{array}
 \]
 

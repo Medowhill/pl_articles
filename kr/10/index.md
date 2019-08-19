@@ -52,7 +52,7 @@ twice(x)=x+x; \\
 
 \[
 \begin{array}{lrcl}
-\text{Function Environment} & \phi & \in & \mathit{Id}\hookrightarrow (\text{Id}\times\text{Expression})
+\text{Function Environment} & \phi & \in & \mathit{Id}\hookrightarrow (\mathit{Id}\times\text{Expression})
 \end{array}
 \]
 
@@ -175,6 +175,8 @@ def interp(e: F1WAE, env: Env, fEnv: FEnv): Int = e match {
     interp(e, Map(x -> interp(a, env, fEnv)), fEnv)
 }
 ```
+
+식이 `App`인 경우에 한 개의 식별자만 가지고 있는 새로운 환경을 만들어 함수의 몸통을 계산한다.
 
 다음은 `interp` 함수를 호출한 예시이다.
 
