@@ -1,6 +1,6 @@
 The article defines F1WAE by adding *first-order functions* to WAE. First-order functions cannot take functions as arguments or return functions. The articles have followed the same pattern, extending a language by defining syntax and semantics, since the previous one. This article and later articles omit tedious details unless complex concepts appear.
 
-## Abstract Syntax
+## Syntax
 
 The following is the abstract syntax of F1WAE:
 

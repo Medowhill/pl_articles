@@ -1,6 +1,6 @@
 The article defines FAE by adding *first-class functions* to AE. First-class functions are values: arguments for function calls and the return values of functions. Functions taking functions as arguments or returning functions are not first-order; they are *higher-order*. In most contexts, the terms 'first-class functions' and 'higher-order functions' are interchangeable.
 
-## Abstract Syntax
+## Syntax
 
 The following is the abstract syntax of FAE:
 
