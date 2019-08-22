@@ -99,6 +99,8 @@ Lambda calculus can encode differences and ratios as well. Moreover, it can enco
 
 It shows only features missed by AE. Metavariable \(b\) ranges over Boolean values.
 
+A conditional expression contains three subexpressions: the first one is its condition; the second one is its true branch; the last one is its false branch.
+
 \[
 \vdash b\Rightarrow b
 \]
