@@ -1,12 +1,12 @@
-이번 글에서는 재귀 함수를 정의할 수 있는 RCFAE를 정의한다.
+The article defines RCFAE featuring recursive functions.
 
 ## CFAE
 
-CFAE는 FAE에 조건식을 추가한 언어이다.
+CFAE adds conditional expressions to FAE.
 
-### 문법
+### Syntax
 
-다음은 CFAE의 요약 문법이다. FAE와 비교하여 추가된 부분만 정의하였다.
+The below is the abstract syntax of CFAE. It shows a conditional expression, which is the only new feature.
 
 \[
 \begin{array}{lrcl}
@@ -15,11 +15,11 @@ CFAE는 FAE에 조건식을 추가한 언어이다.
 \end{array}
 \]
 
-\(\textsf{if0}\)은 지난 글에서 정의한 BAE의 \(\textsf{if}\)와 비슷한 조건식이지만, CFAE에는 불 값이 없기에 조건식의 조건은 아무 값이나 될 수 있다. 만약 조건이 \(0\)이면, 참 가지가 계산된다. 조건이 \(0\)이 아니면, 즉 \(0\)이 아닌 정수거나 클로저이면, 거짓 가지가 계산된다.
+\(\textsf{if0}\) is similar to \(\textsf{if}\) of BAE, defined by the last article, but its condition can be any value since CFAE lacks Boolean values. If a condition is zero, the true branch is evaluated; otherwise, the false branch is evaluated.
 
-### 의미
+### Semantics
 
-다음 두 추론 규칙은 조건식의 의미를 정의한다.
+The following define the semantics of conditional expressions:
 
 \[
 \frac
@@ -33,11 +33,11 @@ CFAE는 FAE에 조건식을 추가한 언어이다.
 { \sigma\vdash \textsf{if0}\ e_1\ e_2\ e_3\Rightarrow v}
 \]
 
-\(\textsf{if}\)의 의미와 유사하다. 언제나 참 가지나 거짓 가지 둘 중 하나만 계산된다.
+The semantics is similar to that of \(\textsf{if}\). Always one of the true and false branches are evaluated, but not both.
 
-## 재귀
+## Recursion
 
-CFAE로 계승을 계산하는 함수를 구현할 수 있을까? (CFAE에 곱셈이 있다고 가정하자.) 먼저 함수형으로 구현한 계승 함수를 생각해보자. 다음 Scala 코드는 계승을 계산한다.
+Is it possible to implement a factorial function with CFAE? Assume that CFAE features multiplications. Firstly, consider a factorial function written functionally. The following Scala function calculates factorials:
 
 ```scala
 def factorial(n: Int): Int =
@@ -45,19 +45,19 @@ def factorial(n: Int): Int =
   else n * factorial(n – 1)
 ```
 
-이는 다음처럼 CFAE로 옮겨질 것 같다.
+It seems the following CFAE expression is equivalent to the above code:
 
 \[\textsf{val}\ factorial=\lambda n.\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\ \textsf{in}\ \cdots\]
 
-그러나, 이 식은 올바르지 않다. \(factorial\)의 묶는 등장의 영역은 \(\cdots\) 부분만 포함하기 때문에, 함수를 정의할 때는 \(factorial\)을 사용할 수 없으며, 람다 요약 안에 있는 \(factorial\)은 묶인 등장이 아닌 자유 식별자이다. 따라서, CFAE에서는 재귀 함수를 정의할 수 없다.
+However, it is wrong since the scope of the binding occurrence of \(factorial\) includes \(\cdots\) but excludes the lambda abstraction. Identifier \(factorial\) in the lambda expression is free. CFAE disallows defining recursive functions.
 
 ## RCFAE
 
-RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
+RCFAE adds recursive functions to CFAE.
 
-### 문법
+### Syntax
 
-다음은 RCFAE의 요약 문법이다. CFAE와 비교하여 추가된 부분만 정의하였다.
+The below is the abstract syntax of RCFAE. It omits features common to CFAE.
 
 \[
 \begin{array}{lrcl}
@@ -66,15 +66,15 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 \end{array}
 \]
 
-\(\mu x_1.\lambda x_2.e\)는 재귀 함수를 정의한다. \(x_1\)은 \(e\)에서 사용할 수 있는, 함수 자신의 이름이다. 예를 들면, 계승 함수는 다음과 같이 정의할 수 있다.
+\(\mu x_1.\lambda x_2.e\) defines a recursive function. \(x_1\) is the name of a function, and \(e\) can refer to \(x_1\). For example, the following is a factorial function:
 
 \[\mu factorial.\lambda n.\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\]
 
-\(x_1\)은 함수를 정의하는 식 밖에서는 사용할 수 없다. 따라서, 재귀 함수도 익명 함수이다. 객체지향언어에서 객체가 자기 자신을 부르는 이름인 `this`나 `self`와 유사하다고 이해할 수 있다. 객체 안에서는 자신을 지칭하기 위해 `this`나 `self` 같은 키워드를 사용할 수 있지만, 객체 밖에서는 사용할 수 없다.
+Any expressions other than \(e\) cannot refer to \(x_1\). Recursive functions are anonymous as well. \(x_1\) takes a similar role to `this` or `self` of object-oriented languages. Objects use the keywords to denote themselves. They are available inside objects but not outside objects.
 
-### 의미
+### Semantics
 
-다음 추론 규칙은 재귀 함수의 의미를 정의한다.
+The following defines the semantics of recursive functions:
 
 \[
 \frac
@@ -82,9 +82,9 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 { \sigma\vdash \mu x_1.\lambda x_2.e\Rightarrow \langle\lambda x_2.e,\sigma'\rangle}
 \]
 
-람다 요약을 사용하여 만든 클로저와 비슷하지만, 현재 환경을 클로저에 저장하는 대신, 현재 환경에 함수의 이름이 클로저를 가리킨다는 정보를 추가한 환경을 저장한다. 클로저를 호출하면, 클로저의 몸통은 클로저의 환경 아래에서 계산되므로, 클로저 몸통에서 문제없이 재귀 호출을 할 수 있다.
+The closure of a recursive function is similar to that of a lambda abstraction but does not store the environment of the moment. Instead, it stores an environment obtained by adding that the name of the function denotes the closure to the environment. Calling a closure evaluates the body of the closure under the environment of the closure so that recursive calls are valid.
 
-아래의 증명 나무는 1의 계승이 1임을 증명한다.
+The below proof tree proves that the factorial of one is one.
 
 \[
 \begin{array}{rcl}
@@ -96,7 +96,7 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 \end{array}
 \]
 
-위 사실을 가정하자.
+Assume the above.
 
 \[
 \frac
@@ -154,9 +154,9 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 }
 \]
 
-### 인터프리터 구현
+### Implementing an Interpreter
 
-다음은 RCFAE의 요약 문법과 환경을 Scala 코드로 표현한 것이다.
+The following Scala code implements the abstract syntax and environments of RCFAE:
 
 ```scala
 sealed trait RCFAE
@@ -179,7 +179,7 @@ def lookup(x: String, env: Env): RCFAEV =
   env.getOrElse(x, throw new Exception)
 ```
 
-`If0`은 조건식, `Rec`은 재귀 함수에 해당한다. `CloV`가 가지고 있는 환경은 수정 가능하다. 환경에 클로저 자신이 저장되기 위해서는 환경을 수정 가능하게 정의해야 한다.
+`If0` instnaces corresponds to conditional expressions; `Rec` instances corresponds to recursive functions. `CloV` instances, which are closures, have mutable environments because adding themselves to the environments requires the environments mutable.
 
 ```scala
 def interp(e: RCFAE, env: Env): RCFAEV = e match {
@@ -213,9 +213,9 @@ def interp(e: RCFAE, env: Env): RCFAEV = e match {
 }
 ```
 
-`If0`인 경우, 조건이 `NumV(0)`이면 참 가지, 아니면 거짓 가지를 계산한다. `Rec`인 경우, 클로저를 만든 뒤 클로저의 환경에 클로저 자신을 추가한다.
+The `If0` case evaluates the true branch if the condition equals `NumV(0)` and the false branch otherwise. The `Rec` case constructs a closure and adds the closure to the environment of the closure.
 
-다음은 `interp` 함수를 호출하여 3의 계승을 구한 것이다.
+The following calculates the factorial of three by calling the `interp` function:
 
 ```scala
 // (mu f.lambda n.if0 n 1 (n * (f (n-1)))) 3
@@ -237,9 +237,9 @@ interp(
 // NumV(6)
 ```
 
-## 재귀 함수 인코딩
+## Encoding Recursive Functions
 
-람다 대수는 Turing 완전하기에, 재귀 함수 역시 람다 대수로 인코딩 될 수 있다. FAE와 CFAE는 람다 대수보다 더 많은 기능을 제공하므로, FAE와 CFAE 역시 재귀 함수를 인코딩 할 수 있다.
+As lambda calculus is Turing complete, recursive functions are encodable with lambda calculus. Since both FAE and CFAE subsume the features of lambda calculus, recursive functions are encodable with them as well.
 
 \[
 \begin{array}{rcl}
@@ -248,11 +248,11 @@ Z&\equiv&\lambda f.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ 
 \end{array}
 \]
 
-\(Z\)는 *고정점 조합자*(fixed point combinator)이다. \(Z\)는 인자로 받은 함수의 고정점을 계산한다. 어떤 함수의 고정점은 그 함수에 인자로 들어왔을 때 인자와 같은 값이 함수의 결괏값이 되는 값이다. 즉, 함수 \(f\)의 고정점은 \(f(x)=x\)를 만족하는 \(x\)이다. 따라서, \(Z\)에 주어진 함수의 고정점이 어떤 재귀 함수라면, \(Z\)를 적용한 결과가 그 재귀 함수이다. 예를 들어, \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)을 생각해보자. \(f\)가 계승 함수일 때 \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) 역시 계승 함수이다. 그렇기에, \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)의 고정점은 계승 함수이므로, \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)도 계승 함수이다.
+\(Z\) is a *fixed point combinator*; it calculates a fixed point of a given function. A fixed point of a function is a value that makes the function yield itself: a fixed point of function \(f\) is any \(x\) satisfying \(f(x)=x\). If an argument given to \(Z\) is a function whose fixed point is a particular recursive function, the result of applying \(Z\) to the function is the recursive function. Consider \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\). If \(f\) is a factorial function, then \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) also is. Thus, the factorial function is a fixed point of \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\), and \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) also is a factorial function.
 
-고정점 조합자가 어떻게 작동하는지 이해해보자. \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)는 \(f\)가 \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)일 때, \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\)와 같다. 이는 \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)와 같다. \(f\)를 인자에 적용하면, \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\)이 된다. 만약 이 함수를 인자 \(0\)에 적용하면, \(x\)가 \(0\)이므로, 결과는 \(1\)이다. 아니라면, 결과는 \(x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))\)인데, \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)가 다시 등장하고 인자의 값이 \(1\) 감소한다. 따라서, 재귀 호출과 같은 일이 일어나며, 계승을 구할 수 있다.
+How does the fixed point combinator work? \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) equals \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\) if \(f\) denotes \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\). It equals \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\). Applying \(f\) to the argument results in \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\). Applying the function to \(0\) yields \(1\) since \(x\) is \(0\). On the other hand, applying the function to a nonzero value leads to \(x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))\). Then, \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\) has reappeared, but its argument has decreased by one. It successfully simulates a recursive call and calculates factorials.
 
-잘 이해가 되지 않는다면 아래의 과정을 천천히 따라가 보자. 1의 계승을 구하는 과정이다.
+The following shows how to get the factorial of one:
 
 \[
 \begin{array}{rll}
@@ -276,7 +276,7 @@ f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)
 \end{array}
 \]
 
-`interp` 함수를 호출하여 고정점 조합자가 잘 작동하는지 확인할 수 있다.
+Via the fixed point combinator, a factorial function is implementable without using a recursive function of RCFAE.
 
 ```scala
 // lambda f.(lambda x.f lambda v.x x v) (lambda x.f lambda v.x x v)
@@ -320,6 +320,6 @@ interp(
 // NumV(6)
 ```
 
-## 감사의 말
+## Acknowledgments
 
-글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
+I thank professor Ryu for giving feedback on the article.
