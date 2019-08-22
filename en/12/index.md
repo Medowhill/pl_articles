@@ -152,39 +152,6 @@ Consider the following encoding:
 
 It is simpler than the previous encoding but always evaluates both true and false branches. Lambda calculus defined by the article uses eager evaluation, but lambda calculus with lazy evaluation allows using the latter encoding without computing needlessly. Later articles discuss lazy evaluation.
 
-Consider CFAE, which features \(\textsf{if0}\) in addition to the features of FAE. \(\textsf{if0}\) is similar to \(\textsf{if}\), but its condition is an integer rather than a Boolean value: \(0\) leads to the true branch, and nonzero integers lead to the false branch.
-
-\[
-\begin{array}{lrcl}
-\text{Expression} & e & ::= & \cdots \\
-&& | & \textsf{if0}\ e\ e\ e
-\end{array}
-\]
-
-A conditional expression is the only new expression.
-
-\[
-\frac
-{ \sigma\vdash e_1\Rightarrow 0 \quad \vdash e_2\Rightarrow v }
-{ \sigma\vdash \textsf{if0}\ e_1\ e_2\ e_3\Rightarrow v}
-\]
-
-\[
-\frac
-{ \sigma\vdash e_1\Rightarrow n \quad n\not=0 \quad \vdash e_3\Rightarrow v }
-{ \sigma\vdash \textsf{if0}\ e_1\ e_2\ e_3\Rightarrow v}
-\]
-
-The semantics of conditional expressions is similar to that of BAE.
-
-\(\textsf{if0}\) also is encodable with lambda calculus. For brevity, let \(T\) and \(F\) respectively denote \(\lambda a.\lambda b.a \_ \) and \(\lambda a.\lambda b.b \_ \). Suppose that \(Is0\) denotes \(\lambda n.n\ (\lambda\_ .F)\ T\). If \(n\) is \(0\), \(Is0\ n\) equals \( (\lambda\_ .F)^0\ T\), which is \(T\). Otherwise, \(\lambda\_ .F\) is applied to \(T\) at least once, and the result thus is \(F\). The following encodes \(\textsf{if0}\):
-
-\[
-\begin{array}{rcl}
-\mathit{encode}(\textsf{if0}\ e_1\ e_2\ e_3)&=&Is0\ \mathit{encode}(e_1)\ (\lambda\_ .\mathit{encode}(e_2))\ (\lambda\_ .\mathit{encode}(e_3))
-\end{array}
-\]
-
 ## Expressivity
 
 How expressive is lambda calculus? *Lambda computable* functions are functions encodable with lambda calculus. Similarly, *Turing computable* functions are functions implementable with *Turing machines*. Lambda computable functions are Turing computable; Turing computable functions are lambda computable. The set of every lambda computable function equals the set of every Turing computable function; lambda calculus is *Turing complete*. Computation doable with Turing machines almost equals that with real computers. The only difference is that the tapes of Turing machines are infinite, while the memories of computers are finite. Therefore, lambda calculus expresses everything whom computers compute. Lambda calculus is 'the only' programming language.

@@ -152,39 +152,6 @@ AE에 비하여 추가된 부분만 정의하였다. 메타변수 \(b\)는 불 �
 
 기존의 인코딩보다 간단하지만, 참과 거짓 가지를 언제나 모두 계산한다는 문제가 있다. 이 글에서 정의한 람다 대수는 빠른 계산(eager evaluation)을 사용하며, 느린 계산(lazy evaluation)을 하도록 정의하였다면 두 번째 인코딩을 사용할 수 있다. 느린 계산에 관해서는 나중 글에서 다룬다.
 
-이번에는 FAE에 \(\textsf{if0}\)을 추가하여 CFAE를 정의해보자. \(\textsf{if0}\)은 \(\textsf{if}\)와 유사하지만, 조건이 불 값이 아닌 정숫값으로, 정수가 \(0\)이면 참 가지를 계산하고, \(0\)이 아니면 거짓 가지를 계산한다.
-
-\[
-\begin{array}{lrcl}
-\text{Expression} & e & ::= & \cdots \\
-&& | & \textsf{if0}\ e\ e\ e
-\end{array}
-\]
-
-FAE에 추가된 유일한 식인 조건식만 정의하였다.
-
-\[
-\frac
-{ \sigma\vdash e_1\Rightarrow 0 \quad \vdash e_2\Rightarrow v }
-{ \sigma\vdash \textsf{if0}\ e_1\ e_2\ e_3\Rightarrow v}
-\]
-
-\[
-\frac
-{ \sigma\vdash e_1\Rightarrow n \quad n\not=0 \quad \vdash e_3\Rightarrow v }
-{ \sigma\vdash \textsf{if0}\ e_1\ e_2\ e_3\Rightarrow v}
-\]
-
-BAE의 의미와 유사하게 조건식의 의미를 정의하였다.
-
-\(\textsf{if0}\)을 람다 대수로 인코딩 해 보자. 간결함을 위해서, \(T\)를 \(\lambda a.\lambda b.a\ \_ \) 대신, \(F\)를 \(\lambda a.\lambda b.b\ \_ \) 대신 사용하겠다. \(Is0\)이 \(\lambda n.n\ (\lambda\_ .F)\ T\)를 의미한다고 생각하자. \(n\)이 \(0\)이라면, \(Is0\ n\)은 \((\lambda\_ .F)^0\ T\)이므로, \(T\)이다. 반대로, \(n\)이 \(0\)이 아니라면 \(\lambda\_ .F\)가 최소 한 번은 적용되므로, 결과가 \(F\)이다. 이를 바탕으로 \(\textsf{if0}\)을 인코딩 할 수 있다.
-
-\[
-\begin{array}{rcl}
-\mathit{encode}(\textsf{if0}\ e_1\ e_2\ e_3)&=&Is0\ \mathit{encode}(e_1)\ (\lambda\_ .\mathit{encode}(e_2))\ (\lambda\_ .\mathit{encode}(e_3))
-\end{array}
-\]
-
 ## 표현력
 
 람다 대수는 얼마나 많은 것을 표현할 수 있을까? 람다 대수로 인코딩 할 수 있는 함수를 *람다 계산 가능한*(lambda computable) 함수라고 부른다. 유사하게, *Turing 기계*(Turing machine)로 구현 할 수 있는 함수를 *Turing 계산 가능한*(Turing computable) 함수라고 한다. 람다 계산 가능한 함수는 Turing 계산 가능하고, Turing 계산 가능한 함수는 람다 계산 가능한 함수임이 증명되어 있다. 따라서, Turing 기계로 구현할 수 있는 계산의 집합과 람다 대수로 인코딩 할 수 있는 계산의 집합은 같으며, 람다 대수가 *Turing 완전*(Turing complete)하다고 말할 수 있다. Turing 기계가 할 수 있는 계산은 현재의 컴퓨터가 할 수 있는 계산과 거의 같다. (컴퓨터의 메모리는 유한하지만, Turing 기계의 테이프는 무한하다.) 따라서, 람다 대수는 컴퓨터가 할 수 있는 모든 일을 표현하는 언어이며, 그런 의미에서 람다 대수는 ‘유일한’ 프로그래밍 언어이다.
