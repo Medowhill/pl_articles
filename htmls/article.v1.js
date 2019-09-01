@@ -81,7 +81,7 @@ function comments() {
       const date = d.getDate();
       const hour = to2(d.getHours());
       const min = to2(d.getMinutes());
-      const time = kr ? `${year}년 ${month}월 ${date}일 ${hour}시 ${min}분` : `${date} ${monthNames[month]} ${year} ${hour}:${min}`;
+      const time = kr ? `${year}년 ${month}월 ${date}일 ${hour}시 ${min}분` : `${date} ${monthNames[month-1]} ${year} ${hour}:${min}`;
       c.content.split('\n').forEach(l => {
         $('#comments').append(`<p class="comment-content">${l}</p>`);
       });
