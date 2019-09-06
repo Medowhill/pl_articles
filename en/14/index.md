@@ -1,4 +1,4 @@
-The article defines BFAE, a language with boxes, which are mutable spaces storing data.
+The article defines BFAE, a language with *boxes*, which are mutable spaces storing data.
 
 ## Syntax
 
@@ -14,19 +14,19 @@ The below is the abstract syntax of BFAE. It shows only parts not in FAE.
 \end{array}
 \]
 
-\(\textsf{ref}\) creates a new box. \(\textsf{ref}\ e\) evaluates \(e\), creates a new box, and stores the result of \(e\) in the box. The whole expression denotes the box. A low-level interpretation of a box is a memory address where its value exists. \(\textsf{ref}\) is similar to `malloc` of C or `new` of object-oriented languages because it allocates spaces whom programmers can use in a memory. For example, rewriting \(\textsf{ref}\ 1\) in C yields `int *p = (int *) malloc(sizeof(int)); *p = 1; return p;`.
+\(\textsf{ref}\) creates a new box. \(\textsf{ref}\ e\) evaluates \(e\), creates a new box, and stores the result of \(e\) in the box. The whole expression denotes the box. A *low-level* interpretation of a box is a memory address where its value exists. \(\textsf{ref}\) is similar to `malloc` of C or `new` of object-oriented languages because it allocates spaces whom programmers can use in a memory. For example, rewriting \(\textsf{ref}\ 1\) in C yields `int *p = (int *) malloc(sizeof(int)); *p = 1; return p;`.
 
-\(:=\) modifies the content of a box. \(e_1:=e_2\) evaluates \(e_1\) and then \(e_2\) and puts a value denoted by \(e_2\) in a box denoted by \(e_1\). The result of the whole expression equals the value. If \(e_1\) does not denote a box, a run-time error occurs. The expression directly modifies the memory. It is similar to an assignment statement whose left-hand side is a pointer dereference in C. For example, if \(x\) denotes a box or a pointer, \(x:=2\) equals \(*x=2\).
+\(:=\) modifies the content of a box. \(e_1:=e_2\) evaluates \(e_1\) and then \(e_2\) and puts a value denoted by \(e_2\) in a box denoted by \(e_1\). The result of the whole expression equals the value. If \(e_1\) does not denote a box, a run-time error occurs. The expression directly modifies the memory. It is similar to an assignment statement whose left-hand side is a pointer *dereference* in C. For example, if \(x\) denotes a box or a pointer, \(x:=2\) equals \(*x=2\).
 
 \(!\) opens a box. If \(e\) results in a box, \(!e\) results in the content of the box. It is similar to a pointer dereference not at the left-hand side of an assignment statement in C. \(!x\) equals \(*x\).
 
-\(e_1;e_2\) is an expression obtained by sequencing \(e_1\) and \(e_2\). It evaluates \(e_1\) and then \(e_2\). The whole expression denotes a value denoted by \(e_2\). Languages covered by the previous articles lack expression sequencing since it is meaningless. The result of the former expression is always discarded without being used by the latter expression. On the other hand, in the case of BFAE, the former expression can create a box or modify the content of a box and is therefore meaningful although its result is ignored. Most languages allow programmers to write sequences of multiple statements or expressions separated by commas or line breaks. Expression sequencing of BFAE equals them.
+\(e_1;e_2\) is an expression obtained by *sequencing* \(e_1\) and \(e_2\). It evaluates \(e_1\) and then \(e_2\). The whole expression denotes a value denoted by \(e_2\). Languages covered by the previous articles lack expression sequencing since it is meaningless. The result of the former expression is always discarded without being used by the latter expression. On the other hand, in the case of BFAE, the former expression can create a box or modify the content of a box and is therefore meaningful although its result is ignored. Most languages allow programmers to write sequences of multiple statements or expressions separated by commas or line breaks. Expression sequencing of BFAE equals them.
 
 ## Semantics
 
 Unlike the previous languages, BFAE is not a purely functional language but provides mutable boxes. Like imperative languages, execution of a BFAE program mutates a state. Despite mutability, the semantics of BFAE retains the functional viewpoint, which interprets an expression as a program and executes the program by finding a value denoted by the expression.
 
-Defining a mutable memory is crucial to define the semantics of BFAE. The article calls such memories stores. A store saves values in boxes existing during execution of a program. Boxes are distinguishable as they have distinct names. The article calls the names addresses. Let \(Addr\) be the set of every possible address. A store is a partial function from an address to a value. A value mapped from the address of a box by a store is the content of the box.
+Defining a mutable memory is crucial to define the semantics of BFAE. The article calls such memories *stores*. A store saves values in boxes existing during execution of a program. Boxes are distinguishable as they have distinct names. The article calls the names *addresses*. Let \(Addr\) be the set of every possible address. A store is a partial function from an address to a value. A value mapped from the address of a box by a store is the content of the box.
 
 \[
 \begin{array}{lrcl}
@@ -54,7 +54,7 @@ Evaluating \(\textsf{ref}\ e\) creates a new box; evaluating \(e_1:=e_2\) change
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Store}\times\text{Expression}\times\text{Value}\times\text{Store}\]
 
-\(\sigma,M\vdash e\Rightarrow v,M'\) implies that evaluating \(e\) under \(\sigma\) and \(M\) results in \(v\) and creates \(M'\). The semantics uses the store passing style. The style allows defining BFAE, featuring mutable boxes, without any mutable concepts.
+\(\sigma,M\vdash e\Rightarrow v,M'\) implies that evaluating \(e\) under \(\sigma\) and \(M\) results in \(v\) and creates \(M'\). The semantics uses the *store passing style*. The style allows defining BFAE, featuring mutable boxes, without any mutable concepts.
 
 The order among subexpressions matters as the subexpressions can modify stores. Suppose that \(x\) denotes a box, and the box contains \(1\). \( (x:=2)+(!x) \) yields \(4\) if \(x:=2\) comes first so that \(!x\) equals \(2\). In contrast, \( (x:=2)+(!x) \) yields \(3\) if \(!x\) comes first so that \(!x\) equals \(1\). Inference rules naturally set orders by passing stores.
 
