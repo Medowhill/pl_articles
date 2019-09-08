@@ -83,7 +83,6 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
 \[
 \frac
 {
-  \begin{array}{c}
   {\Large
   \frac
   {
@@ -94,7 +93,7 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
     \end{array}
   }
   { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle }} \quad
-  \emptyset\vdash2\Rightarrow 2 \\[6pt]
+  \emptyset\vdash2\Rightarrow 2 \quad
   {\Large
   \frac
   {
@@ -109,7 +108,6 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
   }
   { \lbrack x\mapsto 1,y\mapsto 2\rbrack\vdash x+y\Rightarrow 3 }
   }
-  \end{array}
 }
 { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\ 2\Rightarrow 3 }
 \]
