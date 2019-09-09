@@ -13,6 +13,7 @@ function set(_n, _v, _k) {
   let m1 = kr ? '전체 글 목록' : 'Go to the page of all articles';
   let m2 = kr ? '댓글' : 'Comments';
   let m3 = kr ? '이름' : 'Name';
+  let m3_1 = kr ? '이메일(필수 아님)' : 'Email (optional)';
   let m4 = kr ? '내용' : 'Content';
   let m5 = kr ? '댓글 달기' : 'Save';
 
@@ -24,6 +25,7 @@ function set(_n, _v, _k) {
 
   $('body').append(`<h2>${m2}</h2>`);
   $('body').append(`<input type="text" id="comment-name" placeholder="${m3}"></input>`);
+  $('body').append(`<input type="text" id="comment-email" placeholder="${m3_1}"></input>`);
   $('body').append(`<textarea id="comment-content" rows="5" placeholder="${m4}"></textarea>`);
   $('body').append(`<button id="comment-save" onclick="comment()">${m5}</button>`);
   $('body').append(`<div id="comments"></div>`);
@@ -92,14 +94,16 @@ function comments() {
 
 function comment() {
   const name = encodeURIComponent($('#comment-name').val());
+  const email = encodeURIComponent($('#comment-email').val());
   const content = encodeURIComponent($('#comment-content').val());
   if (name && content)
     $('#comment-save').attr('disabled', '');
-    axios.post(`${api}/comment`, `name=${name}&content=${content}&article=${num}`)
+    axios.post(`${api}/comment`, `name=${name}&content=${content}&article=${num}&email=${email}`)
     .then(res => {
       if (res.data.success) {
         comments();
         $('#comment-name').val('');
+        $('#comment-email').val('');
         $('#comment-content').val('');
       }
     })
