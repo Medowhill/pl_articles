@@ -282,3 +282,4 @@ The following proof tree proves that \(\textsf{val}\ x=1\ \textsf{in}\ x+x\) den
 ## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article.
+I thank 'Blue' ('블루') for pointing out incorrect inference rules.
