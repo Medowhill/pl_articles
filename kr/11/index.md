@@ -46,13 +46,13 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 

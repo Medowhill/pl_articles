@@ -84,13 +84,13 @@ twice(x)=x+x; \\
 
 \[
 \frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_1\Rightarrow n_2 }
+{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
 { \sigma;\phi\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_1\Rightarrow n_2 }
+{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
 { \sigma;\phi\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 

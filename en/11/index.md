@@ -46,13 +46,13 @@ The rules for integers, sums, differences, and variables equal those of WAE.
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 

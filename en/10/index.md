@@ -84,13 +84,13 @@ The other rules equal those of WAE except they need function environments.
 
 \[
 \frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_1\Rightarrow n_2 }
+{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
 { \sigma;\phi\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_1\Rightarrow n_2 }
+{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
 { \sigma;\phi\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
