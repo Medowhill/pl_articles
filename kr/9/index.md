@@ -101,13 +101,13 @@ AE의 자연적 의미는 \(\text{Expression}\)과 \(\text{Value}\)의 관계였
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
@@ -166,13 +166,13 @@ v' & \text{if}\ x\neq x'\land\sigma(x')=v'
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
-{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_1\Rightarrow n_2 }
+{ \sigma\vdash e_1\Rightarrow n_1 \quad \sigma\vdash e_2\Rightarrow n_2 }
 { \sigma\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
