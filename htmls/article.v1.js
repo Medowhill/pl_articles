@@ -96,7 +96,7 @@ function comment() {
   const name = encodeURIComponent($('#comment-name').val());
   const email = encodeURIComponent($('#comment-email').val());
   const content = encodeURIComponent($('#comment-content').val());
-  if (name && content)
+  if (name && content) {
     $('#comment-save').attr('disabled', '');
     axios.post(`${api}/comment`, `name=${name}&content=${content}&article=${num}&email=${email}`)
     .then(res => {
@@ -110,4 +110,5 @@ function comment() {
     .finally(() => {
       $('#comment-save').removeAttr('disabled');
     });
+  }
 }
