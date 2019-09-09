@@ -207,7 +207,7 @@ case Sub(l, r) =>
 case App(f, a) =>
   val (CloV(x, b, fEnv), ls) = interp(f, env, sto)
   val (v, rs) = interp(a, env, ls)
-  interp(b, env + (x -> v), rs)
+  interp(b, fEnv + (x -> v), rs)
 ```
 
 The `Seqn`, `Add`, `Sub`, and `App` cases do not directly modify or read stores, but pass stores returned from the recursive calls to the other recursive calls or use them as the results.
@@ -288,7 +288,7 @@ def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match {
   case App(f, a) =>
     val (CloV(x, b, fEnv), ls) = interp(f, env, sto)
     val (v, rs) = interp(a, env, ls)
-    interp(b, env + (x -> v), rs)
+    interp(b, fEnv + (x -> v), rs)
   case NewBox(e) =>
     val (v, s) = interp(e, env, sto)
     val a = malloc(s)

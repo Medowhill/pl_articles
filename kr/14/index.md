@@ -207,7 +207,7 @@ case Sub(l, r) =>
 case App(f, a) =>
   val (CloV(x, b, fEnv), ls) = interp(f, env, sto)
   val (v, rs) = interp(a, env, ls)
-  interp(b, env + (x -> v), rs)
+  interp(b, fEnv + (x -> v), rs)
 ```
 
 `Seqn`, `Add`, `Sub`, `App`은 직접 저장소를 수정하거나 읽지는 않으나, 재귀 호출의 결과로 나온 저장소를 다른 재귀 호출 시에 전달하거나 최종 결과로 사용한다.
@@ -288,7 +288,7 @@ def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match {
   case App(f, a) =>
     val (CloV(x, b, fEnv), ls) = interp(f, env, sto)
     val (v, rs) = interp(a, env, ls)
-    interp(b, env + (x -> v), rs)
+    interp(b, fEnv + (x -> v), rs)
   case NewBox(e) =>
     val (v, s) = interp(e, env, sto)
     val a = malloc(s)
