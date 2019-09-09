@@ -83,7 +83,6 @@ The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields 
 \[
 \frac
 {
-  \begin{array}{c}
   {\Large
   \frac
   {
@@ -94,7 +93,7 @@ The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields 
     \end{array}
   }
   { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle }} \quad
-  \emptyset\vdash2\Rightarrow 2 \\[6pt]
+  \emptyset\vdash2\Rightarrow 2 \quad
   {\Large
   \frac
   {
@@ -109,7 +108,6 @@ The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields 
   }
   { \lbrack x\mapsto 1,y\mapsto 2\rbrack\vdash x+y\Rightarrow 3 }
   }
-  \end{array}
 }
 { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\ 2\Rightarrow 3 }
 \]
