@@ -33,7 +33,7 @@ During the semester, I will add missing articles and edit the preface accordingl
 
 Articles other than the reading materials are the reviews of conferences and papers related to programming languages. They are for people interested in programming languages but not for every student taking the course. A few articles exist at this moment, and I will add new reviews slowly but steadily.
 
-Every reader can give comments on all the articles. Please write any questions or opinions in comments. I will answer them and reflect them in the articles as soon as possible. Both Korean and English are allowable for comments, but other languages are not. One can use a nickname instead of one's real name, but please do not impersonate others and use a single consistent name for the ease of conversations. Comments are neither editable nor deletable. Hence, please double-check before submitting comments.
+Every reader can give comments on all the articles. Please write any questions or opinions in comments. I will answer them and reflect them in the articles as soon as possible. Both Korean and English are allowable for comments, but other languages are not. One can use a nickname instead of one's real name, but please do not impersonate others and use a single consistent name for the ease of conversations. The email field is optional. If an email address is given, it is used for sending notification of a response to the comment and unavailable for any others. Comments are neither editable nor deletable. Hence, please double-check before submitting comments.
 
 ## Why I Write Articles
 
