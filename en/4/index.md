@@ -28,14 +28,45 @@ f(0)(0)
 
 Function `f` returns function `g`. Since `f` has return type `Int => Int`, a return value must be a function that takes an integer as a parameter and returns an integer. `g` satisfies the condition. `f(0)` is same as `g` and therefore is a function. `f(0)(0)` is `g(0)`, which returns `0`.
 
+
 ```scala
-val h0 = f
-val h1 = f(0)
-h0(0)(0)
-h1(0)
+val h0 = f(0)
+h0(0)
 ```
 
-Variables can refer to `f` and `f(0)`. `h0` has type `Int => (Int => Int)`. `Int => Int => Int` denotes the same type because function types are right-associative. `h1` refers to the return value of `f(0)` and has type `Int => Int`. Calling variables referring to function values is possible. Both `h(0)(0)` and `h1(0)` are valid expressions and result in `0`.
+A variable can refer to `f(0)`. `h0` refers to the return value of `f(0)` and has type `Int => Int`. Calling variables referring to function values is possible. `h0(0)` is a valid expression and results in `0`.
+
+```scala
+val h1 = f
+         ^
+error: missing argument list for method f
+
+Unapplied methods are only converted to functions
+when a function type is expected.
+
+You can make this conversion explicit
+by writing `f _` or `f(_)` instead of `f`.
+```
+
+On the other hand, defining a variable referring to `f` results in a compile error. In Scala, a function defined by `def` is not a value. Since `f` is the name of a function but not a variable referring to a value, `h1` cannot refer to the value of `f`. As the above error message implies, underscores convert function names into function values.
+
+```scala
+val h1 = f _
+h1(0)(0)
+```
+
+Compiling the above code succeeds. The type of `h1` is `Int => (Int => Int)`. `Int => Int => Int` denotes the same type because function types are right-associative. `h1(0)(0)` is valid and yields `0`.
+
+Expressions preceding `val h1 = f` use function names as values successfully. Scala compilers transform function names into function values if they occur where function types are expected. Therefore, enforcing the type of `h1` to be a function type corrects the code without underscores. The following code works well:
+
+```scala
+val h1: Int => Int => Int = f
+h1(0)(0)
+```
+
+When programmers use function names as values, they usually place the names where function types are expected. In these cases, underscores and explicit type annotations are unnecessary. Rarely code becomes problematic and needs modifications like the above to enforce the transformations.
+
+How do the compilers create function values from function names? If the parameter type of function `f` is `Int`, the corresponding function value is `(x: Int) => f(x)`. The transformation is called eta expansion. `(x: Int) => f(x)` is a function value without a name and does the same thing as `f`. The following section covers functions without names.
 
 ### Anonymous Functions
 
@@ -586,4 +617,4 @@ Option types are powerful tools to handle erroneous cases in a functional way. F
 
 ## Acknowledgments
 
-I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar.
+I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar. I thank 'seyoon' for pointing out an incorrect code example.
