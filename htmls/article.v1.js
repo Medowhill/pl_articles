@@ -3,11 +3,18 @@ const api = 'https://ch30tnydq2.execute-api.ap-northeast-2.amazonaws.com/default
 var num = -1;
 var ver = -1;
 var kr = true;
+var ps = [];
+var ws = [];
+var words = [];
+var wm = {};
+var last = undefined;
 
 function set(_n, _v, _k) {
   num = _n;
   ver = _v;
   kr = _k;
+  let p = $('p');
+  for (let i = 0; i < p.length; i++) ps.push(p[i]);
 
   let m0 = kr ? '다른 글 읽기' : 'Read other articles';
   let m1 = kr ? '전체 글 목록' : 'Go to the page of all articles';
@@ -110,5 +117,91 @@ function comment() {
     .finally(() => {
       $('#comment-save').removeAttr('disabled');
     });
+  }
+}
+
+function wordsInit() {
+  if (kr) {
+    axios.get(`${api}/words`)
+    .then(res => {
+      words = res.data.map(a => a.kor.S).filter((v, i, a) => a.indexOf(v) === i);
+      ws = ps.map(p => words.filter(w => {
+        let i = p.innerHTML.indexOf(w);
+        return i == 0 || (i > 0 && p.innerHTML[i - 1] === ' ');
+      }));
+      words.forEach(w => {
+        wm[w] = res.data.filter(a => a.kor.S === w).map(a => a.eng.S).join('; ');
+      });
+      $('body').append('<div id="dict-button-div"><div id="dict-button-div2"><button id="dict-button" onclick="showWords()">사전 열기</button></div></div>');
+      $('body').append(`
+      <div id="dict-modal" class="w3-modal" style="display: none;">
+        <div class="w3-modal-content">
+          <div class="w3-container">
+            <span onclick="document.getElementById('dict-modal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+            <a href="dictionary" target="_blank" rel="noopener noreferrer">전체 사전 보기</a>
+            <table id="dict-table"><tbody id="dict-body"></tbody></table>
+          </div>
+        </div>
+      </div>`);
+      document.addEventListener('selectionchange', repWords)
+    });
+  }
+}
+
+function showWords() {
+  if (kr) {
+    let h = $(window).height();
+    let cs = [];
+    for (let i = 0; i < ps.length; i++) {
+      let r = ps[i].getBoundingClientRect();
+      let s = r.y;
+      let e = s + r.height;
+      if (0 <= e && s <= h) {
+        ws[i].forEach(w => {
+          if (!cs.includes(w)) cs.push(w);
+        });
+      }
+    }
+    $('#dict-body').text('');
+    cs.sort().forEach(w => {
+      $('#dict-body').append(`<tr><td>${w}</td><td>${wm[w]}</td></tr>`);
+    });
+    document.getElementById('dict-modal').style.display='block'
+  }
+}
+
+function repWords() {
+  let curr = new Date().getTime();
+  last = curr;
+  let s = document.getSelection();
+  let a = s.anchorNode;
+
+  if (a === s.focusNode && a !== null) {
+    let ao = Math.min(s.anchorOffset, s.focusOffset);
+    let fo = Math.max(s.anchorOffset, s.focusOffset);
+
+    if (fo - ao < 20) {
+      let text = a.data.substring(ao, fo);
+      let fw = words.filter(w =>
+        text.includes(w) &&
+        (ao + text.indexOf(w) === 0 || a.data[ao + text.indexOf(w) - 1] === ' ') &&
+        a.data[ao + text.indexOf(w) + w.length] !== '('
+      ).sort((a, b) => b.length - a.length);
+
+      if (fw.length > 0) {
+        let kor = fw[0];
+        let res = kor + '(' + wm[kor] + ')';
+        let rep = text.replace(kor, res);
+        let pre = a.data.substring(0, ao);
+        let post = a.data.substring(fo);
+
+        setTimeout(() => {
+          if (last === curr) {
+            s.empty();
+            a.data = pre + rep + post;
+          }
+        }, 200);
+      }
+    }
   }
 }
