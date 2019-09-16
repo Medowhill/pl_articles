@@ -110,6 +110,7 @@ s"""<script type="text/x-mathjax-config">
    |  latest();
    |  comments();
    |  others();
+   |  wordsInit();
    |});
    |</script>
    |</head>""".stripMargin
