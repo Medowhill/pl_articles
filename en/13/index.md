@@ -250,7 +250,7 @@ Z&\equiv&\lambda f.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ 
 
 \(Z\) is a *fixed point combinator*; it calculates a fixed point of a given function. A fixed point of a function is a value that makes the function yield itself: a fixed point of function \(f\) is any \(x\) satisfying \(f(x)=x\). If an argument given to \(Z\) is a function whose fixed point is a particular recursive function, the result of applying \(Z\) to the function is the recursive function. Consider \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\). If \(f\) is a factorial function, then \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) also is. Thus, the factorial function is a fixed point of \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\), and \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) also is a factorial function.
 
-How does the fixed point combinator work? \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) equals \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\) if \(f\) denotes \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\). It equals \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\). Applying \(f\) to the argument results in \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\). Applying the function to \(0\) yields \(1\) since \(x\) is \(0\). On the other hand, applying the function to a nonzero value leads to \(x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))\). Then, \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\) has reappeared, but its argument has decreased by one. It successfully simulates a recursive call and calculates factorials.
+How does the fixed point combinator work? \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) equals \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\) if \(f\) denotes \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\). It equals \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\). Applying \(f\) to the argument results in \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\). Applying the function to \(0\) yields \(1\) since \(x\) is \(0\). On the other hand, applying the function to a nonzero value leads to \(x\times((\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))\). Then, \(\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\) has reappeared, but its argument has decreased by one. It successfully simulates a recursive call and calculates factorials.
 
 The following shows how to get the factorial of one:
 
@@ -269,10 +269,10 @@ f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)
 (\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1))))\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 1\\
 && (f\leftarrow\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v) \\
 \rightarrow &
-(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))))\ 1 \\
+(\lambda x.\textsf{if0}\ x\ 1\ (x\times((\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))))\ 1 \\
 && (x\leftarrow 1) \\
 \rightarrow &
-1\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 0)
+1\times((\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 0)
 \end{array}
 \]
 

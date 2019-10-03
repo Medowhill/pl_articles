@@ -250,7 +250,7 @@ Z&\equiv&\lambda f.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ 
 
 \(Z\)는 *고정점 조합자*(fixed point combinator)이다. \(Z\)는 인자로 받은 함수의 고정점을 계산한다. 어떤 함수의 고정점은 그 함수에 인자로 들어왔을 때 인자와 같은 값이 함수의 결괏값이 되는 값이다. 즉, 함수 \(f\)의 고정점은 \(f(x)=x\)를 만족하는 \(x\)이다. 따라서, \(Z\)에 주어진 함수의 고정점이 어떤 재귀 함수라면, \(Z\)를 적용한 결과가 그 재귀 함수이다. 예를 들어, \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)을 생각해보자. \(f\)가 계승 함수일 때 \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\) 역시 계승 함수이다. 그렇기에, \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)의 고정점은 계승 함수이므로, \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)도 계승 함수이다.
 
-고정점 조합자가 어떻게 작동하는지 이해해보자. \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)는 \(f\)가 \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)일 때, \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\)와 같다. 이는 \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)와 같다. \(f\)를 인자에 적용하면, \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\)이 된다. 만약 이 함수를 인자 \(0\)에 적용하면, \(x\)가 \(0\)이므로, 결과는 \(1\)이다. 아니라면, 결과는 \(x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))\)인데, \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)가 다시 등장하고 인자의 값이 \(1\) 감소한다. 따라서, 재귀 호출과 같은 일이 일어나며, 계승을 구할 수 있다.
+고정점 조합자가 어떻게 작동하는지 이해해보자. \(Z\ \lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)는 \(f\)가 \(\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1)))\)일 때, \( (\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\)와 같다. 이는 \(f\ \lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)와 같다. \(f\)를 인자에 적용하면, \(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)))\)이 된다. 만약 이 함수를 인자 \(0\)에 적용하면, \(x\)가 \(0\)이므로, 결과는 \(1\)이다. 아니라면, 결과는 \(x\times(\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1)\)인데, \(\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v\)가 다시 등장하고 인자의 값이 \(1\) 감소한다. 따라서, 재귀 호출과 같은 일이 일어나며, 계승을 구할 수 있다.
 
 잘 이해가 되지 않는다면 아래의 과정을 천천히 따라가 보자. 1의 계승을 구하는 과정이다.
 
@@ -269,10 +269,10 @@ f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)
 (\lambda f.\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (x-1))))\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 1\\
 && (f\leftarrow\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v) \\
 \rightarrow &
-(\lambda x.\textsf{if0}\ x\ 1\ (x\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))))\ 1 \\
+(\lambda x.\textsf{if0}\ x\ 1\ (x\times((\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ (x-1))))\ 1 \\
 && (x\leftarrow 1) \\
 \rightarrow &
-1\times(f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 0)
+1\times((\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\ v)\ 0)
 \end{array}
 \]
 
