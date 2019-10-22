@@ -24,9 +24,9 @@ An expression of FAE is an expression of AE, variable \(x\), *lambda abstraction
 
 A value of FAE is either an integer or a *closure*. A closure, which is a function as a value, is the pair of a lambda abstraction and the environment of when the lambda abstraction defines the function. Lambda abstractions may have free identifiers, but the environments of closures store values denoted by the free identifiers if a program is correct. Consider the following expression:
 
-\[\lambda x.\lambda y.(x + y)\ 1\ 2\]
+\[(\lambda x.\lambda y.x + y)\ 1\ 2\]
 
-\(\lambda y.(x+y)\) contains free identifier \(x\). At run time, when the lambda abstraction is evaluated, the environment of the moment knows that \(x\) refers to \(1\). Hence, the environment of a closure defined by \(\lambda y.(x+y)\) also knows that \(x\) refers to \(1\). The evaluation of the body of a closure happens under the environment of the closure. \(x+y\) does not result in an error. The next section shows the formal semantics of FAE and clarifies how lambda abstractions and function applications operate.
+\(\lambda y.x+y\) contains free identifier \(x\). At run time, when the lambda abstraction is evaluated, the environment of the moment knows that \(x\) refers to \(1\). Hence, the environment of a closure defined by \(\lambda y.x+y\) also knows that \(x\) refers to \(1\). The evaluation of the body of a closure happens under the environment of the closure. \(x+y\) does not result in an error. The next section shows the formal semantics of FAE and clarifies how lambda abstractions and function applications operate.
 
 An environment of FAE is a partial function from identifiers to values. Note that values are not only integers but also closures.
 
@@ -78,7 +78,7 @@ A function application evaluates its both subexpressions. Then, it evaluates the
 { \sigma\vdash e_1\ e_2\Rightarrow v }
 \]
 
-The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields \(3\).
+The following proof tree proves that \((\lambda x.\lambda y.x+y)\ 1\ 2\) yields \(3\).
 
 \[
 \frac
@@ -87,12 +87,12 @@ The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields 
   \frac
   {
     \begin{array}{c}
-    \emptyset\vdash\lambda x.\lambda y.(x+y)\Rightarrow\langle\lambda x.\lambda y.(x+y),\emptyset\rangle \quad
+    \emptyset\vdash\lambda x.\lambda y.x+y\Rightarrow\langle\lambda x.\lambda y.x+y,\emptyset\rangle \quad
     \emptyset\vdash 1\Rightarrow 1 \\
-    \lbrack x\mapsto 1\rbrack\vdash \lambda y.(x+y)\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle
+    \lbrack x\mapsto 1\rbrack\vdash \lambda y.x+y\Rightarrow\langle\lambda y.x+y,\lbrack x\mapsto 1\rbrack\rangle
     \end{array}
   }
-  { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle }} \quad
+  { \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\Rightarrow\langle\lambda y.x+y,\lbrack x\mapsto 1\rbrack\rangle }} \quad
   \emptyset\vdash2\Rightarrow 2 \quad
   {\Large
   \frac
@@ -109,7 +109,7 @@ The following proof tree proves that \(\lambda x.\lambda y.(x+y)\ 1\ 2\) yields 
   { \lbrack x\mapsto 1,y\mapsto 2\rbrack\vdash x+y\Rightarrow 3 }
   }
 }
-{ \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\ 2\Rightarrow 3 }
+{ \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2\Rightarrow 3 }
 \]
 
 ## Implementing an Interpreter
@@ -162,7 +162,7 @@ def interp(e: FAE, env: Env): FAEV = e match {
 
 The `Num` case creates a `NumV` instance. Both `Add` and `Sub` cases check whether values are integral, respectively calculate the sum or the difference, and create `NumV` instances. The `Id` case equals that of WAE. The `Fun` case constructs a `CloV` instance. The `App` case obtains a closure by evaluating the function, calculates the argument, adds the argument to the environment of the closure, and evaluates the body of the closure.
 
-Passing \(\lambda x.\lambda y.(x+y)\ 1\ 2\) and the empty environment to `interp` results in `NumV(3)`.
+Passing \((\lambda x.\lambda y.x+y)\ 1\ 2\) and the empty environment to `interp` results in `NumV(3)`.
 
 ```scala
 // lambda x.lambda y.(x + y) 1 2
@@ -194,7 +194,7 @@ One of the premises of the inference rule for function applications enforces the
 
 Both expressions cause *type errors*. In the former, an expression denoting a function occurs where an integer must come. In the latter, an expression denoting an integer occurs where a function must come. Errors such as those from the examples are type errors since their reasons are expressions of unexpected types.
 
-Syntactic methods can hardly prevent type errors. Such solutions restrict languages too much. Consider restricting operands of sums and differences to only integers rather than arbitrary expressions. Then, the syntax rejects many useful or trivially correct expressions including \(1+1+1\). In the same manner, restricting the first expressions of function applications to lambda abstractions refuses \(\lambda x.\lambda y.(x+y)\ 1\ 2\) and many others.
+Syntactic methods can hardly prevent type errors. Such solutions restrict languages too much. Consider restricting operands of sums and differences to only integers rather than arbitrary expressions. Then, the syntax rejects many useful or trivially correct expressions including \(1+1+1\). In the same manner, restricting the first expressions of function applications to lambda abstractions refuses \((\lambda x.\lambda y.x+y)\ 1\ 2\) and many others.
 
 A *type system* is the most popular method to avoid type errors before executions. Type systems prove that particular programs never cause type errors at run time without executing them. Since they are the semantics of programs before run time, *static semantics* is another name of them. To distinguish 'semantics,' whom the previous articles and the current article focus on, from static semantics, *dynamic semantics* means 'semantics,' which defines the run-time behaviors of programs. Type systems are out of the scope of the article, and later articles discuss type systems in detail.
 

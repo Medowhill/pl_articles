@@ -24,9 +24,9 @@ FAE의 식은 AE의 식이거나, 변수 \(x\)이거나, *람다 요약*(lambda 
 
 FAE의 값은 정수이거나 *클로저*(closure)이다. 클로저는 람다 요약과 환경의 순서쌍으로, 함숫값을 나타내며, 람다 요약과 함께 람다 요약이 함수를 정의할 때의 환경을 가지고 있다. 람다 요약은 자유 식별자를 가질 수 있으나, 올바른 프로그램을 실행하면 클로저의 환경에 자유 식별자가 가리키는 값이 저장되어 있기에 오류가 발생하지 않는다. 다음 식을 생각해보자.
 
-\[\lambda x.\lambda y.(x + y)\ 1\ 2\]
+\[(\lambda x.\lambda y.x+y)\ 1\ 2\]
 
-\(\lambda y.(x+y)\)라는 람다 요약 자체는 \(x\)라는 자유 식별자를 가지고 있다. 그러나, 실제 실행 시에는 람다 요약이 계산될 때 환경에 \(x\)가 \(1\)이라는 정보가 저장되어 있기에, \(\lambda y.(x+y)\)를 계산하여 얻은 클로저의 환경에도 \(x\)가 \(1\)이라는 정보가 포함되어 있다. 클로저를 호출하여 몸통을 계산할 때는 클로저의 환경을 사용하므로, \(x+y\)를 오류 없이 계산할 수 있다. 뒤에서 FAE의 의미를 정의함으로써 람다 요약과 함수 적용이 어떻게 작동하는지 명확하게 나타낼 것이다.
+\(\lambda y.x+y\)라는 람다 요약 자체는 \(x\)라는 자유 식별자를 가지고 있다. 그러나, 실제 실행 시에는 람다 요약이 계산될 때 환경에 \(x\)가 \(1\)이라는 정보가 저장되어 있기에, \(\lambda y.x+y\)를 계산하여 얻은 클로저의 환경에도 \(x\)가 \(1\)이라는 정보가 포함되어 있다. 클로저를 호출하여 몸통을 계산할 때는 클로저의 환경을 사용하므로, \(x+y\)를 오류 없이 계산할 수 있다. 뒤에서 FAE의 의미를 정의함으로써 람다 요약과 함수 적용이 어떻게 작동하는지 명확하게 나타낼 것이다.
 
 FAE의 환경은 WAE나 F1WAE의 환경과 마찬가지로 식별자에서 값으로 가는 부분 함수이다. 다만, 값이 정수만 가능한 것이 아니라, 클로저도 될 수 있다는 차이가 있다.
 
@@ -78,7 +78,7 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
 { \sigma\vdash e_1\ e_2\Rightarrow v }
 \]
 
-다음은 \(\lambda x.\lambda y.(x + y)\ 1\ 2\)를 계산한 결과가 \(3\)임을 증명하는 증명 나무이다.
+다음은 \((\lambda x.\lambda y.x + y)\ 1\ 2\)를 계산한 결과가 \(3\)임을 증명하는 증명 나무이다.
 
 \[
 \frac
@@ -87,12 +87,12 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
   \frac
   {
     \begin{array}{c}
-    \emptyset\vdash\lambda x.\lambda y.(x+y)\Rightarrow\langle\lambda x.\lambda y.(x+y),\emptyset\rangle \quad
+    \emptyset\vdash\lambda x.\lambda y.x+y\Rightarrow\langle\lambda x.\lambda y.x+y,\emptyset\rangle \quad
     \emptyset\vdash 1\Rightarrow 1 \\
-    \lbrack x\mapsto 1\rbrack\vdash \lambda y.(x+y)\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle
+    \lbrack x\mapsto 1\rbrack\vdash \lambda y.x+y\Rightarrow\langle\lambda y.x+y,\lbrack x\mapsto 1\rbrack\rangle
     \end{array}
   }
-  { \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\Rightarrow\langle\lambda y.(x+y),\lbrack x\mapsto 1\rbrack\rangle }} \quad
+  { \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\Rightarrow\langle\lambda y.x+y,\lbrack x\mapsto 1\rbrack\rangle }} \quad
   \emptyset\vdash2\Rightarrow 2 \quad
   {\Large
   \frac
@@ -109,7 +109,7 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
   { \lbrack x\mapsto 1,y\mapsto 2\rbrack\vdash x+y\Rightarrow 3 }
   }
 }
-{ \emptyset\vdash\lambda x.\lambda y.(x+y)\ 1\ 2\Rightarrow 3 }
+{ \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2\Rightarrow 3 }
 \]
 
 ## 인터프리터 구현
@@ -162,10 +162,10 @@ def interp(e: FAE, env: Env): FAEV = e match {
 
 `Num`인 경우 `NumV` 객체를 만든다. `Add`와 `Sub`인 경우에는 값이 `NumV` 타입인지 확인한 후 정숫값을 꺼내서 계산한 뒤 다시 `NumV` 객체를 만든다. `Id`인 경우는 WAE일 때와 같다. `Fun`인 경우 `CloV` 객체를 만든다. `App`인 경우 함수 부분을 계산해서 클로저를 얻은 뒤 인자를 계산한다. 클로저의 환경에 인자의 값을 추가하고 클로저의 몸통을 계산한다.
 
-`interp`에 \(\lambda x.\lambda y.(x + y)\ 1\ 2\)와 빈 환경을 인자로 넘기면 `NumV(3)`이 결과로 나온다.
+`interp`에 \((\lambda x.\lambda y.x + y)\ 1\ 2\)와 빈 환경을 인자로 넘기면 `NumV(3)`이 결과로 나온다.
 
 ```scala
-// lambda x.lambda y.(x + y) 1 2
+// (lambda x.lambda y.x + y) 1 2
 interp(
   App(
     App(
@@ -194,7 +194,7 @@ WAE나 F1WAE에서 실행 중에 오류가 발생하는 이유는 자유 식별�
 
 위 두 식은 모두 *타입 오류*(type error)를 일으킨다고 이야기할 수 있다. 첫 번째는 정수를 나타내는 식이 와야 할 자리에 함수를 나타내는 식이 와서 오류가 발생하고, 두 번째는 함수를 나타내는 식이 와야 할 자리에 정수를 나타내는 식이 와서 오류가 발생했다. 이처럼 기대하지 않은 타입의 식이 와서 발생한 오류를 타입 오류라고 한다.
 
-타입 오류를 문법적인 방법으로 막기는 어렵다. 덧셈과 뺄셈의 피연산자로 올 수 있는 식을 정수로 제한한다면, \(1 + 1 + 1\) 같은 간단한 식도 문법을 만족하지 않는다. 마찬가지로, 함수 적용의 첫 식으로 올 수 있는 식을 람다 요약으로 제한한다면, 위에서 본 \(\lambda x.\lambda y.(x + y)\ 1\ 2\) 같은 식조차 문법을 만족하지 않는다.
+타입 오류를 문법적인 방법으로 막기는 어렵다. 덧셈과 뺄셈의 피연산자로 올 수 있는 식을 정수로 제한한다면, \(1 + 1 + 1\) 같은 간단한 식도 문법을 만족하지 않는다. 마찬가지로, 함수 적용의 첫 식으로 올 수 있는 식을 람다 요약으로 제한한다면, 위에서 본 \((\lambda x.\lambda y.x + y)\ 1\ 2\) 같은 식조차 문법을 만족하지 않는다.
 
 타입 오류를 실행 이전에 방지하는 가장 널리 사용되는 좋은 방법은 *타입 체계*(type system)이다. 타입 체계를 통해서 프로그램을 실행하지 않고도 특정 프로그램이 타입 오류를 절대 발생시키지 않음을 증명할 수 있다. 타입 체계는 프로그램을 실행하기 이전에 코드에 적용되는 의미이기 때문에 *정적 의미*(static semantics)라고도 부른다. 정적 의미와 구분하기 위해서, 지금까지 의미라고 부른, 프로그램을 실행한 결과를 정의하는 의미는 *동적 의미*(dynamic semantics)라고도 부른다. 타입 체계는 이 글의 관심 대상은 아니며, 나중 글에서 자세히 다룰 것이다.
 
