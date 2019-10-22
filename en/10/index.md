@@ -67,6 +67,7 @@ An environment and a function environment are essential to evaluate an expressio
 \[
 \frac
 {
+  f\in\mathit{Domain}(\phi) \quad
   \phi(f)=(x,e') \quad
   \sigma;\phi\vdash e\Rightarrow v' \quad
   \lbrack x\mapsto v'\rbrack;\phi\vdash e'\Rightarrow v
