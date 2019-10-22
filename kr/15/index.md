@@ -41,7 +41,7 @@ MFAE의 환경은 식별자에서 값으로 가는 부분 함수가 아니라 �
 \[
 \begin{array}{lrcl}
 \text{Environment} & \sigma & \in & \textit{Id}\hookrightarrow\text{Address} \\
-\text{Store} & M & \in & \textit{Address}\hookrightarrow\text{Value}
+\text{Store} & M & \in & \text{Address}\hookrightarrow\text{Value}
 \end{array}
 \]
 
@@ -87,7 +87,7 @@ MFAE의 환경은 식별자에서 값으로 가는 부분 함수가 아니라 �
 \frac
 { \sigma,M\vdash e_1\Rightarrow \langle\lambda x.e,\sigma'\rangle,M_1 \quad
   \sigma,M_1\vdash e_2\Rightarrow v_1,M_2 \quad
-  a\not\in M_2 \quad
+  a\not\in \mathit{Domain}(M_2) \quad
   \sigma'\lbrack x\mapsto a\rbrack,M_2\lbrack a\mapsto v_1\rbrack\vdash e\Rightarrow v_2,M_3 }
 { \sigma,M\vdash e_1\ e_2\Rightarrow v_2,M_3 }
 \]
@@ -253,13 +253,15 @@ interp(
 // (NumV(2), Map(1 -> NumV(1)))
 ```
 
-## 계산 전략
+## 참조에 의한 호출
 
-함수 호출 시 인자를 함수에 전달하는 방법을 *계산 전략*(evaluation strategy)이라 부른다. 계산 전략은 언어마다 다르다. 한 언어에서 여러 가지 계산 전략을 사용자에게 제공할 수도 있다.
+함수 호출 시 인자를 함수에 전달하는 방법[^1]은 여러 가지가 있으며 언어마다 다르다. 한 언어에서 여러 가지 방법을 사용자에게 제공할 수도 있다.
 
-MFAE를 포함한 지금까지 다룬 모든 언어는 *값에 의한 호출*(call by value)을 계산 전략으로 사용한다. 값에 의한 호출은 함수 호출 시에 인자의 값을 계산하여 값을 함수에 전달하는 계산 전략이다. 지금까지의 언어들은 언제나 인자를 계산하여 값을 얻고, 그 값을 환경 또는 저장소에 추가하였다.
+[^1]: 이를 일컫는 통일된 용어는 없으며 문헌에 따라 *호출 규약*(calling convention)이나 *계산 전략*(evaluation strategy)라는 말을 사용한다. 호출 메커니즘이라고 부르는 경우도 있다. 굳이 용어를 하나로 정의하지 않아도 글을 이해하는 데 문제가 없기에 이 글에서는 용어를 정하지 않는다.
 
-다른 계산 전략으로는 *참조에 의한 호출*(call by reference)이 있다. 참조에 의한 호출의 경우, 인자가 변수라면, 변수의 값 대신 주소를 전달한다. 다음 추론 규칙은 참조에 의한 호출을 하는 MFAE의 함수 적용의 의미를 정의한다.
+MFAE를 포함한 지금까지 다룬 모든 언어는 *값에 의한 호출*(call by value)을 사용한다. 값에 의한 호출은 함수 호출 시에 인자의 값을 계산하여 값을 함수에 전달하는 의미이다. 지금까지의 언어들은 언제나 인자를 계산하여 값을 얻고, 그 값을 환경 또는 저장소에 추가하였다.
+
+다른 방법으로는 *참조에 의한 호출*(call by reference)이 있다. 참조에 의한 호출의 경우, 인자가 변수라면, 변수의 값 대신 주소를 전달한다. 다음 추론 규칙은 참조에 의한 호출을 하는 MFAE의 함수 적용의 의미를 정의한다.
 
 \[
 \frac
@@ -274,7 +276,7 @@ MFAE를 포함한 지금까지 다룬 모든 언어는 *값에 의한 호출*(ca
 { \sigma,M\vdash e_1\Rightarrow \langle\lambda x.e,\sigma'\rangle,M_1 \quad
   e_2\not\in\text{Variable} \quad
   \sigma,M_1\vdash e_2\Rightarrow v_1,M_2 \quad
-  a\not\in M_2 \quad
+  a\not\in \mathit{Domain}(M_2) \quad
   \sigma'\lbrack x\mapsto a\rbrack,M_2\lbrack a\mapsto v_1\rbrack\vdash e\Rightarrow v_2,M_3 }
 { \sigma,M\vdash e_1\ e_2\Rightarrow v_2,M_3 }
 \]
@@ -318,7 +320,7 @@ void f(int &x) {
 
 그밖에도, 포인터를 인자로 사용한다면 사용자가 명시적으로 참조를 전달하여 참조에 의한 호출을 흉내 낸 것이다. 또, Java나 Scala에서는 기본 타입을 제외한 클래스를 통해 만들어진 모든 참조 타입의 값은 함수나 메서드 호출 시에 값이 복사되는 대신 참조가 전달되므로, 참조에 의한 호출이라 볼 수 있다. 다른 여러 객체 지향 언어에서도 객체를 참조에 의한 호출로 전달한다. 다만, 변수 자체의 주소를 전달한 것이 아니라, 객체의 주소를 전달한 것이므로, 위에서 설명한 C++이나 MFAE의 참조에 의한 호출과는 차이가 존재하며, 구분하기 위해서 *공유에 의한 호출*(call by sharing)이라고 부르기도 한다. 그러나, 공유에 의한 호출은 널리 쓰이는 말은 아니며, 모두 구분 없이 참조에 의한 호출이라고 부르는 경우가 많다.
 
-계산 전략에는 *이름에 의한 호출*(call by name)과 *요구에 의한 호출*(call by need) 등도 있으며, 다음 글에서 이 두 계산 전략에 대해 다룬다.
+이 밖에 *이름에 의한 호출*(call by name)과 *요구에 의한 호출*(call by need) 등도 있으며 다음 글에서 다룰 것이다.
 
 ## 감사의 말
 
