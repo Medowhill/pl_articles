@@ -159,7 +159,7 @@ case class Seqn(l: BFAE, r: BFAE) extends BFAE
 
 sealed trait BFAEV
 case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, var e: Env) extends BFAEV
+case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
 case class BoxV(a: Addr) extends BFAEV
 
 type Env = Map[String, BFAEV]
@@ -256,7 +256,7 @@ case class Seqn(l: BFAE, r: BFAE) extends BFAE
 
 sealed trait BFAEV
 case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, var e: Env) extends BFAEV
+case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
 case class BoxV(a: Addr) extends BFAEV
 
 type Env = Map[String, BFAEV]

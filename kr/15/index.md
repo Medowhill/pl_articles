@@ -121,7 +121,7 @@ case class Set(x: String, e: MFAE) extends MFAE
 
 sealed trait MFAEV
 case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, var e: Env) extends MFAEV
+case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
@@ -194,7 +194,7 @@ case class Set(x: String, e: MFAE) extends MFAE
 
 sealed trait MFAEV
 case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, var e: Env) extends MFAEV
+case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
