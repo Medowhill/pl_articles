@@ -258,9 +258,9 @@ interp(
 
 The semantics of a function application varies in how arguments are passed to a function. Different languages use different function application semantics. Some languages provide multiple ways to pass arguments and allow programmers to choose one of them.
 
-Every hitherto language in the articles uses call-by-value semantics. Under the semantics, the evaluation of the argument precedes the evaluation of the function body. Only a value denoted by the argumens is passed to the function.
+Every hitherto language in the articles uses *call-by-value* semantics. Under the semantics, the evaluation of the argument precedes the evaluation of the function body. Only a value denoted by the argumens is passed to the function.
 
-Call by reference is another semantics to deal with function applications. It allows passing an address instead of a value if the argument is a variable. The following inference rules define the semantics of MFAE featuring call by reference:
+*Call by reference* is another semantics to deal with function applications. It allows passing an address instead of a value if the argument is a variable. The following inference rules define the semantics of MFAE featuring call by reference:
 
 \[
 \frac
@@ -317,9 +317,9 @@ void f(int &x) {
 
 Execution of the code prints `2`.
 
-In C or C++, programmers can mimic call by reference by explicitly passing pointers as arguments. In Java or Scala, if arguments are objects, their references are passed. One can say that it is call by reference. Many other object-oriented languages use call by reference. However, since they pass the addresses of objects instead of the addresses of variables, their call-by-reference semantics differs from call by reference of C++ or MFAE. Some people call such semantics of object-oriented languages call by sharing, but the terminology is unpopular.
+In C or C++, programmers can mimic call by reference by explicitly passing pointers as arguments. In Java or Scala, if arguments are objects, their references are passed. One can say that it is call by reference. Many other object-oriented languages use call by reference. However, since they pass the addresses of objects instead of the addresses of variables, their call-by-reference semantics differs from call by reference of C++ or MFAE. Some people call such semantics of object-oriented languages *call by sharing*, but the terminology is unpopular.
 
-Call by name and call by need are other semantics for function applications. The next article deals with them.
+*Call by name* and *call by need* are other semantics for function applications. The next article deals with them.
 
 ## Acknowledgments
 
