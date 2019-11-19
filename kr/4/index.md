@@ -477,7 +477,7 @@ def list_foldLeft(l: List, n: Int, f: (Int, Int) => Int): Int = {
   list_foldLeft(List(1, 2, 3), 0, +)
 = +(+(+(0, 1), 2), 3)
 
-  list_foldRight(List(1, 2, 3), 1, *)
+  list_foldLeft(List(1, 2, 3), 1, *)
 = *(*(*(1, 1), 2), 3)
 ```
 

@@ -470,7 +470,7 @@ I call the function `list_foldLeft`. Its semantics is different from `list_foldR
   list_foldLeft(List(1, 2, 3), 0, +)
 = +(+(+(0, 1), 2), 3)
 
-  list_foldRight(List(1, 2, 3), 1, *)
+  list_foldLeft(List(1, 2, 3), 1, *)
 = *(*(*(1, 1), 2), 3)
 ```
 
