@@ -53,7 +53,8 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 
 \[
 \begin{array}{cccccc}
-&\text{해야 하는 계산} & \text{환원가능식} & \text{계속} & \text{환원가능식 계산 결과} \\
+&\text{해야 하는 계산} & \text{환원가능식} & \text{계속} & \text{환원가능식 계산 결과}
+& \text{일급 계속} \\
 & \small{\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3}
 & \small{\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3}
 & \lambda v.v
@@ -322,7 +323,7 @@ case App(e1, e2) =>
     interp(e2, env, v2 => v1 match {
       case CloV(xv1, ev1, sigmav1) =>
         interp(ev1, sigmav1 + (xv1 -> v2), k)
-       case ContV(k) => k(v2)
+      case ContV(k) => k(v2)
     })
   )
 ```
