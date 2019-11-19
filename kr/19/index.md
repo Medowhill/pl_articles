@@ -152,7 +152,7 @@ TFAE는 FAE를 변형하여 정의한, 타입 검사가 가능한 언어이다. 
 
 ### 문법
 
-다음은 FAE의 요약 문법이다.
+다음은 TFAE의 요약 문법이다.
 
 \[
 \begin{array}{lrcl}
@@ -1034,3 +1034,7 @@ def interp(e: TFAE, env: Env): TFAEV = e match {
     interp(if (b) t else f, env)
 }
 ```
+
+## 감사의 말
+
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.

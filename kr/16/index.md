@@ -498,3 +498,7 @@ def interp(e: LFAE, env: Env): LFAEV = e match {
 [^3]: Jill Seaman, S.Purushothaman Iyer, *An operational semantics of sharing in lazy evaluation*, Science of Computer Programming, Volume 27, Issue 3, 1996, Pages 289-322, <https://doi.org/10.1016/0167-6423(96)00012-3>.
 
 필요에 의한 호출을 사용하는 LFAE의 구현은 앞에서 본 옵션 타입을 사용한 `ExprV`와 이름에 의한 호출을 사용하는 LFAE의 구현을 조합하여 쉽게 만들 수 있다. 이 역시 생략하겠다.
+
+## 감사의 말
+
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
