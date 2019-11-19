@@ -443,3 +443,7 @@ Call by need is semantics that evaluates an argument when the corresponding para
 Call by need is formalizable as well as call by name. However, to represent storing values of arguments, formalization needs a concept similar to a store of BFAE or MFAE. It complexifies the semantics needlessly. Moreover, an LFAE expression results in the same value regardless of choice between call by name and call by need. Call by need for LFAE is an optimization of call by name for LFAE. Thus, the article omits formalization of call by need. One can find additionally from other articles, such as "An operational semantics of sharing in lazy evaluation."[^2] Since modifying the interpreter to use call by need is trivial, the article omits it as well.
 
 [^2]: Jill Seaman, S.Purushothaman Iyer, *An operational semantics of sharing in lazy evaluation*, Science of Computer Programming, Volume  27, Issue 3, 1996, Pages 289-322, <https://doi.org/10.1016/0167-6423(96)00012-3>.
+
+## Acknowledgments
+
+I thank professor Ryu for giving feedback on the article.
