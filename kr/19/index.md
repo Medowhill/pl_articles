@@ -369,11 +369,11 @@ type TEnv = Map[String, TFAET]
 `TFAE` 인스턴스는 TFAE의 식을 표현한다. `Fun` 클래스에 매개변수 타입을 표시하는 필드 `t`가 추가된 것만 빼면 FAE와 같다. `TFAET` 인스턴스는 TFAE의 타입을 표현한다. `NumT`는 \(\textsf{num}\) 타입에 해당한다. `ArrowT` 인스턴스는 함수의 타입을 표현한다. 타입 환경 `TEnv`는 문자열을 열쇠, TFAE의 타입을 값으로 하는 사전이다.
 
 ```scala
-def mustSame(t1: TFAET, t2: TFAET): Unit =
-  if (t1 != t2) throw new Exception
+def mustSame(t1: TFAET, t2: TFAET): TFAET =
+  if (t1 == t2) t1 else throw new Exception
 ```
 
-`mustSame` 함수는 두 타입을 인자로 받아 두 타입이 같은지 비교한다. 같으면 아무것도 하지 않고, 다르면 예외를 발생시킨다.
+`mustSame` 함수는 두 타입을 인자로 받아 두 타입이 같은지 비교한다. 같으면 받은 타입을 결과로 내고, 다르면 예외를 발생시킨다.
 
 다음 `typeCheck` 함수가 타입 검사기이다. TFAE 식과 타입 환경을 인자로 받는다. 타입 검사가 성공하면 식의 타입을 결과로 낸다. 실패하면 예외를 발생시킨다. 다만 `typeCheck` 함수가 직접 예외를 발생시키지는 않는다. `mustSame`을 호출함으로써, 같아야 할 두 타입이 다르면 예외가 발생한다.
 
@@ -381,13 +381,11 @@ def mustSame(t1: TFAET, t2: TFAET): Unit =
 def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
   case Num(n) => NumT
   case Add(l, r) =>
-    mustSame(typeCheck(l, env), NumT)
-    mustSame(typeCheck(r, env), NumT)
-    NumT
+    mustSame(mustSame(NumT,
+      typeCheck(l, env)), typeCheck(r, env))
   case Sub(l, r) =>
-    mustSame(typeCheck(l, env), NumT)
-    mustSame(typeCheck(r, env), NumT)
-    NumT
+    mustSame(mustSame(NumT,
+      typeCheck(l, env)), typeCheck(r, env))
   case Id(x) => env(x)
   case Fun(x, t, b) =>
     ArrowT(t, typeCheck(b, env + (x -> t)))
@@ -1018,10 +1016,7 @@ def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
   case Bool(b) => BoolT
   case If(c, t, f) =>
     mustSame(typeCheck(c, env), BoolT)
-    val tt = typeCheck(t, env)
-    val tf = typeCheck(f, env)
-    mustSame(tt, tf)
-    tt
+    mustSame(typeCheck(t, env), typeCheck(f, env))
 }
 
 case class BoolV(b: Boolean) extends TFAEV
