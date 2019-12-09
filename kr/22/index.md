@@ -47,7 +47,7 @@ g\ \textsf{true}
 \begin{array}{l}
 \textsf{let}\ f=\lambda\alpha.\lambda x:\alpha.x\ \textsf{in} \\
 \textsf{let}\ x=f\ \lbrack\textsf{num}\rbrack\ 1\ \textsf{in} \\
-g\ \lbrack\textsf{bool}\rbrack\ \textsf{true}
+f\ \lbrack\textsf{bool}\rbrack\ \textsf{true}
 \end{array}
 \]
 
@@ -136,7 +136,7 @@ Cons[String]("0", Cons[String]("1", Cons[String]("2", Nil[String]())))
 
 값 \(\langle\lambda\alpha.e,\sigma\rangle\)는 타입 함수 값이다. 함수를 계산하면 클로저가 나오는 것처럼 타입 함수를 계산하면 타입 함수 값이 나온다. 함수의 몸통은 함수가 클로저가 될 때 계산되지 않고 함수가 호출되었을 때 계산된다. 몸통은 클로저가 만들어질 때의 환경 아래서 계산되어야 하므로 클로저는 만들어질 때의 환경을 저장하고 있다. 마찬가지로 타입 함수의 몸통도 타입 함수가 타입 함수 값이 될 때 계산되지 않는다. 타입 함수가 어떤 타입에 적용되면 그때 몸통이 계산된다. 타입 함수의 몸통 역시 타입 함수 값이 만들어질 때의 환경 아래서 계산되어야 한다. 그러므로 클로저와 마찬가지로 타입 함수 값도 환경을 저장한다. 환경 \(\sigma\) 아래서 타입 함수 \(\lambda\alpha.e\)를 계산한 결과는 타입 함수 값 \(\langle\lambda\alpha.e,\sigma\rangle\)이다. 빈 환경 아래서 \(\lambda\alpha.\lambda x:\alpha.x\)를 계산하면 그 결과는 \(\langle\lambda\alpha.\lambda x:\alpha.x,\emptyset\rangle\)이다.
 
-타입 \(\lambda\alpha.\tau\)는 타입 함수의 타입이다. 타입 함수 \(\lambda\alpha.e\)가 있을 때, \(e\)의 타입이 \(\tau\)라면 타입 함수의 타입은 \(\lambda\alpha.\tau\)이다. 예를 들어, \(\lambda x:\alpha.x\)의 타입은 \(\alpha\rightarrow\alpha\)이므로 \(\lambda\alpha.\lambda x:\alpha.x\)의 타입은 \(\forall\alpha.\alpha\rightarrow\alpha\)이다. 기호 \(\forall\)를 *전칭 기호*(universal quantifier)라 부르는 것에 따라 \(\lambda\alpha.\tau\) 형태의 타입을 *전칭 타입*(universal type; universally quantified typed)이라 부른다. 전칭 타입은 타입 함수와 비슷하게 타입 식별자를 묶는 효과가 있다. 타입 \(\forall\alpha.\tau\)에서 \(\alpha\)는 타입 식별자 \(\alpha\)의 묶는 등장이며 그 영역은 \(\tau\) 전체이다.
+타입 \(\forall\alpha.\tau\)는 타입 함수의 타입이다. 타입 함수 \(\lambda\alpha.e\)가 있을 때, \(e\)의 타입이 \(\tau\)라면 타입 함수의 타입은 \(\forall\alpha.\tau\)이다. 예를 들어, \(\lambda x:\alpha.x\)의 타입은 \(\alpha\rightarrow\alpha\)이므로 \(\lambda\alpha.\lambda x:\alpha.x\)의 타입은 \(\forall\alpha.\alpha\rightarrow\alpha\)이다. 기호 \(\forall\)를 *전칭 기호*(universal quantifier)라 부르는 것에 따라 \(\forall\alpha.\tau\) 형태의 타입을 *전칭 타입*(universal type; universally quantified typed)이라 부른다. 전칭 타입은 타입 함수와 비슷하게 타입 식별자를 묶는 효과가 있다. 타입 \(\forall\alpha.\tau\)에서 \(\alpha\)는 타입 식별자 \(\alpha\)의 묶는 등장이며 그 영역은 \(\tau\) 전체이다.
 
 식 \(e\ \lbrack\tau\rbrack\)는 타입 적용을 하는 식이다. \(e\)를 계산한 결과가 타입 함수 값이면 타입 함수의 몸통을 값이 가지고 있는 환경 아래서 계산하면 된다. 함수를 값에 적용할 때는 인자를 환경에 추가한다. 값을 환경에 저장하는 것처럼 타입은 타입 환경에 저장된다. 그러나 타입 환경은 실행 중에 존재하지 않으므로 타입 적용을 계산할 때 타입을 타입 환경에 추가할 수는 없다. 그 대신 치환을 사용한다. \(e\)의 계산 결과가 \(\langle\lambda\alpha.e,\sigma\rangle\)이면 \(e\ \lbrack\tau\rbrack\)를 계산하는 것은 \(e\)에서 \(\alpha\)를 \(\tau\)로 치환하여 얻은 식을 \(\sigma\) 아래서 계산하는 것이다. 치환에 대해서는 뒤에서 다시 볼 것이다. 앞에서 \(\lambda\alpha.\lambda x:\alpha.x\)를 빈 환경 아래서 계산하면 \(\langle\lambda\alpha.\lambda x:\alpha.x,\emptyset\rangle\)이 나온다고 했다. 따라서 \((\lambda\alpha.\lambda x:\alpha.x)\ \lbrack\textsf{num}\rbrack\)을 계산하는 것은 \(\lambda x:\alpha.x\)에서 \(\alpha\)를 \(\textsf{num}\)으로 치환하여 나온 \(\lambda x:\textsf{num}.x\)을 타입 환경 값이 가지고 있던 빈 환경 아래에서 계산하는 것이다. 그 결과는 \(\langle\lambda x.x,\emptyset\rangle\)이다.
 
@@ -454,7 +454,7 @@ def subst(t1: TPFAET, a: String, t2: TPFAET): TPFAET = t1 match {
 def mustSame(t1: TPFAET, t2: TPFAET): TPFAET = (t1, t2) match {
   case (NumT, NumT) => t1
   case (ArrowT(p1, r1), ArrowT(p2, r2)) =>
-    ArrowT(mustSame(p1, p2), mustSame(p2, r2))
+    ArrowT(mustSame(p1, p2), mustSame(r1, r2))
   case (IdT(a1), IdT(a2)) if a1 == a2 => t1
   case (ForallT(a1, t1), ForallT(a2, t2)) =>
     ForallT(a1, mustSame(t1, subst(t2, a2, IdT(a1))))
