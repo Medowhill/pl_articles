@@ -236,14 +236,16 @@ n\Downarrow n
 \]
 
 \[
-\[
 \frac{
   e_1\Downarrow \lambda x.e \quad
   e_2\Downarrow v' \quad
   \lbrack v'/x\rbrack e\Downarrow v
 }
 { e_1\ e_2\Downarrow v }
-\]\frac
+\]
+
+\[
+\frac
 {
   e_1\Downarrow n_1 \quad
   e_2\Downarrow n_2
@@ -444,29 +446,6 @@ type Env = Map[String, Expr]
 def lookup(x: String, env: Env): Expr =
   env.getOrElse(x, throw new Exception)
 
-```scala
-def lookup(x: String, env: Env): Expr =
-  env.getOrElse(x, throw new Exception)
-
-def interp(e: LFAE, env: Env): LFAEV = e match {
-  case Num(n) => NumV(n)
-  case Add(l, r) =>
-    val NumV(n) = interp(l, env)
-    val NumV(m) = interp(r, env)
-    NumV(n + m)
-  case Sub(l, r) =>
-    val NumV(n) = interp(l, env)
-    val NumV(m) = interp(r, env)
-    NumV(n - m)
-  case Id(x) =>
-    val Expr(e, eEnv) = lookup(x, env)
-    interp(e, eEnv)
-  case Fun(x, b) => CloV(x, b, env)
-  case App(f, a) =>
-    val CloV(x, b, fEnv) = interp(f, env)
-    interp(b, fEnv + (x -> Expr(a, env)))
-}
-```
 def interp(e: LFAE, env: Env): LFAEV = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
