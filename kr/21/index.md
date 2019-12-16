@@ -306,7 +306,7 @@ TVFAE의 타입은 임의의 타입 식별자일 수 있다. 예를 들면 타�
 
 \[
 \frac
-{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
