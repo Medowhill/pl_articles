@@ -689,3 +689,7 @@ break\ ())
 \]
 
 The encoding omits \(continue\). The value of \(break\) is a continuation doing nothing. Even though the condition always equals true, the evaluation of \(break\ ()\) makes the final result of the program \(()\) and the program terminate.
+
+## Acknowledgments
+
+I thank professor Ryu for giving feedback on the article.
