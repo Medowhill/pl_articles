@@ -220,7 +220,7 @@ A value is either an integer or a function value. Due to the absence of environm
 
 The inference rules for integers, sums, and differences are similar to the previous rules.
 
-[
+\[
 n\Downarrow n
 \]
 

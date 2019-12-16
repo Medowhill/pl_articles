@@ -236,15 +236,6 @@ n\Downarrow n
 \]
 
 \[
-\frac{
-  e_1\Downarrow \lambda x.e \quad
-  e_2\Downarrow v' \quad
-  \lbrack v'/x\rbrack e\Downarrow v
-}
-{ e_1\ e_2\Downarrow v }
-\]
-
-\[
 \frac
 {
   e_1\Downarrow n_1 \quad
