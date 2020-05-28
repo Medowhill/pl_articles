@@ -13,15 +13,15 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 \[
 \begin{array}{lrcl}
 \text{Expression} & e & ::= & \cdots \\
-&& | & \textsf{letcc}\ x\ \textsf{in}\ e \\
+&& | & \textsf{vcc}\ x\ \textsf{in}\ e \\
 \end{array}
 \]
 
-\(\textsf{letcc}\ x\ \textsf{in}\ e\)는 현재 계속을 \(x\)의 값으로 하고 \(e\)를 계산하는 식이다. \(\textsf{letcc}\)의 \(\textsf{cc}\)는 ‘current continuation', 즉 현재 계속을 뜻한다. 여기서 현재 계속은, \(\textsf{letcc}\ x\ \textsf{in}\ e\) 전체가 환원가능식일 때의 계속이다. 다른 말로는, \(\textsf{letcc}\ x\ \textsf{in}\ e\)를 계산할 때의 계속이다. \(x\)의 영역은 \(e\) 전체이다. \(x\)에 해당하는 값이 호출되면, 호출이 일어나는 시점의 계속이 무시되고 \(x\)의 값인 계속이 계산된다.
+\(\textsf{vcc}\ x\ \textsf{in}\ e\)는 현재 계속을 \(x\)의 값으로 하고 \(e\)를 계산하는 식이다. \(\textsf{vcc}\)의 \(\textsf{cc}\)는 ‘current continuation', 즉 현재 계속을 뜻한다. 여기서 현재 계속은, \(\textsf{vcc}\ x\ \textsf{in}\ e\) 전체가 환원가능식일 때의 계속이다. 다른 말로는, \(\textsf{vcc}\ x\ \textsf{in}\ e\)를 계산할 때의 계속이다. \(x\)의 영역은 \(e\) 전체이다. \(x\)에 해당하는 값이 호출되면, 호출이 일어나는 시점의 계속이 무시되고 \(x\)의 값인 계속이 계산된다.
 
 먼저  \(1+(((\lambda v.1+v)\ 2)+3)\)를 보자. 프로그래머가 코드에 \(\lambda v.1+v\)라고 썼기에 이는 인자를 받아 \(1\)에 더한 값을 결과로 내는 함수이다. 함수를 호출해도 계속에는 영향이 없다. 함수 호출 시의 계속을 바꾸지 않고 함수의 결괏값을 가지고 계산을 이어 나간다. \((\lambda v.1+v)\ 2\)의 계속은 \(\lambda v.1+(v+3)\)이다. 함수 호출의 결과는 \(3\)이므로 계속을 적용하면 \(1+(3+3)\)이 된다. 최종 결과는 \(7\)이다. 
 
-이제 \(1+(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3)\)을 생각해 보자. \(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3\)이 계산될 때 계속은 그 결과를 \(1\)에 더하는 것이다. 함수로 표현하면 \(\lambda v.1+v\)이다. 이 계속이 \(x\)의 값인 채로 \((x\ 2)+3\)이 계산된다. 앞에서도 말한 것처럼 계속은 함수 꼴로 표현될 수 있으나 사용자가 코드에 쓴 람다 요약과는 다르다. \(x\)는 그냥 람다 요약이 아니라 계속이다. \(x\)를 호출하는 것은 현재의 계속을 \(x\)가 나타내는 계속으로 바꾸는 효과를 낸다. 그러므로 \(x\ 2\)를 계산할 때의 원래 계속인 \(\lambda v.1+(v+3)\)는 버려진다. \((\lambda v.1+v)\ 2\)가 남은 계산 전부이다. 이는 \(1+2\)이므로 최종 결과는 \(3\)이다.
+이제 \(1+(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3)\)을 생각해 보자. \(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3\)이 계산될 때 계속은 그 결과를 \(1\)에 더하는 것이다. 함수로 표현하면 \(\lambda v.1+v\)이다. 이 계속이 \(x\)의 값인 채로 \((x\ 2)+3\)이 계산된다. 앞에서도 말한 것처럼 계속은 함수 꼴로 표현될 수 있으나 사용자가 코드에 쓴 람다 요약과는 다르다. \(x\)는 그냥 람다 요약이 아니라 계속이다. \(x\)를 호출하는 것은 현재의 계속을 \(x\)가 나타내는 계속으로 바꾸는 효과를 낸다. 그러므로 \(x\ 2\)를 계산할 때의 원래 계속인 \(\lambda v.1+(v+3)\)는 버려진다. \((\lambda v.1+v)\ 2\)가 남은 계산 전부이다. 이는 \(1+2\)이므로 최종 결과는 \(3\)이다.
 
 위 두 식의 차이를 직관적으로 다음과 같이 정리할 수 있다.
 
@@ -39,7 +39,7 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 \begin{array}{cccccc}
 &\text{해야 하는 계산} & \text{환원가능식} & \text{계속} & \text{환원가능식 계산 결과}
 & \text{일급 계속} \\
-& 1+(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3) & \textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3 & \lambda v.1+v & (x\ 2)+3 & x=\lambda v.1+v \\
+& 1+(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3) & \textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3 & \lambda v.1+v & (x\ 2)+3 & x=\lambda v.1+v \\
 \rightarrow& 1+((x\ 2)+3) & (x\ 2) & \lambda v.1+(v+3) & \text{현재 계속을 버린다}  \\
 \rightarrow& x\ 2 & 2 & x & 2 \\
 \equiv & x\ 2 & 2 & \lambda v.1+v & 2 \\
@@ -55,18 +55,18 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 \begin{array}{cccccc}
 &\text{해야 하는 계산} & \text{환원가능식} & \text{계속} & \text{환원가능식 계산 결과}
 & \text{일급 계속} \\
-& \small{\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3}
-& \small{\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3}
+& \small{\textsf{vcc}\ x\ \textsf{in}\ (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3}
+& \small{\textsf{vcc}\ x\ \textsf{in}\ (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3}
 & \lambda v.v
-& \small{(\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3}
+& \small{(\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3}
 & x=\lambda v.v \\
-\rightarrow & (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3
-& \textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))
+\rightarrow & (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3
+& \textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))
 & \lambda v.v\ 3
-& x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))
+& x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))
 & y=\lambda v.v\ 3 \\
-\rightarrow & x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))3
-& \textsf{letcc}\ z\ \textsf{in}\ y\ z
+\rightarrow & x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))3
+& \textsf{vcc}\ z\ \textsf{in}\ y\ z
 & \lambda v.x(1+v)3
 & y\ z
 & z=\lambda v.x(1+v)3 \\
@@ -82,13 +82,13 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 \end{array}
 \]
 
-따라서 \(\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3\)의 실행 결과는 \(4\)이다.
+따라서 \(\textsf{vcc}\ x\ \textsf{in}\ (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3\)의 실행 결과는 \(4\)이다.
 
 일급 계속이 나오는 두 식의 계산 과정에서 해야 하는 계산만 정리하면 다음과 같다.
 
 \[
 \begin{array}{cl}
-& 1+(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3) \\
+& 1+(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3) \\
 \rightarrow& 1+((x\ 2)+3)  \\
 \rightarrow& x\ 2 \\
 \rightarrow& 1+2 \\
@@ -98,9 +98,9 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 
 \[
 \begin{array}{cl}
-& \textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3 \\
-\rightarrow & (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3\\
-\rightarrow & x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))3\\
+& \textsf{vcc}\ x\ \textsf{in}\ (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3 \\
+\rightarrow & (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3\\
+\rightarrow & x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))3\\
 \rightarrow & x(1+(y\ z))3 \\
 \rightarrow & y\ z\\
 \rightarrow & z\ 3 \\
@@ -111,7 +111,7 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 \end{array}
 \]
 
-주목할 점은 두 가지이다. 첫 번째는 \(\textsf{letcc}\) 자체는 아무런 계산도 하지 않는다는 것이다. 현재의 계속을 값으로 만든다는 점만 빼면 몸통을 바로 계산하는 것과 같다. 예를 들면 \(1+(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3)\)은 \(\textsf{letcc}\ x\ \textsf{in}\ (x\ 2)+3\)이 \((x\ 2)+3\)으로 그대로 바뀌므로 \(1+((x\ 2)+3)\)이 된다. 두 번째는 계속을 호출하는 식을 계산해야 하는 순간 계속과 인자를 제외한 부분은 사라진다는 것이다. 예를 들면 \(1+((x\ 2)+3)\)에서는 \(x\ 2\)를 계산해야 하고 \(x\)가 계속이므로 바로 \(x\ 2\)로 바뀐다. 또, \(x(1+(y\ z))3\)에서도 \(y\ z\)를 계산해야 하고 \(y\)가 계속이므로 바로 \(y\ z\)로 바뀐다. 이처럼 나머지 부분을 없애는 것이 현재의 계속을 호출하는 계속으로 바꾸는 것이다.
+주목할 점은 두 가지이다. 첫 번째는 \(\textsf{vcc}\) 자체는 아무런 계산도 하지 않는다는 것이다. 현재의 계속을 값으로 만든다는 점만 빼면 몸통을 바로 계산하는 것과 같다. 예를 들면 \(1+(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3)\)은 \(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3\)이 \((x\ 2)+3\)으로 그대로 바뀌므로 \(1+((x\ 2)+3)\)이 된다. 두 번째는 계속을 호출하는 식을 계산해야 하는 순간 계속과 인자를 제외한 부분은 사라진다는 것이다. 예를 들면 \(1+((x\ 2)+3)\)에서는 \(x\ 2\)를 계산해야 하고 \(x\)가 계속이므로 바로 \(x\ 2\)로 바뀐다. 또, \(x(1+(y\ z))3\)에서도 \(y\ z\)를 계산해야 하고 \(y\)가 계속이므로 바로 \(y\ z\)로 바뀐다. 이처럼 나머지 부분을 없애는 것이 현재의 계속을 호출하는 계속으로 바꾸는 것이다.
 
 ## 의미
 
@@ -126,14 +126,14 @@ KFAE의 의미를 먼저 본 뒤 KFAE의 인터프리터를 구현하겠다. 또
 
 일급 계속을 지원하므로 값은 정수와 클로저 이외에도 계속이 될 수 있다. 지난 글에서 계산 스택과 값 스택의 순서쌍이 계속이 된다고 하였다. 따라서 \(\langle k,s\rangle\)가 계속을 표현하는 값이다. 이 계속을 함수로 표현하면 \(\lambda v.\mathit{eval}(k\ ||\ v::s)\)라고 하였다. 여기서 \(\mathit{eval}(k\ ||\ v::s)\)는 \(k\ ||\ v::s\rightarrow^\ast \square\ ||\ v'::\blacksquare\)가 참이 되는 \(v'\)이다. 그러므로 \(\langle k,s\rangle\)를 어떤 값 \(v\)에 적용하는 것은 현재 상태를 \(k\ ||\ v::s\)로 환원하는 것이다.
 
-지난 글에서 정의한 FAE의 작은 걸음 의미를 위한 규칙들은 KFAE에서도 그대로 사용할 수 있다. 거기에 더하여 두 규칙을 추가해야 한다. 추가된 식 \(\textsf{letcc}\ x\ \textsf{in}\ e\)이 환원가능식인 경우에 대한 규칙과 \((@)\)이 해야 하는 계산일 때 함수 위치에 클로저가 아닌 계속이 오는 경우에 대한 규칙이 필요하다.
+지난 글에서 정의한 FAE의 작은 걸음 의미를 위한 규칙들은 KFAE에서도 그대로 사용할 수 있다. 거기에 더하여 두 규칙을 추가해야 한다. 추가된 식 \(\textsf{vcc}\ x\ \textsf{in}\ e\)이 환원가능식인 경우에 대한 규칙과 \((@)\)이 해야 하는 계산일 때 함수 위치에 클로저가 아닌 계속이 오는 경우에 대한 규칙이 필요하다.
 
 \[
-\sigma\vdash\textsf{letcc}\ x\ \textsf{in}\ e::k\ ||\ s\rightarrow
+\sigma\vdash\textsf{vcc}\ x\ \textsf{in}\ e::k\ ||\ s\rightarrow
 \sigma[x\mapsto\langle k,s\rangle]\vdash e::k\ ||\ s
 \]
 
-\(\textsf{letcc}\ x\ \textsf{in}\ e\)는 \(x\)의 값을 현재의 계속으로 한 뒤 \(e\)를 계산하는 식이다. 현재 상태가 \(\sigma\vdash\textsf{letcc}\ x\ \textsf{in}\ e::k\ ||\ s\)이면 환원가능식이 \(\textsf{letcc}\ x\ \textsf{in}\ e\)이고 계속은 \(\langle k,s\rangle\)이다. 따라서 계산 스택의 가장 위를 \(\sigma[x\mapsto\langle k,s\rangle]\vdash e\)로 바꾸는 것이 환원이다.
+\(\textsf{vcc}\ x\ \textsf{in}\ e\)는 \(x\)의 값을 현재의 계속으로 한 뒤 \(e\)를 계산하는 식이다. 현재 상태가 \(\sigma\vdash\textsf{vcc}\ x\ \textsf{in}\ e::k\ ||\ s\)이면 환원가능식이 \(\textsf{vcc}\ x\ \textsf{in}\ e\)이고 계속은 \(\langle k,s\rangle\)이다. 따라서 계산 스택의 가장 위를 \(\sigma[x\mapsto\langle k,s\rangle]\vdash e\)로 바꾸는 것이 환원이다.
 
 계속을 적용하는 경우에 대한 규칙을 정의하기 전에 먼저 클로저를 적용하는 규칙을 다시 보겠다.
 
@@ -153,9 +153,9 @@ k'\ ||\ v::s'
 
 \[
 \begin{array}{lrcr}
-& \emptyset\vdash 1+(\textsf{letcc}\ x\ \textsf{in}\ ((x\ 2)+3))::\square &||& \blacksquare \\
-\rightarrow & \emptyset\vdash 1::\emptyset\vdash \textsf{letcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& \blacksquare \\
-\rightarrow & \emptyset\vdash \textsf{letcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& 1::\blacksquare \\
+& \emptyset\vdash 1+(\textsf{vcc}\ x\ \textsf{in}\ ((x\ 2)+3))::\square &||& \blacksquare \\
+\rightarrow & \emptyset\vdash 1::\emptyset\vdash \textsf{vcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& \blacksquare \\
+\rightarrow & \emptyset\vdash \textsf{vcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& 1::\blacksquare \\
 \rightarrow & \sigma\vdash (x\ 2)+3::(+)::\square &||& 1::\blacksquare \\
 \rightarrow & \sigma\vdash x\ 2::\sigma\vdash 3::(+)::(+)::\square &||& 1::\blacksquare \\
 \rightarrow & \sigma\vdash x::\sigma\vdash 2::(@)::\sigma\vdash 3::(+)::(+)::\square &||& 1::\blacksquare \\
@@ -169,11 +169,11 @@ k'\ ||\ v::s'
 새로운 규칙이 사용된 환원은 두 곳이다.
 
 \[\begin{array}{lrcr}
-& \emptyset\vdash \textsf{letcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& 1::\blacksquare \\
+& \emptyset\vdash \textsf{vcc}\ x\ \textsf{in}\ ((x\ 2)+3)::(+)::\square &||& 1::\blacksquare \\
 \rightarrow & \lbrack x\mapsto\langle(+)::\square\ ||\ 1::\blacksquare\rangle\rbrack\vdash (x\ 2)+3::(+)::\square &||& 1::\blacksquare \\
 \end{array}\]
 
-\(\textsf{letcc}\) 식의 몸통을 계산하는 것이 추가되며 환경에 계속인 \(\langle(+)::\square\ ||\ 1::\blacksquare\rangle\)이 추가되었다.
+\(\textsf{vcc}\) 식의 몸통을 계산하는 것이 추가되며 환경에 계속인 \(\langle(+)::\square\ ||\ 1::\blacksquare\rangle\)이 추가되었다.
 
 \[\begin{array}{lrcr}
 &(@)::\sigma\vdash 3::(+)::(+)::\square &||& 2::\langle(+)::\square \ ||\  1::\blacksquare\rangle::1::\blacksquare \\
@@ -206,21 +206,21 @@ v_3&=&\langle(+)::(@)::\sigma_1\vdash3::(@)::\square,1::v_1::\blacksquare\rangle
 
 \[
 \begin{array}{lrcr}
-& \emptyset\vdash\textsf{letcc}\ x\ \textsf{in}\ (\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3
+& \emptyset\vdash\textsf{vcc}\ x\ \textsf{in}\ (\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3
 ::\square &||& \blacksquare \\
-\rightarrow& \sigma_1\vdash(\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)))3
+\rightarrow& \sigma_1\vdash(\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)))3
 ::\square &||& \blacksquare \\
-\rightarrow& \sigma_1\vdash\textsf{letcc}\ y\ \textsf{in}\ x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_1\vdash\textsf{vcc}\ y\ \textsf{in}\ x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))::\sigma_1\vdash3::(@)
 ::\square &||& \blacksquare \\
-\rightarrow& \sigma_2\vdash x(1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z))::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_2\vdash x(1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z))::\sigma_1\vdash3::(@)
 ::\square &||& \blacksquare \\
-\rightarrow& \sigma_2\vdash x::\sigma_2\vdash 1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)::(@)::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_2\vdash x::\sigma_2\vdash 1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)::(@)::\sigma_1\vdash3::(@)
 ::\square &||& \blacksquare \\
-\rightarrow& \sigma_2\vdash 1+(\textsf{letcc}\ z\ \textsf{in}\ y\ z)::(@)::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_2\vdash 1+(\textsf{vcc}\ z\ \textsf{in}\ y\ z)::(@)::\sigma_1\vdash3::(@)
 ::\square &||& v_1::\blacksquare \\
-\rightarrow& \sigma_2\vdash 1::\sigma_2\vdash\textsf{letcc}\ z\ \textsf{in}\ y\ z::(+)::(@)::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_2\vdash 1::\sigma_2\vdash\textsf{vcc}\ z\ \textsf{in}\ y\ z::(+)::(@)::\sigma_1\vdash3::(@)
 ::\square &||& v_1::\blacksquare \\
-\rightarrow& \sigma_2\vdash\textsf{letcc}\ z\ \textsf{in}\ y\ z::(+)::(@)::\sigma_1\vdash3::(@)
+\rightarrow& \sigma_2\vdash\textsf{vcc}\ z\ \textsf{in}\ y\ z::(+)::(@)::\sigma_1\vdash3::(@)
 ::\square &||& 1::v_1::\blacksquare \\
 \rightarrow& \sigma_3\vdash y\ z::(+)::(@)::\sigma_1\vdash3::(@)
 ::\square &||& 1::v_1::\blacksquare \\
@@ -267,49 +267,49 @@ v_3&=&\langle(+)::(@)::\sigma_1\vdash3::(@)::\square,1::v_1::\blacksquare\rangle
 다음은 KFAE의 요약 문법을 Scala 코드로 작성한 것이다.
 
 ```scala
-sealed trait KFAE
-case class Num(n: Int) extends KFAE
-case class Add(l: KFAE, r: KFAE) extends KFAE
-case class Sub(l: KFAE, r: KFAE) extends KFAE
-case class Id(x: String) extends KFAE
-case class Fun(x: String, b: KFAE) extends KFAE
-case class App(f: KFAE, a: KFAE) extends KFAE
-case class Withcc(x: String, b: KFAE) extends KFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class Vcc(x: String, b: Expr) extends Expr
 
-sealed trait KFAEV
-case class NumV(n: Int) extends KFAEV
-case class CloV(p: String, b: KFAE, e: Env) extends KFAEV
-case class ContV(k: Cont) extends KFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class ContV(k: Cont) extends Value
 
-type Env = Map[String, KFAEV]
-def lookup(x: String, env: Env): KFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
-type Cont = KFAEV => KFAEV
+type Cont = Value => Value
 
-def numVAdd(v1: KFAEV, v2: KFAEV): KFAEV = {
+def numVAdd(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 + n2)
 }
-def numVSub(v1: KFAEV, v2: KFAEV): KFAEV = {
+def numVSub(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 - n2)
 }
 ```
 
-식에 \(\textsf{letcc}\)가 추가되었으므로 그에 해당하는 `Withcc` 클래스가 추가되었다. 또한 계속이 값이 될 수 있으므로 그에 해당하는 `ContV` 클래스가 추가되었다. 인터프리터는 계속을 Scala 함수로 표현하므로 `ContV` 객체는 하나의 필드를 가지며 그 필드의 타입은 `Cont`, 즉 값에서 값으로 가는 함수이다.
+식에 \(\textsf{vcc}\)가 추가되었으므로 그에 해당하는 `Vcc` 클래스가 추가되었다. 또한 계속이 값이 될 수 있으므로 그에 해당하는 `ContV` 클래스가 추가되었다. 인터프리터는 계속을 Scala 함수로 표현하므로 `ContV` 객체는 하나의 필드를 가지며 그 필드의 타입은 `Cont`, 즉 값에서 값으로 가는 함수이다.
 
-`interp` 함수에는 `Withcc` 경우를 처리하는 코드가 추가된다.
+`interp` 함수에는 `Vcc` 경우를 처리하는 코드가 추가된다.
 
 ```scala
-case Withcc(x, b) =>
+case Vcc(x, b) =>
   interp(b, env + (x -> ContV(k)), k)
 ```
 
 \[
-\sigma\vdash\textsf{letcc}\ x\ \textsf{in}\ e::k\ ||\ s\rightarrow
+\sigma\vdash\textsf{vcc}\ x\ \textsf{in}\ e::k\ ||\ s\rightarrow
 \sigma[x\mapsto\langle k,s\rangle]\vdash e::k\ ||\ s
 \]
 
@@ -338,7 +338,7 @@ k'\ ||\ v::s'
 `interp` 함수의 전체 코드는 다음과 같다.
 
 ```scala
-def interp(e: KFAE, env: Env, k: Cont): KFAEV = e match {
+def interp(e: Expr, env: Env, k: Cont): Value = e match {
   case Num(n) => k(NumV(n))
   case Id(x) => k(lookup(x, env))
   case Fun(x, b) => k(CloV(x, b, env))
@@ -358,7 +358,7 @@ def interp(e: KFAE, env: Env, k: Cont): KFAEV = e match {
         case ContV(k) => k(v2)
       })
     )
-  case Withcc(x, b) =>
+  case Vcc(x, b) =>
     interp(b, env + (x -> ContV(k)), k)
 }
 ```
@@ -366,11 +366,11 @@ def interp(e: KFAE, env: Env, k: Cont): KFAEV = e match {
 다음은 `interp` 함수를 사용하여 KFAE 식을 계산한 예시이다.
 
 ```scala
-// 1 + (letcc x in ((x 2) + 3))
+// 1 + (vcc x in ((x 2) + 3))
 interp(
   Add(
     Num(1),
-    Withcc("x",
+    Vcc("x",
       Add(
        App(Id("x"), Num(2)),
        Num(3)
@@ -382,19 +382,19 @@ interp(
 )
 // 3
 
-// letcc x in
-//   (letcc y in
-//     x (1 + (letcc z in y z))
+// vcc x in
+//   (vcc y in
+//     x (1 + (vcc z in y z))
 //   ) 3
 interp(
-  Withcc("x",
+  Vcc("x",
     App(
-      Withcc("y",
+      Vcc("y",
         App(
           Id("x"),
           Add(
             Num(1),
-            Withcc("z",
+            Vcc("z",
               App(Id("y"), Id("z"))
             )
           )
@@ -430,11 +430,11 @@ scala> run(...)
 다음은 실행한 결과 예시이다.
 
 ```scala
-// 1 + (letcc x in ((x 2) + 3))
+// 1 + (vcc x in ((x 2) + 3))
 run(
   Add(
     Num(1),
-    Withcc("x",
+    Vcc("x",
       Add(
        App(Id("x"), Num(2)),
        Num(3)
@@ -446,32 +446,32 @@ run(
 
 ```
 v1 = <(1 + □)>
-(1 + letcc x in ((x 2) + 3)) | □                            | ∅
-1                            | (□ + letcc x in ((x 2) + 3)) | ∅
-letcc x in ((x 2) + 3)       | (1 + □)                      | ∅
-((x 2) + 3)                  | (1 + □)                      | [x -> v1]
-(x 2)                        | (1 + (□ + 3))                | [x -> v1]
-x                            | (1 + ((□ 2) + 3))            | [x -> v1]
-2                            | (1 + ((v1 □) + 3))           | [x -> v1]
-2                            | (1 + □)                      |
-1 + 2                        | □                            | ∅
+(1 + vcc x in ((x 2) + 3)) | □                          | ∅
+1                          | (□ + vcc x in ((x 2) + 3)) | ∅
+vcc x in ((x 2) + 3)       | (1 + □)                    | ∅
+((x 2) + 3)                | (1 + □)                    | [x -> v1]
+(x 2)                      | (1 + (□ + 3))              | [x -> v1]
+x                          | (1 + ((□ 2) + 3))          | [x -> v1]
+2                          | (1 + ((v1 □) + 3))         | [x -> v1]
+2                          | (1 + □)                    |
+1 + 2                      | □                          | ∅
 3
 ```
 
 ```scala
-// letcc x in
-//   (letcc y in
-//     x (1 + (letcc z in y z))
+// vcc x in
+//   (vcc y in
+//     x (1 + (vcc z in y z))
 //   ) 3
 run(
-  Withcc("x",
+  Vcc("x",
     App(
-      Withcc("y",
+      Vcc("y",
         App(
           Id("x"),
           Add(
             Num(1),
-            Withcc("z",
+            Vcc("z",
               App(Id("y"), Id("z"))
             )
           )
@@ -487,22 +487,22 @@ run(
 v1 = <□>
 v2 = <(□ 3)>
 v3 = <((v1 (1 + □)) 3)>
-letcc x in (letcc y in (x (1 + letcc z in (y z))) 3) | □                               | ∅
-(letcc y in (x (1 + letcc z in (y z))) 3)            | □                               | [x -> v1]
-letcc y in (x (1 + letcc z in (y z)))                | (□ 3)                           | [x -> v1]
-(x (1 + letcc z in (y z)))                           | (□ 3)                           | [x -> v1, y -> v2]
-x                                                    | ((□ (1 + letcc z in (y z))) 3)  | [x -> v1, y -> v2]
-(1 + letcc z in (y z))                               | ((v1 □) 3)                      | [x -> v1, y -> v2]
-1                                                    | ((v1 (□ + letcc z in (y z))) 3) | [x -> v1, y -> v2]
-letcc z in (y z)                                     | ((v1 (1 + □)) 3)                | [x -> v1, y -> v2]
-(y z)                                                | ((v1 (1 + □)) 3)                | [x -> v1, y -> v2, z -> v3]
-y                                                    | ((v1 (1 + (□ z))) 3)            | [x -> v1, y -> v2, z -> v3]
-z                                                    | ((v1 (1 + (v2 □))) 3)           | [x -> v1, y -> v2, z -> v3]
-v3                                                   | (□ 3)                           |
-3                                                    | (v3 □)                          | [x -> v1]
-3                                                    | ((v1 (1 + □)) 3)                |
-1 + 3                                                | ((v1 □) 3)                      | [x -> v1, y -> v2]
-4                                                    | □                               |
+vcc x in (vcc y in (x (1 + vcc z in (y z))) 3) | □                             | ∅
+(vcc y in (x (1 + vcc z in (y z))) 3)          | □                             | [x -> v1]
+vcc y in (x (1 + vcc z in (y z)))              | (□ 3)                         | [x -> v1]
+(x (1 + vcc z in (y z)))                       | (□ 3)                         | [x -> v1, y -> v2]
+x                                              | ((□ (1 + vcc z in (y z))) 3)  | [x -> v1, y -> v2]
+(1 + vcc z in (y z))                           | ((v1 □) 3)                    | [x -> v1, y -> v2]
+1                                              | ((v1 (□ + vcc z in (y z))) 3) | [x -> v1, y -> v2]
+vcc z in (y z)                                 | ((v1 (1 + □)) 3)              | [x -> v1, y -> v2]
+(y z)                                          | ((v1 (1 + □)) 3)              | [x -> v1, y -> v2, z -> v3]
+y                                              | ((v1 (1 + (□ z))) 3)          | [x -> v1, y -> v2, z -> v3]
+z                                              | ((v1 (1 + (v2 □))) 3)         | [x -> v1, y -> v2, z -> v3]
+v3                                             | (□ 3)                         |
+3                                              | (v3 □)                        | [x -> v1]
+3                                              | ((v1 (1 + □)) 3)              |
+1 + 3                                          | ((v1 □) 3)                    | [x -> v1, y -> v2]
+4                                              | □                             |
 4
 ```
 
@@ -510,22 +510,22 @@ v3                                                   | (□ 3)                  
 
 계속은 프로그램의 흐름을 나타낸다. 계속은 프로그램의 남은 할 일이기 때문에 계속을 바꾸면 프로그램도 다른 일을 하게 된다. 즉, 계속을 바꿈으로써 프로그램의 흐름을 바꿀 수 있다는 말이다. 명령형 언어에서는 `return`, `break`, `continue` 같은 문들이 프로그램의 흐름을 바꾸기 위해 사용된다. 우리가 지금까지 본 FAE 같은 언어에는 프로그램 흐름을 바꾸는 식이 없었다.
 
-KFAE는 일급 계속을 지원하므로 프로그램 흐름을 바꾸는 것이 가능하다. 일급 계속을 호출하면 계속을 프로그래머가 원하는 대로 바꿀 수 있다. 이는 곧 프로그래머가 임의로 프로그램 흐름을 변경하는 것을 뜻한다. `return` 문 등은 정해진 의미에 따라서만 흐름을 바꿀 수 있다. 반면 KFAE에서는 프로그래머가 원하는 시점에서 \(\textsf{letcc}\)를 통해 계속을 만들고 원하는 시점에서 계속을 호출 할 수 있다. 그러므로 일급 계속은 `return` 등과 비교했을 때 더 높은 표현력을 제공하며 `return`, `break`, `continue` 등 모두를 인코딩할 수 있다.
+KFAE는 일급 계속을 지원하므로 프로그램 흐름을 바꾸는 것이 가능하다. 일급 계속을 호출하면 계속을 프로그래머가 원하는 대로 바꿀 수 있다. 이는 곧 프로그래머가 임의로 프로그램 흐름을 변경하는 것을 뜻한다. `return` 문 등은 정해진 의미에 따라서만 흐름을 바꿀 수 있다. 반면 KFAE에서는 프로그래머가 원하는 시점에서 \(\textsf{vcc}\)를 통해 계속을 만들고 원하는 시점에서 계속을 호출 할 수 있다. 그러므로 일급 계속은 `return` 등과 비교했을 때 더 높은 표현력을 제공하며 `return`, `break`, `continue` 등 모두를 인코딩할 수 있다.
 
 `return`을 인코딩하는 방법부터 보겠다. \(\lambda x.e\)의 몸통 \(e\)에서 \(return\)이 사용된다고 가정하자. \(return\)은 하나의 인자를 받는다. \(return\)이 호출되면 그 즉시 함수 실행이 끝나고 \(return\)의 인자로 전달된 값이 함수의 결괏값이 된다.
 
 \[
 \textit{encode}(\lambda x.e)=
-\lambda x.\textsf{letcc}\ return\ \textsf{in}\ \textit{encode}(e)
+\lambda x.\textsf{vcc}\ return\ \textsf{in}\ \textit{encode}(e)
 \]
 
-함수의 결괏값이 나오면 하는 계산은 함수의 몸통을 모두 계산하고 나서 하는 계산과 같다. 다른 말로는 함수의 몸통 \(e\)를 계산하는 시점의 계속이다. \(return\)을 사용하는 것은 함수의 몸통이 모두 계산된 상태로 건너뛰는 것이다. 따라서 몸통 \(e\)를 계산하는 시점의 계속을 호출하는 것과 같다. \(\textsf{letcc}\ return\ \textsf{in}\ \textit{encode}(e)\)에서 \(\textsf{letcc}\)의 몸통이 \(e\)이므로 \(return\)의 값이 우리가 원하는 계속이다. 그러므로 위 식은 \(return\)을 성공적으로 인코딩한다.
+함수의 결괏값이 나오면 하는 계산은 함수의 몸통을 모두 계산하고 나서 하는 계산과 같다. 다른 말로는 함수의 몸통 \(e\)를 계산하는 시점의 계속이다. \(return\)을 사용하는 것은 함수의 몸통이 모두 계산된 상태로 건너뛰는 것이다. 따라서 몸통 \(e\)를 계산하는 시점의 계속을 호출하는 것과 같다. \(\textsf{vcc}\ return\ \textsf{in}\ \textit{encode}(e)\)에서 \(\textsf{vcc}\)의 몸통이 \(e\)이므로 \(return\)의 값이 우리가 원하는 계속이다. 그러므로 위 식은 \(return\)을 성공적으로 인코딩한다.
 
 다음은 \(return\)을 사용하는 예시이다.
 
 \[
 \textit{encode}(((\lambda x.(return\ 1)+x)\ 2) + 3)=
-((\lambda x.\textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x) 2)+3
+((\lambda x.\textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x) 2)+3
 \]
 
 \(x\)를 더하기 전에 \(return\ 1\)이 먼저 나오므로 함수의 결괏값은 \(1\)이 되어야 한다. 따라서 최종 결과는 \(4\)이다. 인터프리터를 실행하여 결과를 확인할 수 있다.
@@ -534,7 +534,7 @@ KFAE는 일급 계속을 지원하므로 프로그램 흐름을 바꾸는 것이
 interp(
   Add(
     App(
-      Fun("x", Withcc("return",
+      Fun("x", Vcc("return",
         Add(
           App(Id("return"), Num(1)),
           Id("x")
@@ -554,7 +554,7 @@ interp(
 run(
   Add(
     App(
-      Fun("x", Withcc("return",
+      Fun("x", Vcc("return",
         Add(
           App(Id("return"), Num(1)),
           Id("x")
@@ -569,18 +569,18 @@ run(
 
 ```
 v1 = <(□ + 3)>
-((λx.letcc return in ((return 1) + x) 2) + 3) | □                                                  | ∅
-(λx.letcc return in ((return 1) + x) 2)       | (□ + 3)                                            | ∅
-λx.letcc return in ((return 1) + x)           | ((□ 2) + 3)                                        | ∅
-2                                             | ((<λx.letcc return in ((return 1) + x), ∅> □) + 3) | ∅
-letcc return in ((return 1) + x)              | (□ + 3)                                            | [x -> 2]
-((return 1) + x)                              | (□ + 3)                                            | [x -> 2, return -> v1]
-(return 1)                                    | ((□ + x) + 3)                                      | [x -> 2, return -> v1]
-return                                        | (((□ 1) + x) + 3)                                  | [x -> 2, return -> v1]
-1                                             | (((v1 □) + x) + 3)                                 | [x -> 2, return -> v1]
-1                                             | (□ + 3)                                            |
-3                                             | (1 + □)                                            | ∅
-1 + 3                                         | □                                                  | ∅
+((λx.vcc return in ((return 1) + x) 2) + 3) | □                                                | ∅
+(λx.vcc return in ((return 1) + x) 2)       | (□ + 3)                                          | ∅
+λx.vcc return in ((return 1) + x)           | ((□ 2) + 3)                                      | ∅
+2                                           | ((<λx.vcc return in ((return 1) + x), ∅> □) + 3) | ∅
+vcc return in ((return 1) + x)              | (□ + 3)                                          | [x -> 2]
+((return 1) + x)                            | (□ + 3)                                          | [x -> 2, return -> v1]
+(return 1)                                  | ((□ + x) + 3)                                    | [x -> 2, return -> v1]
+return                                      | (((□ 1) + x) + 3)                                | [x -> 2, return -> v1]
+1                                           | (((v1 □) + x) + 3)                               | [x -> 2, return -> v1]
+1                                           | (□ + 3)                                          |
+3                                           | (1 + □)                                          | ∅
+1 + 3                                       | □                                                | ∅
 4
 ```
 
@@ -590,7 +590,7 @@ return                                        | (((□ 1) + x) + 3)             
 
 \[
 \begin{array}{rcl}
-v1&=&\langle\lambda x.\textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x,\emptyset\rangle\\
+v1&=&\langle\lambda x.\textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x,\emptyset\rangle\\
 v2&=&
 \langle
 \emptyset\vdash 3::(+)
@@ -600,12 +600,12 @@ v2&=&
 
 \[
 \begin{array}{lrcr}
-& \emptyset\vdash((\lambda x.\textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x) 2)+3
+& \emptyset\vdash((\lambda x.\textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x) 2)+3
 ::\square &||& \blacksquare \\
-\rightarrow& \emptyset\vdash(\lambda x.\textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x) 2
+\rightarrow& \emptyset\vdash(\lambda x.\textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x) 2
 ::\emptyset\vdash 3::(+)
 ::\square &||& \blacksquare \\
-\rightarrow& \emptyset\vdash\lambda x.\textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x
+\rightarrow& \emptyset\vdash\lambda x.\textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x
 ::\emptyset\vdash 2::(@)
 ::\emptyset\vdash 3::(+)
 ::\square &||& \blacksquare \\
@@ -619,7 +619,7 @@ v1
 2::v1
 ::\blacksquare \\
 \rightarrow& 
-\lbrack x\mapsto 2\rbrack\vdash \textsf{letcc}\ return\ \textsf{in}\ (return\ 1)+x::
+\lbrack x\mapsto 2\rbrack\vdash \textsf{vcc}\ return\ \textsf{in}\ (return\ 1)+x::
 \emptyset\vdash 3::(+)
 ::\square &||& \blacksquare \\
 \rightarrow& 
@@ -663,15 +663,15 @@ v1
 
 \[
 \textit{encode}(\textsf{while}\ e_1\ e_2)=
-\textsf{letcc}\ break\ \textsf{in}\
+\textsf{vcc}\ break\ \textsf{in}\
 (\textsf{while}\ e_1\
-(\textsf{letcc}\ continue\ \textsf{in}\ 
+(\textsf{vcc}\ continue\ \textsf{in}\ 
 \lbrack (break\ ())/break\rbrack\lbrack (continue\ ())/continue\rbrack\mathit{encode}(e_2)))
 \]
 
-\(break\)은 반복문을 종료시킨다. 반복문이 종료되고 나서 할 계산은 반복문을 계산할 때의 계속이다. 따라서 반복문 전체를 \(\textsf{letcc}\)의 몸통으로 하고 그 계속을 \(break\)의 값으로 하면 된다.
+\(break\)은 반복문을 종료시킨다. 반복문이 종료되고 나서 할 계산은 반복문을 계산할 때의 계속이다. 따라서 반복문 전체를 \(\textsf{vcc}\)의 몸통으로 하고 그 계속을 \(break\)의 값으로 하면 된다.
 
-\(continue\)는 이번 몸통 계산을 건너뛴다. 바로 조건식 계산으로 넘어가며 조건식이 참이면 반복문을 다시 실행하고 거짓이면 반복문을 종료한다. 이는 몸통을 계산할 때의 계속이다. 그러므로 반복문의 몸통 전체를 \(\textsf{letcc}\)의 몸통으로 하고 그 계속을 \(continue\)의 값으로 하면 된다.
+\(continue\)는 이번 몸통 계산을 건너뛴다. 바로 조건식 계산으로 넘어가며 조건식이 참이면 반복문을 다시 실행하고 거짓이면 반복문을 종료한다. 이는 몸통을 계산할 때의 계속이다. 그러므로 반복문의 몸통 전체를 \(\textsf{vcc}\)의 몸통으로 하고 그 계속을 \(continue\)의 값으로 하면 된다.
 
 프로그래머가 코드에서 \(break\)과 \(continue\)를 사용할 때는 인자를 전달하지 않는다. 그러나 계속을 호출하기 위해서는 인자가 필요하다. 반복문의 결과는 반드시 \(()\)라 하였으니 둘 모두 \(()\)를 인자로 받으면 된다. 이를 위해 인코딩 과정에서 반복문 몸통의 \(break\)과 \(continue\)를 각각 \(break\ ()\)과 \(continue\ ()\)로 치환한다.
 
@@ -679,7 +679,7 @@ v1
 
 \[
 \textit{encode}(\textsf{while}\ \textsf{true}\ break)=
-\textsf{letcc}\ break\ \textsf{in}\
+\textsf{vcc}\ break\ \textsf{in}\
 (\textsf{while}\ \textsf{true}\ 
 break\ ())
 \]

@@ -1,7 +1,7 @@
 object KFAE {
   val L = '\u03bb'
   val SQ = "\u25a1"
-  
+
   sealed trait KFAE
   case class Num(n: Int) extends KFAE {
     override def toString = n.toString
@@ -19,12 +19,12 @@ object KFAE {
     override def toString = s"$L$x.$b"
   }
   case class App(f: KFAE, a: KFAE) extends KFAE {
-    override def toString = s"($f $a)" 
+    override def toString = s"($f $a)"
   }
-  case class Withcc(x: String, b: KFAE) extends KFAE {
-    override def toString = s"letcc $x in $b"
+  case class Vcc(x: String, b: KFAE) extends KFAE {
+    override def toString = s"vcc $x in $b"
   }
-  
+
   sealed trait KFAEV
   case class NumV(n: Int) extends KFAEV {
     override def toString = n.toString
@@ -43,7 +43,7 @@ object KFAE {
     def conts = _conts.toList
     def clear() = { v = 0; _conts.clear() }
   }
-  
+
   type Env = Map[String, KFAEV]
   type Cont = KFAEV => KFAEV
   def lookup(x: String, env: Env): KFAEV =
@@ -58,7 +58,7 @@ object KFAE {
     if (env.isEmpty) "\u2205" else env.mkString("[", ", ", "]")
   val buf = new scala.collection.mutable.ListBuffer[(String, String, String)]
   def log(e: String, s: String, env: String) = buf += ((e, s, env))
-  
+
   def interp(e: KFAE, env: Env, k: Cont, s: String): KFAEV = {
     log(e.toString, s, envToString(env))
     e match {
@@ -88,12 +88,12 @@ object KFAE {
           }, s.replace(SQ, s"($v1 $SQ)")),
           s.replace(SQ, s"($SQ $e2)")
         )
-      case Withcc(x, b) =>
+      case Vcc(x, b) =>
         val cont = ContV(k, s)
         interp(b, env + (x -> cont), k, s)
     }
   }
-  
+
   def addSpaces(s: String, i: Int): String =
     s + (" " * (i - s.length))
   def run(e: KFAE): String = {
