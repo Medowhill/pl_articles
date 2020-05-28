@@ -53,40 +53,40 @@ class A {
 이 글에서는 산술식을 나타내는 언어인 AE의 문법을 정의한다. AE의 식은 정수이거나, 두 식의 합이거나, 두 식의 차이다. 아래는 BNF를 사용하여 정의한 AE의 구체적 문법이다.
 
 \[
-\begin{array}{rcl}
-\langle digit \rangle & ::= & "0"\ |\ "1"\ |\ "2"\ |\ "3"\ |\ "4"\\
-& | &  "5"\ |\ "6"\ |\ "7"\ |\ "8"\ |\ "9" \\
-\langle nat \rangle & ::= & \langle digit \rangle\ |\ \langle digit \rangle \ \langle nat \rangle \\
-\langle num \rangle & ::= & \langle nat \rangle\ |\ "-"\ \langle nat \rangle \\
-\langle AE \rangle & ::= & \langle num \rangle \\
-& | & "\{+"\ \langle AE \rangle\ "\ {"}\ \langle AE \rangle \ "\}" \\
-& | & "\{-"\ \langle AE \rangle\ "\ {"}\ \langle AE \rangle \ "\}"
+\begin{array}{l}
+\texttt{digit ::= "0" | "1" | "2" | "3" | "4"} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "5" | "6" | "7" | "8" | "9"} \\
+\texttt{nat}{\tt\ \ \ }\texttt{::= digit | digit nat} \\
+\texttt{num}{\tt\ \ \ }\texttt{::= nat | "-" nat} \\
+\texttt{expr}{\tt\ \ }\texttt{::= num} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "(" expr "+" expr ")"} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "(" expr "-" expr ")"} \\
 \end{array}
 \]
 
-BNF를 사용하여 정의한 문법은 아래처럼 해석할 수 있다. \(\langle digit \rangle\)이 나타내는 집합은 \(Digit\), \(\langle nat \rangle\)이 나타내는 집합은 \(Nat\), \(\langle num \rangle\)이 나타내는 집합은 \(Num\), \(\langle AE \rangle\)가 나타내는 집합은 \(AE\)라고 표기하겠다.
+BNF를 사용하여 정의한 문법은 아래처럼 해석할 수 있다. \(\tt digit\)이 나타내는 집합은 \(Digit\), \(\tt nat\)이 나타내는 집합은 \(Nat\), \(\tt num \)이 나타내는 집합은 \(Num\), \(\tt expr\)가 나타내는 집합은 \(Expr\)라고 표기하겠다.
 
-\(Digit\)은 \(\{"0","1","2","3","4","5","6","7","8","9"\}\)이다. 십진수의 숫자를 나타낸다.
+\(Digit\)은 \(\{{\tt"0"},{\tt"1"},{\tt"2"},{\tt"3"},{\tt"4"},{\tt"5"},{\tt"6"},{\tt"7"},{\tt"8"},{\tt"9"}\}\)이다. 십진수의 숫자를 나타낸다.
 
-\(Nat\)은 다음 조건 1과 2를 모두 만족하는 집합 중 가장 작은 집합으로, 자연수를 나타낸다. \("0"\), \("42"\), \("00100"\) 등을 원소로 가진다.
+\(Nat\)은 다음 조건 1과 2를 모두 만족하는 집합 중 가장 작은 집합으로, 자연수를 나타낸다. \(\tt"0"\), \(\tt"42"\), \(\tt"00100"\) 등을 원소로 가진다.
 
 1. \(\forall d\in Digit.d\in Nat\)
-2. \(\forall d\in Digit.\forall n\in Nat.d+n\in Nat\)
+2. \(\forall d\in Digit.\forall n\in Nat.d \cdot n\in Nat\)
 
-(\(+\) 연산자는 문자열 *접합*(concatenation)을 나타낸다.)
+(\(\cdot\) 연산자는 문자열 *접합*(concatenation)을 나타낸다.)
 
-\(Num\)은 다음 조건 1과 2를 모두 만족하는 집합 중 가장 작은 집합으로, 정수를 나타낸다. \("-0"\), \("1"\), \("-42"\) 등을 원소로 가진다.
+\(Num\)은 다음 조건 1과 2를 모두 만족하는 집합 중 가장 작은 집합으로, 정수를 나타낸다. \(\texttt{"-0"}\), \(\tt"1"\), \(\texttt{"-42"}\) 등을 원소로 가진다.
 
 1. \(\forall n\in Nat.n\in Num\)
-2. \(\forall n\in Nat."-"+n\in Num\)
+2. \(\forall n\in Nat.\texttt{"-"}\cdot n\in Num\)
 
-\(AE\)는 다음 조건 1, 2, 3을 모두 만족하는 집합 중 가장 작은 집합으로, 산술식을 나타낸다.
+\(Expr\)는 다음 조건 1, 2, 3을 모두 만족하는 집합 중 가장 작은 집합으로, 산술식을 나타낸다.
 
-1. \(\forall n\in Num.n\in AE\)
-2. \(\forall e_1\in AE.\forall e_2\in AE."\{+"+e_1+"\ {"}+e_2+"\}"\in AE\)
-3. \(\forall e_1\in AE.\forall e_2\in AE."\{-"+e_1+"\ {"}+e_2+"\}"\in AE\)
+1. \(\forall n\in Num.n\in Expr\)
+2. \(\forall e_1\in Expr.\forall e_2\in Expr.{\tt"("}\cdot e_1\cdot{\tt"+"}\cdot e_2\cdot{\tt")"}\in Expr\)
+3. \(\forall e_1\in Expr.\forall e_2\in Expr.{\tt"("}\cdot e_1\cdot\texttt{"-"}\cdot e_2\cdot{\tt")"}\in Expr\)
 
-\("\{+1\ 2\}"\)는 \(AE\)의 원소이다. 그러나, \("\{+\ 1\ 2\}"\)는 \("+"\)와 \("1"\) 사이에 공백이 있으므로 \(AE\)의 원소가 아니다.
+\(\tt"(1+2)"\)는 \(Expr\)의 원소이다. 그러나, \(\tt"1+2"\)는 괄호가 없으므로 \(Expr\)의 원소가 아니다.
 
 ### 요약 문법
 
@@ -100,16 +100,16 @@ BNF를 사용하여 정의한 문법은 아래처럼 해석할 수 있다. \(\la
 \begin{array}{rcl}
 n & \in & \mathbb{Z} \\
 e & ::= & n \\
-& | & \{+\ e\ e\} \\
-& | & \{-\ e\ e\} \\
+& | & e+e \\
+& | & e-e \\
 \end{array}
 \]
 
-구체적 문법과 마찬가지로 BNF를 집합으로 해석할 수 있다. \(e\)가 나타내는 집합을 \(\mathcal{A}\)이라고 하자. \(\mathcal{A}\)는 1, 2, 3을 모두 만족하는 가장 작은 집합이다.
+구체적 문법과 마찬가지로 BNF를 집합으로 해석할 수 있다. \(e\)가 나타내는 집합을 \(\mathcal{A}\)라고 하자. \(\mathcal{A}\)는 1, 2, 3을 모두 만족하는 가장 작은 집합이다.
 
 1. \(\forall n\in\mathbb{Z}.n\in \mathcal{A}\)
-2. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.\{+\ e_1 \ e_2\}\in\mathcal{A}\)
-3. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.\{-\ e_1 \ e_2\}\in\mathcal{A}\)
+2. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.e_1+e_2\in\mathcal{A}\)
+3. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.e_1-e_2\in\mathcal{A}\)
 
 BNF 대신 *추론* *규칙*(inference rule) 형태로 문법을 정의할 수도 있다. 추론 규칙은 언어의 의미를 정의하기 위해서 주로 사용되지만, 미리 익숙해질 수 있도록 요약 문법을 추론 규칙으로 정의해 보겠다. 구체적 문법도 추론 규칙으로 정의할 수 있지만, 불필요한 반복이라 생각되기 때문에, 요약 문법만 정의하려 한다.
 
@@ -150,14 +150,15 @@ BNF 대신 *추론* *규칙*(inference rule) 형태로 문법을 정의할 수�
 \quad
 \frac
 { e_1\in\mathcal{A} \quad e_2\in\mathcal{A} }
-{ \{+\ e_1 \ e_2\}\in\mathcal{A} }
+{ e_1+e_2\in\mathcal{A} }
 \quad
 \frac
 { e_1\in\mathcal{A} \quad e_2\in\mathcal{A} }
-{ \{-\ e_1 \ e_2\}\in\mathcal{A} }
+{ e_1-e_2\in\mathcal{A} }
 \]
 
-아래의 증명 나무는 \(\{+\ 4\ \{-\ 2\ 1\}\}\)이 \(\mathcal{A}\)의 원소라는 것을 증명한다.
+아래의 증명 나무는 \(4+(2-1)\)이 \(\mathcal{A}\)의 원소라는 것을 증명한다.
+요약 문법은 수학적 표기법이므로 우선 순위를 나타내기 위해 괄호를 사용할 수 있다.
 
 \[
 \frac
@@ -174,28 +175,28 @@ BNF 대신 *추론* *규칙*(inference rule) 형태로 문법을 정의할 수�
     { 1\in\mathbb{Z} }
     { 1\in\mathcal{A} }
   }
-  { \{-\ 2\ 1\}\in\mathcal{A} }
+  { (2-1)\in\mathcal{A} }
 }
 }
-{ \{+\ 4\ \{-\ 2\ 1\}\}\in\mathcal{A} }
+{ 4+(2-1)\in\mathcal{A} }
 \]
 
 AE의 요약 문법은 Scala 코드로도 작성할 수 있다. AE의 식은 전형적인 대수적 데이터 타입이므로, 지난 글에서 다룬 것처럼 봉인된 트레잇과 경우 클래스를 사용하여 정의할 수 있다.
 
 ```scala
-sealed trait AE
-case class Num(n: Int) extends AE
-case class Add(l: AE, r: AE) extends AE
-case class Sub(l: AE, r: AE) extends AE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
 ```
 
-\(\{+\ 4\ \{-2\ 1\}\}\)를 Scala 코드로는 아래처럼 쓸 수 있다.
+\(4+(2-1)\)을 Scala 코드로는 아래처럼 쓸 수 있다.
 
 ```scala
 Add(Num(4), Sub(Num(2), Num(1)))
 ```
 
-대부분의 요약 문법이 정의한 대상은 나무 모양이다. 요약 문법에 따라 만들어진 나무를 *요약* *문법* *나무*(abstract syntax tree; AST)라고 부른다. 아래 나무는 \(\{+\ 4\ \{-2\ 1\}\}\)을 시각적으로 표현한 것이다. 위 Scala 코드가 정의하고 있는 객체도 같은 구조로 되어 있다.
+대부분의 요약 문법이 정의한 대상은 나무 모양이다. 요약 문법에 따라 만들어진 나무를 *요약* *문법* *나무*(abstract syntax tree; AST)라고 부른다. 아래 나무는 \(4+(2-1)\)을 시각적으로 표현한 것이다. 위 Scala 코드가 정의하고 있는 객체도 같은 구조로 되어 있다.
 
 <div class="chart" id="tree-ae-0"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.js"></script>
@@ -214,25 +215,25 @@ Scala 표준 라이브러리는 *파서* *조합기*(parser combinator)를 제�
 ```scala
 import scala.util.parsing.combinator._
 
-object AE extends RegexParsers {
-  def wrap[T](e: Parser[T]): Parser[T] = "{" ~> e <~ "}"
+object Expr extends RegexParsers {
+  def wrap[T](e: Parser[T]): Parser[T] = "(" ~> e <~ ")"
   lazy val n: Parser[Int] = "-?\\d+".r ^^ (_.toInt)
-  lazy val e: Parser[AE] =
-    n                  ^^ Num                         |
-    wrap("+" ~> e ~ e) ^^ { case l ~ r => Add(l, r) } |
-    wrap("-" ~> e ~ e) ^^ { case l ~ r => Sub(l, r) }
+  lazy val e: Parser[Expr] =
+    n                    ^^ Num                         |
+    wrap((e <~ "+") ~ e) ^^ { case l ~ r => Add(l, r) } |
+    wrap((e <~ "-") ~ e) ^^ { case l ~ r => Sub(l, r) }
 
-  def parse(s: String): AE =
+  def parse(s: String): Expr =
     parseAll(e, s).getOrElse(throw new Exception)
 }
 
-AE.parse("1") 
+Expr.parse("1") 
 // Num(1)
 
-AE.parse("{+ 4 {- 2 1}}")
+Expr.parse("(4 + (2 - 1))")
 // Add(Num(4),Sub(Num(2),Num(1)))
 
-AE.parse("{+ 1 2 3}")
+Expr.parse("1 + 2")
 // java.lang.Exception
 ```
 

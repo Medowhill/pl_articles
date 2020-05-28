@@ -61,38 +61,39 @@ An expression of AE is
 The following is the concrete syntax of AE in the BNF:
 
 \[
-\begin{array}{rcl}
-\langle digit \rangle & ::= & "0"\ |\ "1"\ |\ "2"\ |\ "3"\ |\ "4"\\
-& | &  "5"\ |\ "6"\ |\ "7"\ |\ "8"\ |\ "9" \\
-\langle nat \rangle & ::= & \langle digit \rangle\ |\ \langle digit \rangle \ \langle nat \rangle \\
-\langle num \rangle & ::= & \langle nat \rangle\ |\ "-"\ \langle nat \rangle \\
-\langle AE \rangle & ::= & \langle num \rangle \\
-& | & "\{+"\ \langle AE \rangle\ "\ {"}\ \langle AE \rangle \ "\}" \\
-& | & "\{-"\ \langle AE \rangle\ "\ {"}\ \langle AE \rangle \ "\}"
+\begin{array}{l}
+\texttt{digit ::= "0" | "1" | "2" | "3" | "4"} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "5" | "6" | "7" | "8" | "9"} \\
+\texttt{nat}{\tt\ \ \ }\texttt{::= digit | digit nat} \\
+\texttt{num}{\tt\ \ \ }\texttt{::= nat | "-" nat} \\
+\texttt{expr}{\tt\ \ }\texttt{::= num} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "(" expr "+" expr ")"} \\
+{\tt\ \ \ \ \ \ \ \ }\texttt{| "(" expr "-" expr ")"} \\
 \end{array}
 \]
 
-The remaining part of the section shows how to interpret syntax in the BNF. \(Digit\) is a set denoted by \(\langle digit \rangle\); \(Nat\) is a set denoted by \(\langle nat \rangle\); \(Num\) is a set denoted by \(\langle num \rangle\); \(AE\) is a set denoted by \(\langle AE \rangle\).
+The remaining part of the section shows how to interpret syntax in the BNF. \(Digit\) is a set denoted by \(\tt digit\); \(Nat\) is a set denoted by \(\tt nat\); \(Num\) is a set denoted by \(\tt num \); \(Expr\) is a set denoted by \(\tt expr\).
 
 \(Digit\) equals , a set of the digits of decimals.
 
-\(Nat\) is the smallest set satisfying the following two conditions; it denotes the set of every natural number. The \(+\) operator denotes string concatenation.
+\(Nat\) is the smallest set satisfying the following two conditions; it denotes the set of every natural number. The \(\cdot\) operator denotes string concatenation.
 
 1. \(\forall d\in Digit.d\in Nat\)
-2. \(\forall d\in Digit.\forall n\in Nat.d+n\in Nat\)
+2. \(\forall d\in Digit.\forall n\in Nat.d \cdot n\in Nat\)
 
 \(Num\) is the smallest set satisfying the following two conditions; it denotes the set of every integer.
 
 1. \(\forall n\in Nat.n\in Num\)
-2. \(\forall n\in Nat."-"+n\in Num\)
+2. \(\forall n\in Nat.\texttt{"-"}\cdot n\in Num\)
 
-\(AE\) is the smallest set satisfying the following three conditions; it denotes the set of every arithmetic expression.
+\(Expr\) is the smallest set satisfying the following three conditions; it denotes the set of every arithmetic expression.
 
-1. \(\forall n\in Num.n\in AE\)
-2. \(\forall e_1\in AE.\forall e_2\in AE."\{+"+e_1+"\ {"}+e_2+"\}"\in AE\)
-3. \(\forall e_1\in AE.\forall e_2\in AE."\{-"+e_1+"\ {"}+e_2+"\}"\in AE\)
+1. \(\forall n\in Num.n\in Expr\)
+2. \(\forall e_1\in Expr.\forall e_2\in Expr.{\tt"("}\cdot e_1\cdot{\tt"+"}\cdot e_2\cdot{\tt")"}\in Expr\)
+3. \(\forall e_1\in Expr.\forall e_2\in Expr.{\tt"("}\cdot e_1\cdot\texttt{"-"}\cdot e_2\cdot{\tt")"}\in Expr\)
 
-\("\{+1\ 2\}"\) is an element of \(AE\), but \("\{+\ 1\ 2\}"\) is not since a whitespace exists between \("+"\) and \("1"\).
+\(\tt"(1+2)"\) is an element of \(Expr\), but \(\tt"1+2"\) is not an element
+of \(Expr\) due to the lack of parentheses.
 
 ### Abstract Syntax
 
@@ -106,8 +107,8 @@ The following is the abstract syntax of AE in the BNF:
 \begin{array}{rcl}
 n & \in & \mathbb{Z} \\
 e & ::= & n \\
-& | & \{+\ e\ e\} \\
-& | & \{-\ e\ e\} \\
+& | & e+e \\
+& | & e-e \\
 \end{array}
 \]
 
@@ -116,8 +117,8 @@ Metavariable \(n\) ranges over integers; metavariable \(e\) ranges over expressi
 Like concrete syntax, the abstract syntax in the BNF defines a set. Let \(\mathcal{A}\) is a set denoted by \(e\). \(\mathcal{A}\) is the smallest set satisfying the following three conditions.
 
 1. \(\forall n\in\mathbb{Z}.n\in \mathcal{A}\)
-2. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.\{+\ e_1 \ e_2\}\in\mathcal{A}\)
-3. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.\{-\ e_1 \ e_2\}\in\mathcal{A}\)
+2. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.e_1+e_2\in\mathcal{A}\)
+3. \(\forall e_1\in\mathcal{A}.\forall e_2\in\mathcal{A}.e_1-e_2\in\mathcal{A}\)
 
 *Inference rules* can define abstract syntax as well. Inference rules typically define the semantics of languages, but the article defines abstract syntax with inference rules to make readers familiar with inference rules. It is possible to define concrete syntax with inference rules, but I think that it is redundant and unnecessary.
 
@@ -160,14 +161,16 @@ The following inference rules define the abstract syntax of AE:
 \quad
 \frac
 { e_1\in\mathcal{A} \quad e_2\in\mathcal{A} }
-{ \{+\ e_1 \ e_2\}\in\mathcal{A} }
+{ e_1+e_2\in\mathcal{A} }
 \quad
 \frac
 { e_1\in\mathcal{A} \quad e_2\in\mathcal{A} }
-{ \{-\ e_1 \ e_2\}\in\mathcal{A} }
+{ e_1-e_2\in\mathcal{A} }
 \]
 
-The following proof tree proves that \(\{+\ 4\ \{-\ 2\ 1\}\}\) is an element of \(\mathcal{A}\).
+The following proof tree proves that \(4+(2-1)\) is an element of \(\mathcal{A}\).
+Note that we can use parentheses to resolve ambiguity in abstract syntax since
+it defines mathematical notation.
 
 \[
 \frac
@@ -184,28 +187,28 @@ The following proof tree proves that \(\{+\ 4\ \{-\ 2\ 1\}\}\) is an element of 
     { 1\in\mathbb{Z} }
     { 1\in\mathcal{A} }
   }
-  { \{-\ 2\ 1\}\in\mathcal{A} }
+  { (2-1)\in\mathcal{A} }
 }
 }
-{ \{+\ 4\ \{-\ 2\ 1\}\}\in\mathcal{A} }
+{ 4+(2-1)\in\mathcal{A} }
 \]
 
 Scala code also can represent the abstract syntax of AE. It is a typical ADT; a sealed trait and case classes define it:
 
 ```scala
-sealed trait AE
-case class Num(n: Int) extends AE
-case class Add(l: AE, r: AE) extends AE
-case class Sub(l: AE, r: AE) extends AE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
 ```
 
-The following Scala code represents \(\{+\ 4\ \{-2\ 1\}\}\):
+The following Scala code represents \(4+(2-1)\):
 
 ```scala
 Add(Num(4), Sub(Num(2), Num(1)))
 ```
 
-Most sorts of abstract syntax define tree shapes. Trees following abstract syntax are *abstract syntax trees* (ASTs). The below tree visualizes \(\{+\ 4\ \{-2\ 1\}\}\). The structure of an object defined by the above Scala code equals the tree.
+Most sorts of abstract syntax define tree shapes. Trees following abstract syntax are *abstract syntax trees* (ASTs). The below tree visualizes \(4+(2-1)\). The structure of an object defined by the above Scala code equals the tree.
 
 <div class="chart" id="tree-ae-0"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.js"></script>
@@ -224,25 +227,25 @@ The Scala standard library provides *parser combinators*. Programmers can implem
 ```scala
 import scala.util.parsing.combinator._
 
-object AE extends RegexParsers {
-  def wrap[T](e: Parser[T]): Parser[T] = "{" ~> e <~ "}"
+object Expr extends RegexParsers {
+  def wrap[T](e: Parser[T]): Parser[T] = "(" ~> e <~ ")"
   lazy val n: Parser[Int] = "-?\\d+".r ^^ (_.toInt)
-  lazy val e: Parser[AE] =
-    n                  ^^ Num                         |
-    wrap("+" ~> e ~ e) ^^ { case l ~ r => Add(l, r) } |
-    wrap("-" ~> e ~ e) ^^ { case l ~ r => Sub(l, r) }
+  lazy val e: Parser[Expr] =
+    n                    ^^ Num                         |
+    wrap((e <~ "+") ~ e) ^^ { case l ~ r => Add(l, r) } |
+    wrap((e <~ "-") ~ e) ^^ { case l ~ r => Sub(l, r) }
 
-  def parse(s: String): AE =
+  def parse(s: String): Expr =
     parseAll(e, s).getOrElse(throw new Exception)
 }
 
-AE.parse("1") 
+Expr.parse("1") 
 // Num(1)
 
-AE.parse("{+ 4 {- 2 1}}")
+Expr.parse("(4 + (2 - 1))")
 // Add(Num(4),Sub(Num(2),Num(1)))
 
-AE.parse("{+ 1 2 3}")
+Expr.parse("1 + 2")
 // java.lang.Exception
 ```
 
