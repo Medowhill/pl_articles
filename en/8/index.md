@@ -20,8 +20,8 @@ The last article defined the abstract syntax of AE.
 \begin{array}{lrcl}
 \text{Integer} & n & \in & \mathbb{Z} \\
 \text{Expression} & e & ::= & n \\
-&& | & \{+\ e\ e\} \\
-&& | & \{-\ e\ e\} \\
+&& | & e+e \\
+&& | & e-e \\
 \end{array}
 \]
 
@@ -64,7 +64,7 @@ Intuitively, \(n\) does not require any computation, and the result is \(n\).
 \[
 \frac
 { \vdash e_1\Rightarrow n_1\quad\vdash e_2\Rightarrow n_2 }
-{ \vdash \{+\ e_1\ e_2\}\Rightarrow n_1+n_2 }
+{ \vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 If an expression is the sum of two expressions, the expression denotes the sum of two integers denoted by the two expressions. The rule has the following mathematical meaning:
@@ -77,16 +77,19 @@ If an expression is the sum of two expressions, the expression denotes the sum o
 \forall n_2\in\mathbb{Z}.\\
 (\vdash e_1\Rightarrow n_1)\rightarrow
 (\vdash e_2\Rightarrow n_2)\rightarrow
-(\vdash \{+\ e_1\ e_2\}\Rightarrow n_1+n_2)
+(\vdash e_1+e_2\Rightarrow n_1+n_2)
 \end{array}
 \]
 
-Intuitively, computing \(\{+\ e_1\ e_2\}\) requires computing \(e_1\) and \(e_2\), and since \(e_1\) and \(e_2\) respectively result in \(n_1\) and \(n_2\), the result is \(n_1+n_2\). \(e_1\) and \(e_2\) are given; intermediate computation yields \(n_1\) and \(n_2\); the final result is \(n_1+n_2\).
+Intuitively, computing \(e_1+e_2\) requires computing \(e_1\) and \(e_2\), and since \(e_1\) and \(e_2\) respectively result in \(n_1\) and \(n_2\), the result is \(n_1+n_2\). \(e_1\) and \(e_2\) are given; intermediate computation yields \(n_1\) and \(n_2\); the final result is \(n_1+n_2\).
+Note that
+in \(e_1+e_2\), \(+\) is a symbol used to represent abstract syntax, while \(+\)
+in \(n_1+n_2\) denotes mathematical addtion as usual.
 
 \[
 \frac
 { \vdash e_1\Rightarrow n_1\quad\vdash e_2\Rightarrow n_2 }
-{ \vdash \{-\ e_1\ e_2\}\Rightarrow n_1-n_2 }
+{ \vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
 If an expression is the difference of two expressions, the expression denotes the difference of two integers denoted by the two expressions. The rule has the following mathematical meaning:
@@ -99,11 +102,13 @@ If an expression is the difference of two expressions, the expression denotes th
 \forall n_2\in\mathbb{Z}.\\
 (\vdash e_1\Rightarrow n_1)\rightarrow
 (\vdash e_2\Rightarrow n_2)\rightarrow
-(\vdash \{-\ e_1\ e_2\}\Rightarrow n_1-n_2)
+(\vdash e_1-e_2\Rightarrow n_1-n_2)
 \end{array}
 \]
 
-Intuitively, computing \(\{-\ e_1\ e_2\}\) requires computing \(e_1\) and \(e_2\), and since \(e_1\) and \(e_2\) respectively result in \(n_1\) and \(n_2\), the result is \(n_1-n_2\). \(e_1\) and \(e_2\) are given; intermediate computation yields \(n_1\) and \(n_2\); the final result is \(n_1-n_2\).
+Intuitively, computing \(e_1-e_2\) requires computing \(e_1\) and \(e_2\), and since \(e_1\) and \(e_2\) respectively result in \(n_1\) and \(n_2\), the result is \(n_1-n_2\). \(e_1\) and \(e_2\) are given; intermediate computation yields \(n_1\) and \(n_2\); the final result is \(n_1-n_2\).
+Like \(+\), \(-\) represents both expressions in abstract syntax and
+mathematical subtraction.
 
 The article keeps emphasizing that both understanding mathematical definitions and interpreting the semantics intuitively are essential. In a mathematical sense, the natural semantics of AE is a relation over \(\text{Expression}\) and \(\text{Value}\), and the inference rules do not care what given things are and what obtained things are. In contrast, intuitively, the natural semantics find a value denoted by a given expression. An expression inside the conclusion of a rule is input; the premises of a rule represent required computation; a value inside the conclusion is output. Not considering mathematical definitions, one may make a mistake while strictly thinking and hardly understand complicated semantics. Complex semantics needs rules not interpreted with the concepts of input, computation, and output; for instance, computation uses output. It intuitively seems odd but is natural in a mathematical sense, which does not have such concepts. On the other hand, not interpreting semantics intuitively, one hardly understands a language. In conclusion, both viewpoints are crucial.
 
@@ -116,18 +121,18 @@ The following rules are all of the natural semantics of AE:
 \[
 \frac
 { \vdash e_1\Rightarrow n_1\quad\vdash e_2\Rightarrow n_2 }
-{ \vdash \{+\ e_1\ e_2\}\Rightarrow n_1+n_2 }
+{ \vdash e_1+e_2\Rightarrow n_1+n_2 }
 \]
 
 \[
 \frac
 { \vdash e_1\Rightarrow n_1\quad\vdash e_2\Rightarrow n_2 }
-{ \vdash \{-\ e_1\ e_2\}\Rightarrow n_1-n_2 }
+{ \vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
 ### Drawing Proof Trees
 
-The following proof tree proves that \(\{+\ 4\ \{-\ 2 \ 1\}\}\) denotes \(5\):
+The following proof tree proves that \(4+(2-1)\) denotes \(5\):
 
 \[
 \frac
@@ -136,17 +141,17 @@ The following proof tree proves that \(\{+\ 4\ \{-\ 2 \ 1\}\}\) denotes \(5\):
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}
-  {\vdash \{-\ 2\ 1\}\Rightarrow 1}
+  {\vdash 2-1\Rightarrow 1}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow 5}
+{\vdash4+(2-1)\Rightarrow 5}
 \]
 
 Drawing proof trees is not an interesting research topic. However, it is a good practice to understand semantics, and some students feel difficult about it. The article thus briefly introduces a strategy to draw proof trees.
 
 Languages defined by the course have simple semantics. Usually, only a single inference rule fits a given expression. The meanings of propositions are unimportant, and substituting metavariables with appropriate expressions is enough to draw proof trees. Drawing proof trees is often mechanical.
 
-The remaining part of the section draws a proof tree proving that \(\{+\ 4\ \{-\ 2 \ 1\}\}\) denotes \(5\) step by step. Firstly, an expression inside a conclusion is \(\{+\ 4\ \{-\ 2 \ 1\}\}\).
+The remaining part of the section draws a proof tree proving that \(4+(2-1)\) denotes \(5\) step by step. Firstly, an expression inside a conclusion is \(4+(2-1)\).
 
 \[
 \color{red}{
@@ -156,14 +161,14 @@ The remaining part of the section draws a proof tree proving that \(\{+\ 4\ \{-\
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}
-  {\vdash \{-\ 2\ 1\}\Rightarrow 1}
+  {\vdash 2-1\Rightarrow 1}
   }}
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 }
 \]
 
-A single rule fits \(\{+\ 4\ \{-\ 2 \ 1\}\}\). Substitute \(e_1\) and \(e_2\) with \(4\) and \(\{-\ 2\ 1\}\) respectively to make premises. Do not write values of the premises.
+A single rule fits \(4+(2-1)\). Substitute \(e_1\) and \(e_2\) with \(4\) and \(2-1\) respectively to make premises. Do not write values of the premises.
 
 \[
 \frac
@@ -172,10 +177,10 @@ A single rule fits \(\{+\ 4\ \{-\ 2 \ 1\}\}\). Substitute \(e_1\) and \(e_2\) wi
   \color{red}{\vdash 4\Rightarrow {\color{white}4} \quad
   \frac
   {\color{white}{\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{white}{1}}
+  {\vdash 2-1\Rightarrow \color{white}{1}}
   }}
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
 A single rule fits \(4\). The rule has no premises. Substitute \(n\) with \(4\) and write the value.
@@ -187,13 +192,13 @@ A single rule fits \(4\). The rule has no premises. Substitute \(n\) with \(4\) 
   \vdash 4\Rightarrow \color{red}{4} \quad
   \frac
   {\color{white}{\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{white}{1}}
+  {\vdash 2-1\Rightarrow \color{white}{1}}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
-A single rule fits \(\{-\ 2\ 1\}\). Substitute \(e_1\) and \(e_2\) with \(2\) and \(1\) respectively to make premises. Do not write values of the premises.
+A single rule fits \(2-1\). Substitute \(e_1\) and \(e_2\) with \(2\) and \(1\) respectively to make premises. Do not write values of the premises.
 
 \[
 \frac
@@ -202,10 +207,10 @@ A single rule fits \(\{-\ 2\ 1\}\). Substitute \(e_1\) and \(e_2\) with \(2\) an
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\color{red}{\vdash 2\Rightarrow \color{white}{2} \quad \vdash 1\Rightarrow \color{white}{1}}}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{white}{1}}
+  {\vdash 2-1\Rightarrow \color{white}{1}}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
 A single rule fits \(2\). The rule has no premises. Substitute \(n\) with \(2\) and write the value.
@@ -217,10 +222,10 @@ A single rule fits \(2\). The rule has no premises. Substitute \(n\) with \(2\) 
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow \color{red}{2} \quad \vdash 1\Rightarrow \color{white}{1}}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{white}{1}}
+  {\vdash 2-1\Rightarrow \color{white}{1}}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
 A single rule fits \(1\). The rule has no premises. Substitute \(n\) with \(1\) and write the value.
@@ -232,13 +237,13 @@ A single rule fits \(1\). The rule has no premises. Substitute \(n\) with \(1\) 
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow \color{red}{1}}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{white}{1}}
+  {\vdash 2-1\Rightarrow \color{white}{1}}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
-Compute \(2-1\) and write \(1\), the result of \(\{-\ 2\ 1\}\).
+Compute \(2-1\) and write \(1\), the result of \(2-1\).
 
 \[
 \frac
@@ -247,13 +252,13 @@ Compute \(2-1\) and write \(1\), the result of \(\{-\ 2\ 1\}\).
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}
-  {\vdash \{-\ 2\ 1\}\Rightarrow \color{red}{1}}
+  {\vdash 2-1\Rightarrow \color{red}{1}}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{white}{5}}
+{\vdash4+(2-1)\Rightarrow \color{white}{5}}
 \]
 
-Compute \(4+1\) and write \(5\), the result of \(\{+\ 4\ \{-\ 2 \ 1\}\}\).
+Compute \(4+1\) and write \(5\), the result of \(4+(2-1)\).
 
 \[
 \frac
@@ -262,10 +267,10 @@ Compute \(4+1\) and write \(5\), the result of \(\{+\ 4\ \{-\ 2 \ 1\}\}\).
   \vdash 4\Rightarrow 4 \quad
   \frac
   {\vdash 2\Rightarrow 2 \quad \vdash 1\Rightarrow 1}
-  {\vdash \{-\ 2\ 1\}\Rightarrow 1}
+  {\vdash 2-1\Rightarrow 1}
   }
 }
-{\vdash\{+\ 4\ \{-2 \ 1\}\}\Rightarrow \color{red}{5}}
+{\vdash4+(2-1)\Rightarrow \color{red}{5}}
 \]
 
 The tree is complete.
@@ -275,12 +280,12 @@ The tree is complete.
 The following Scala code is the implementation of an interpreter following the natural semantics of AE:
 
 ```scala
-sealed trait AE
-case class Num(n: Int) extends AE
-case class Add(l: AE, r: AE) extends AE
-case class Sub(l: AE, r: AE) extends AE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
 
-def interp(e: AE): Int = e match {
+def interp(e: Expr): Int = e match {
   case Num(n) => n
   case Add(l, r) => interp(l) + interp(r)
   case Sub(l, r) => interp(l) - interp(r)
