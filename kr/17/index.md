@@ -194,39 +194,39 @@ factorialC(7, println)  // 5040
 이제 FAE의 인터프리터를 계속 전달 방식으로 구현해 보겠다. 요약 문법과 환경은 이전에 본 것과 같다.
 
 ```scala
-sealed trait FAE
-case class Num(n: Int) extends FAE
-case class Add(l: FAE, r: FAE) extends FAE
-case class Sub(l: FAE, r: FAE) extends FAE
-case class Id(x: String) extends FAE
-case class Fun(x: String, b: FAE) extends FAE
-case class App(f: FAE, a: FAE) extends FAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait FAEV
-case class NumV(n: Int) extends FAEV
-case class CloV(p: String, b: FAE, e: Env) extends FAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, FAEV]
-def lookup(x: String, env: Env): FAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 추가적으로 계속의 타입을 정의한다.
 
 ```scala
-type Cont = FAEV => FAEV
+type Cont = Value => Value
 ```
 
 원래의 `interp` 함수는 다음과 같이 생겼다.
 
 ```scala
-def interp(e: FAE, env: Env): FAEV = ...
+def interp(e: Expr, env: Env): Value = ...
 ```
 
 계속 전달 방식을 사용하면 인자로 계속도 받아야 한다.
 
 ```scala
-def interp(e: FAE, env: Env, k: Cont): FAEV = ...
+def interp(e: Expr, env: Env, k: Cont): Value = ...
 ```
 
 어떤 `e`, `env`, `k`에 대해 `k(interp(e, env))`와 `interp(e, env, k)`는 반드시 같은 결괏값을 내야 한다.
@@ -270,7 +270,7 @@ case Add(e1, e2) =>
 다만 실제로는 `v1 + v2`를 바로 할 수 없고 `NumV`를 벗긴 뒤 더하고 다시 `NumV`를 씌워야 한다.
 
 ```scala
-def numVAdd(v1: FAEV, v2: FAEV): FAEV = {
+def numVAdd(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 + n2)
@@ -317,7 +317,7 @@ case Add(e1, e2) =>
 `Sub`은 `Add`와 마찬가지이다.
 
 ```scala
-def numVSub(v1: FAEV, v2: FAEV): FAEV = {
+def numVSub(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 - n2)
@@ -357,7 +357,7 @@ case App(e1, e2) =>
 이제 인터프리터를 완성할 수 있다. 다음은 지금까지 나온 코드를 모은 것이다.
 
 ```scala
-def interp(e: FAE, env: Env, k: Cont): FAEV = e match {
+def interp(e: Expr, env: Env, k: Cont): Value = e match {
   case Num(n) => k(NumV(n))
   case Id(x) => k(lookup(x, env))
   case Fun(x, b) => k(CloV(x, b, env))
@@ -412,8 +412,8 @@ interp(
 계속과 `interp` 함수의 결과 타입을 `Unit`으로 바꾸어 계속 전달 방식을 바르게 사용했는지 확인할 수 있다.
 
 ```scala
-type Cont = FAEV => Unit
-def interp(e: FAE, env: Env, k: Cont): Unit = ...
+type Cont = Value => Unit
+def interp(e: Expr, env: Env, k: Cont): Unit = ...
 ```
 
 딱 두 줄만 바꾸면 된다. 수정 후에도 인터프리터는 그대로 잘 작동한다.

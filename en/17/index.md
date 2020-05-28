@@ -195,39 +195,39 @@ Continuation-passing style is a style that programs pass continuations from func
 The article finally implements an interpreter of FAE with continuation-passing style. The abstract syntax of FAE follows:
 
 ```scala
-sealed trait FAE
-case class Num(n: Int) extends FAE
-case class Add(l: FAE, r: FAE) extends FAE
-case class Sub(l: FAE, r: FAE) extends FAE
-case class Id(x: String) extends FAE
-case class Fun(x: String, b: FAE) extends FAE
-case class App(f: FAE, a: FAE) extends FAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait FAEV
-case class NumV(n: Int) extends FAEV
-case class CloV(p: String, b: FAE, e: Env) extends FAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, FAEV]
-def lookup(x: String, env: Env): FAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 `Cont` is the type of a continuation:
 
 ```scala
-type Cont = FAEV => FAEV
+type Cont = Value => Value
 ```
 
 The original signature of the `interp` function equals the following:
 
 ```scala
-def interp(e: FAE, env: Env): FAEV = ...
+def interp(e: Expr, env: Env): Value = ...
 ```
 
 To follow continuation-passing style, the function needs an additional parameter to take the current continuation as an argument.
 
 ```scala
-def interp(e: FAE, env: Env, k: Cont): FAEV = ...
+def interp(e: Expr, env: Env, k: Cont): Value = ...
 ```
 
 For any `e`, `env`, and `k`, `interp(e, env, k)` must produce the same result as that of `k(interp(e, env))`.
@@ -271,7 +271,7 @@ case Add(e1, e2) =>
 The only problem is that `v1 + v2` is impossible. The function must remove `NumV` and wrap the result with `NumV` again.
 
 ```scala
-def numVAdd(v1: FAEV, v2: FAEV): FAEV = {
+def numVAdd(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 + n2)
@@ -313,7 +313,7 @@ Step 2 equals `k(numVAdd(v1, v2))`. The continuation is `v2 => k(numVAdd(v1, v2)
 The `Sub` case is similar to the `Add` case.
 
 ```scala
-def numVSub(v1: FAEV, v2: FAEV): FAEV = {
+def numVSub(v1: Value, v2: Value): Value = {
   val NumV(n1) = v1
   val NumV(n2) = v2
   NumV(n1 - n2)
@@ -353,7 +353,7 @@ The code does not directly call `k`. Instead of calling `k`, it passes `k` as an
 The following is a complete interpreter:
 
 ```scala
-def interp(e: FAE, env: Env, k: Cont): FAEV = e match {
+def interp(e: Expr, env: Env, k: Cont): Value = e match {
   case Num(n) => k(NumV(n))
   case Id(x) => k(lookup(x, env))
   case Fun(x, b) => k(CloV(x, b, env))
@@ -408,8 +408,8 @@ interp(
 To check whether the interpreter uses continuation-passing style, change the return types of continuations and the `interp` function to `Unit`.
 
 ```scala
-type Cont = FAEV => Unit
-def interp(e: FAE, env: Env, k: Cont): Unit = ...
+type Cont = Value => Unit
+def interp(e: Expr, env: Env, k: Cont): Unit = ...
 ```
 
 The interpreter works well even after the change.
