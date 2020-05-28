@@ -1,10 +1,10 @@
-이번 글은 *소극적 계산*(lazy evaluation)에 대한 글이다. 소극적 계산[^1]은 식의 계산을 계산 결과가 필요할 때까지 늦추는 것을 말한다. 실용적으로 사용되는 언어는 대개 함수 적용 이외에도 다른 여러 기능을 제공하므로 계산을 늦추는 대상이 다양할 수 있다. 예를 들어, Scala에서는 변수가 가지는 값을 소극적으로 계산할 수 있도록 `lazy`라는 키워드를 제공하며, `lazy val`을 사용하여 선언된 변수는 변수가 선언될 때 변수가 나타내는 값이 계산되는 것이 아니라 그 변수를 다른 식에서 사용할 때 변수가 나타내는 값이 계산된다. 그러나 함수 적용에서 인자가 언제 계산되는지 살펴보는 것만으로 소극적 계산에 대해 알아보기에 충분하며 인자가 아닌 대상에 소극적 계산을 사용하면 어떻게 될지 이해하는 데 문제가 없으므로 이 글에서는 함수 적용에만 초점을 두고 소극적 계산에 대해 다룰 것이다.
+이번 글은 *느긋한 계산*(lazy evaluation)에 대한 글이다. 느긋한 계산[^1]은 식의 계산을 계산 결과가 필요할 때까지 늦추는 것을 말한다. 실용적으로 사용되는 언어는 대개 함수 적용 이외에도 다른 여러 기능을 제공하므로 계산을 늦추는 대상이 다양할 수 있다. 예를 들어, Scala에서는 변수가 가지는 값을 느긋하게 계산할 수 있도록 `lazy`라는 키워드를 제공하며, `lazy val`을 사용하여 선언된 변수는 변수가 선언될 때 변수가 나타내는 값이 계산되는 것이 아니라 그 변수를 다른 식에서 사용할 때 변수가 나타내는 값이 계산된다. 그러나 함수 적용에서 인자가 언제 계산되는지 살펴보는 것만으로 느긋한 계산에 대해 알아보기에 충분하며 인자가 아닌 대상에 느긋한 계산을 사용하면 어떻게 될지 이해하는 데 문제가 없으므로 이 글에서는 함수 적용에만 초점을 두고 느긋한 계산에 대해 다룰 것이다.
 
-[^1]: 소극적 계산을 뒤에서 다룰 이름에 의한 호출과 같은 뜻으로 사용하는 사람도 있으나, 이 글에서는 이름에 의한 호출과 필요에 의한 호출 등을 모두 포함하는 큰 뜻으로 사용한다.
+[^1]: 느긋한 계산을 뒤에서 다룰 이름에 의한 호출과 같은 뜻으로 사용하는 사람도 있으나, 이 글에서는 이름에 의한 호출과 필요에 의한 호출 등을 모두 포함하는 큰 뜻으로 사용한다.
 
-지금까지 글에서 다룬 언어는 모두 *적극적 계산*(eager evaluation; strict evaluation)을 사용하였다. 적극적 계산은 함수 호출 시 인자가 나타내는 값을 먼저 계산하고 그 뒤에 함수 몸통을 계산하는 방법을 말한다. 지난 글에서 본 값에 의한 호출이 적극적 계산에 해당한다. 참조에 의한 호출은 엄밀히 이야기하면 계산 순서에 따른 구분이 아니라 값 대신 주소를 넘기는 것을 의미하므로 소극적 계산인지 적극적 계산인지 따지는 것이 큰 의미는 없다. 다만 소극적 계산은 계산을 미룬다는 점이 핵심인데 참조에 의한 호출은 계산을 미루는 의도는 없기에 일반적으로는 적극적 계산이라고 말해도 문제가 없다.
+지금까지 글에서 다룬 언어는 모두 *조급한 계산*(eager evaluation; strict evaluation)을 사용하였다. 조급한 계산은 함수 호출 시 인자가 나타내는 값을 먼저 계산하고 그 뒤에 함수 몸통을 계산하는 방법을 말한다. 지난 글에서 본 값에 의한 호출이 조급한 계산에 해당한다. 참조에 의한 호출은 엄밀히 이야기하면 계산 순서에 따른 구분이 아니라 값 대신 주소를 넘기는 것을 의미하므로 느긋한 계산인지 조급한 계산인지 따지는 것이 큰 의미는 없다. 다만 느긋한 계산은 계산을 미룬다는 점이 핵심인데 참조에 의한 호출은 계산을 미루는 의도는 없기에 일반적으로는 조급한 계산이라고 말해도 문제가 없다.
 
-반면 소극적 계산은 함수 호출 시에 인자가 나타내는 값을 먼저 계산하지 않는다. 인자 대신 바로 함수 몸통을 계산하며 함수 몸통을 계산하다 매개변수가 사용되어 인자의 값이 필요해지는 시점에 인자의 값을 계산한다. 다음의 Scala 코드를 생각해 보자.
+반면 느긋한 계산은 함수 호출 시에 인자가 나타내는 값을 먼저 계산하지 않는다. 인자 대신 바로 함수 몸통을 계산하며 함수 몸통을 계산하다 매개변수가 사용되어 인자의 값이 필요해지는 시점에 인자의 값을 계산한다. 다음의 Scala 코드를 생각해 보자.
 
 ```scala
 def f(): Int = ...
@@ -15,9 +15,9 @@ def h(x: Int, b: Boolean): Int =
 h(f(), g())
 ```
 
-함수 `h`는 매개변수 `x`와 `b`를 가지지만 `b`의 값이 `false`인 경우에는 `x`를 사용하지 않는다. `b`가 `false`라면 `x`의 값이 무엇이든 함수의 결괏값은 `0`이다. 마지막 줄에서는 `h`를 호출하면서 첫 인자로 `f()`를 두 번째 인자로 `g()`를 사용하였다. `g()`를 계산한 결과가 `true`라면 `f()`를 계산하지 않고는 결괏값을 알 수 없기에 반드시 `f()`를 계산해야 한다. 그러나 `g()`가 `false`라면 `f()`를 계산하지 않고도 결괏값은 `0`임을 알 수 있다. Scala에서는 기본적으로 적극적 계산을 사용하기에 `f()`의 결괏값이 필요하지 않을 때도 `f()`를 계산하므로 비효율적인 코드가 된다. 만약 `f()`의 계산이 오래 걸린다면 실사용에 문제가 될 수도 있다. 만약 소극적 계산을 사용한다면 인자의 값이 필요해지기 전에는 인자의 값을 계산하지 않기에 `g()`가 `false`일 때는 자연스럽게 `f()`가 계산되지 않는다. 그러므로 코드를 전혀 수정하지 않아도 그 자체로 효율적인 구현이다. 이처럼 소극적 계산은 함수 몸통에서 인자의 값이 필요하지 않을 가능성이 있을 때 코드의 가독성을 지키면서도 효율적으로 구현하는 것을 가능하게 한다.
+함수 `h`는 매개변수 `x`와 `b`를 가지지만 `b`의 값이 `false`인 경우에는 `x`를 사용하지 않는다. `b`가 `false`라면 `x`의 값이 무엇이든 함수의 결괏값은 `0`이다. 마지막 줄에서는 `h`를 호출하면서 첫 인자로 `f()`를 두 번째 인자로 `g()`를 사용하였다. `g()`를 계산한 결과가 `true`라면 `f()`를 계산하지 않고는 결괏값을 알 수 없기에 반드시 `f()`를 계산해야 한다. 그러나 `g()`가 `false`라면 `f()`를 계산하지 않고도 결괏값은 `0`임을 알 수 있다. Scala에서는 기본적으로 조급한 계산을 사용하기에 `f()`의 결괏값이 필요하지 않을 때도 `f()`를 계산하므로 비효율적인 코드가 된다. 만약 `f()`의 계산이 오래 걸린다면 실사용에 문제가 될 수도 있다. 만약 느긋한 계산을 사용한다면 인자의 값이 필요해지기 전에는 인자의 값을 계산하지 않기에 `g()`가 `false`일 때는 자연스럽게 `f()`가 계산되지 않는다. 그러므로 코드를 전혀 수정하지 않아도 그 자체로 효율적인 구현이다. 이처럼 느긋한 계산은 함수 몸통에서 인자의 값이 필요하지 않을 가능성이 있을 때 코드의 가독성을 지키면서도 효율적으로 구현하는 것을 가능하게 한다.
 
-인자의 값이 필요해지는 시점을 언제로 보느냐에 따라 소극적 계산도 여러 방법이 가능하다. 가장 간단한 기준은 매개변수가 함수 몸통에 등장했을 때이다. 그러나 그보다 계산을 더 늦추는 것도 생각해 볼 수 있다. 매개변수가 등장했지만 매개변수의 값이 당장 의미 있는 계산에 사용되는 것이 아니라면 아직 계산할 필요가 없다고 볼 수도 있는 것이다. 다음 Scala 코드를 생각해 보자. (물론 Scala는 적극적 계산을 사용하지만 Scala에 소극적 계산을 추가할 방법을 고민 중이라고 가정하자.)
+인자의 값이 필요해지는 시점을 언제로 보느냐에 따라 느긋한 계산도 여러 방법이 가능하다. 가장 간단한 기준은 매개변수가 함수 몸통에 등장했을 때이다. 그러나 그보다 계산을 더 늦추는 것도 생각해 볼 수 있다. 매개변수가 등장했지만 매개변수의 값이 당장 의미 있는 계산에 사용되는 것이 아니라면 아직 계산할 필요가 없다고 볼 수도 있는 것이다. 다음 Scala 코드를 생각해 보자. (물론 Scala는 조급한 계산을 사용하지만 Scala에 느긋한 계산을 추가할 방법을 고민 중이라고 가정하자.)
 
 ```scala
 def f(x: Int): Int = x
@@ -31,36 +31,36 @@ f(1 + 1) + 1
 
 ## LFAE
 
-LFAE는 소극적 계산을 사용하는 FAE이다. LFAE의 문법은 FAE와 같다. 함수 적용 시 인자는 바로 계산되지 않으며 인자의 값이 필요한 시점에 계산이 이루어진다. 값이 필요한 시점은 인자가 덧셈이나 뺄셈의 피연산자로 사용되는 경우와 함수 적용에서 함수로 사용되는 경우이다.
+LFAE는 느긋한 계산을 사용하는 FAE이다. LFAE의 문법은 FAE와 같다. 함수 적용 시 인자는 바로 계산되지 않으며 인자의 값이 필요한 시점에 계산이 이루어진다. 값이 필요한 시점은 인자가 덧셈이나 뺄셈의 피연산자로 사용되는 경우와 함수 적용에서 함수로 사용되는 경우이다.
 
 다음은 LFAE의 요약 문법을 Scala로 구현한 것이다.
 ```scala
-sealed trait LFAE
-case class Num(n: Int) extends LFAE
-case class Add(l: LFAE, r: LFAE) extends LFAE
-case class Sub(l: LFAE, r: LFAE) extends LFAE
-case class Id(x: String) extends LFAE
-case class Fun(x: String, b: LFAE) extends LFAE
-case class App(f: LFAE, a: LFAE) extends LFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 ```
 
 LFAE의 환경은 문자열을 열쇠, LFAE의 값을 값으로 하는 사전이다. 함수의 인자가 나타내는 값은 환경에 저장되어야 한다. 그러나 인자의 값을 환경에 넣기 전에 계산하지 않으므로 문제가 생긴다. 따라서 계산을 미루고 있다는 것을 명시적으로 표현하는 값을 추가로 정의해야 한다.
 
 ```scala
-sealed trait LFAEV
-case class NumV(n: Int) extends LFAEV
-case class CloV(p: String, b: LFAE, e: Env) extends LFAEV
-case class ExprV(e: LFAE, env: Env) extends LFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class ExprV(e: Expr, env: Env) extends Value
 
-type Env = Map[String, LFAEV]
+type Env = Map[String, Value]
 ```
 
-`ExprV`는 계산을 미루고 있는 식을 나타내는 경우 클래스로, `env` 아래서 필드 `e`를 계산한 결과가 그 값이다. `ExprV`를 계산한 결과는 결국 `NumV`나 `CloV`가 되어야 하므로 미루어진 계산일 뿐인 `ExprV`를 값으로 보는 것이 다소 어색할 수 있다. `CloV`도 사실은 식과 환경으로 이루어짐에도 값인 것처럼 `ExprV`를 값으로 정의해도 문제될 것은 없지만 마음에 들지 않는다면 단순히 소극적 계산을 쉽고 효율적으로 구현하기 위한 하나의 구현 전략으로 받아들여도 된다. (실제로 뒤에서 이름에 의한 호출과 필요에 의한 호출을 볼 때는 구현에는 `ExprV`가 등장하지만 언어의 의미에는 `ExprV`에 해당하는 존재가 아예 없다.)
+`ExprV`는 계산을 미루고 있는 식을 나타내는 경우 클래스로, `env` 아래서 필드 `e`를 계산한 결과가 그 값이다. `ExprV`를 계산한 결과는 결국 `NumV`나 `CloV`가 되어야 하므로 미루어진 계산일 뿐인 `ExprV`를 값으로 보는 것이 다소 어색할 수 있다. `CloV`도 사실은 식과 환경으로 이루어짐에도 값인 것처럼 `ExprV`를 값으로 정의해도 문제될 것은 없지만 마음에 들지 않는다면 단순히 느긋한 계산을 쉽고 효율적으로 구현하기 위한 하나의 구현 전략으로 받아들여도 된다. (실제로 뒤에서 이름에 의한 호출과 필요에 의한 호출을 볼 때는 구현에는 `ExprV`가 등장하지만 언어의 의미에는 `ExprV`에 해당하는 존재가 아예 없다.)
 
 `ExprV`가 덧셈이나 뺄셈의 피연산자나 함수 적용의 함수 위치에 등장하였다면 미루었던 계산을 수행하여 `ExprV`가 진짜로 나타내는 값이 무엇인지 찾아야 한다. 다음의 `strict` 함수가 그 역할이다.
 
 ```scala
-def strict(v: LFAEV): LFAEV = v match {
+def strict(v: Value): Value = v match {
   case ExprV(e, env) => strict(interp(e, env))
   case _ => v
 }
@@ -69,10 +69,10 @@ def strict(v: LFAEV): LFAEV = v match {
 `ExprV`가 나타내는 값은 가지고 있는 환경 아래서 가지고 있는 식을 계산한 결과지만 그 결과도 `ExprV`일 수 있기 때문에 재귀 호출을 통해서 `ExprV`가 아닌 값을 얻을 때까지 같은 과정을 반복한다. `strict` 함수에 `ExprV`가 아닌 값이 들어온다면 그 값이 그대로 결과가 된다.
 
 ```scala
-def lookup(x: String, env: Env): LFAEV =
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
-def interp(e: LFAE, env: Env): LFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = strict(interp(l, env))
@@ -115,20 +115,20 @@ def g(): Int = ...
 f(g())
 ```
 
-함수 `f`의 몸통에 매개변수 `x`가 두 번 등장하므로 `g()`의 값이 두 번 계산된다. 그러나 함수 `g`가 언제나 같은 결과를 내며 부작용이 없는 순수 함수라면 두 번째 계산의 결과는 첫 번째 결과와 항상 같고 다른 계산에도 아무 영향을 주지 않는다. 따라서 `g()`를 처음 계산하여 얻은 값을 두 번 사용해도 같은 결과를 얻을 수 있다. 만약 적극적 계산을 사용한다면 함수 몸통을 계산하기 전 먼저 `g()`를 계산하므로 자연스럽게 `g()`는 한 번만 계산된다.
+함수 `f`의 몸통에 매개변수 `x`가 두 번 등장하므로 `g()`의 값이 두 번 계산된다. 그러나 함수 `g`가 언제나 같은 결과를 내며 부작용이 없는 순수 함수라면 두 번째 계산의 결과는 첫 번째 결과와 항상 같고 다른 계산에도 아무 영향을 주지 않는다. 따라서 `g()`를 처음 계산하여 얻은 값을 두 번 사용해도 같은 결과를 얻을 수 있다. 만약 조급한 계산을 사용한다면 함수 몸통을 계산하기 전 먼저 `g()`를 계산하므로 자연스럽게 `g()`는 한 번만 계산된다.
 
-매개변수가 여러 번 사용되어도 효율적인 적극적 계산의 장점과 매개변수가 사용되지 않을 수 있는 경우에 효율적인 소극적 계산의 장점을 모두 살리기 위해서는 인자를 처음 계산해서 얻은 값을 저장한 뒤 그 값이 다시 필요할 때는 저장한 값을 사용하는 방법이 있다. 만약 수정 가능한 변수나 상자처럼 언어에 부작용을 일으키는 기능이 있다면 매번 다시 계산하는 것과 저장한 값을 사용하는 것이 다른 결과를 낼 수 있다. 그러나 LFAE에는 부작용이 없으므로 그런 언어의 의미를 바꾸지 않고 최적화를 할 수 있다.
+매개변수가 여러 번 사용되어도 효율적인 조급한 계산의 장점과 매개변수가 사용되지 않을 수 있는 경우에 효율적인 느긋한 계산의 장점을 모두 살리기 위해서는 인자를 처음 계산해서 얻은 값을 저장한 뒤 그 값이 다시 필요할 때는 저장한 값을 사용하는 방법이 있다. 만약 수정 가능한 변수나 상자처럼 언어에 부작용을 일으키는 기능이 있다면 매번 다시 계산하는 것과 저장한 값을 사용하는 것이 다른 결과를 낼 수 있다. 그러나 LFAE에는 부작용이 없으므로 그런 언어의 의미를 바꾸지 않고 최적화를 할 수 있다.
 
 ```scala
 case class ExprV(
-  e: LFAE, env: Env, var v: Option[LFAEV]
-) extends LFAEV
+  e: Expr, env: Env, var v: Option[Value]
+) extends Value
 ```
 
 최적화를 위해 수정된 `ExprV`의 정의이다. `v`는 수정 가능한 필드로, 아직 계산을 한 번도 수행하지 않아 계산을 해서 나온 값을 모른다면 `None`이 값이다. 즉 `ExprV` 객체가 처음 만들어졌을 때는 `v`의 값은 반드시 `None`이다. 처음 `ExprV`가 나타내는 값을 계산한 뒤에는 그 값이 `Some`으로 감싸져서 `v`에 저장된다. `ExprV`의 값을 다시 필요로 하면 계산을 반복할 필요 없이 `v`에서 값을 꺼내면 된다. 이를 위해서는 아래와 같이 `strict` 함수의 정의를 수정해야 한다.
 
 ```scala
-def strict(v: LFAEV): LFAEV = v match {
+def strict(v: Value): Value = v match {
   case ev @ ExprV(e, env, None) =>
     val cache = strict(interp(e, env))
     ev.v = Some(cache)
@@ -150,15 +150,15 @@ case App(f, a) =>
 
 ```scala
 case class ExprV(
-  e: LFAE, env: Env, var v: Option[LFAEV] = None
-) extends LFAEV
+  e: Expr, env: Env, var v: Option[Value] = None
+) extends Value
 ```
 
 이 경우 `ExprV` 객체를 만들 때 인자가 두 개만 주어진다면 필드 `v`의 값은 자동으로 `None`이 된다. 따라서 `interp` 함수는 그대로 두고 `strict` 함수만 수정하는 것으로 충분하다.
 
 ## 치환
 
-이름에 의한 호출과 필요에 의한 호출에 대해 알아보기에 앞서 적극적 계산을 하는 FAE의 의미를 기존과 다른 방법으로 다시 정의할 것이다. 이는 환경 대신 *치환*(substitution)을 사용한 방법이다. 치환을 사용해서 의미를 정의함으로써 소극적 계산의 의미를 쉽게 정의할 수 있으며 적극적 계산과 소극적 계산이 어떻게 다른지 명확히 볼 수 있다.
+이름에 의한 호출과 필요에 의한 호출에 대해 알아보기에 앞서 조급한 계산을 하는 FAE의 의미를 기존과 다른 방법으로 다시 정의할 것이다. 이는 환경 대신 *치환*(substitution)을 사용한 방법이다. 치환을 사용해서 의미를 정의함으로써 느긋한 계산의 의미를 쉽게 정의할 수 있으며 조급한 계산과 느긋한 계산이 어떻게 다른지 명확히 볼 수 있다.
 
 치환은 식의 특정 부분식을 다른 부분식으로 바꾸는 것을 의미한다. 대부분의 경우 식에 들어 있는 변수를 어떤 식으로 바꾸는 것을 말한다. 예를 들어 \(x+y\)에서 \(x\)를 \((z\ 3)\)으로 치환하면 \((z\ 3)+y\)가 된다.
 
@@ -411,23 +411,23 @@ n\Downarrow n
 기존 LFAE 인터프리터 구현을 약간 수정하여 이름에 의한 호출을 사용하도록 할 수 있다. 기존 인터프리터는 인자의 값이 필요한 경우를 인자가 덧셈이나 뺄셈의 피연산자나 함수 적용의 함수로 사용되는 경우로 판단한다. 이름에 의한 호출 의미를 따르려면 매개변수가 나온 시점에 즉시 인자를 계산해야 한다.
 
 ```scala
-sealed trait LFAE
-case class Num(n: Int) extends LFAE
-case class Add(l: LFAE, r: LFAE) extends LFAE
-case class Sub(l: LFAE, r: LFAE) extends LFAE
-case class Id(x: String) extends LFAE
-case class Fun(x: String, b: LFAE) extends LFAE
-case class App(f: LFAE, a: LFAE) extends LFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 ```
 
 요약 문법은 이전과 같다.
 
 ```scala
-sealed trait LFAEV
-case class NumV(n: Int) extends LFAEV
-case class CloV(p: String, b: LFAE, e: Env) extends LFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-case class Expr(e: LFAE, env: Env)
+case class Expr(e: Expr, env: Env)
 type Env = Map[String, Expr]
 ```
 
@@ -437,7 +437,7 @@ type Env = Map[String, Expr]
 def lookup(x: String, env: Env): Expr =
   env.getOrElse(x, throw new Exception)
 
-def interp(e: LFAE, env: Env): LFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)

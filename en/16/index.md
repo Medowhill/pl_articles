@@ -40,24 +40,24 @@ LFAE is a language applying lazy evaluation to FAE. They have the same syntax. I
 The following Scala code implements the abstract syntax of LFAE:
 
 ```scala
-sealed trait LFAE
-case class Num(n: Int) extends LFAE
-case class Add(l: LFAE, r: LFAE) extends LFAE
-case class Sub(l: LFAE, r: LFAE) extends LFAE
-case class Id(x: String) extends LFAE
-case class Fun(x: String, b: LFAE) extends LFAE
-case class App(f: LFAE, a: LFAE) extends LFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 ```
 
 An environment is a map from strings to values. It contains the values of arguments. However, the values are unknown when an environment is expanded. Values must be able to denote delayed evaluations.
 
 ```scala
-sealed trait LFAEV
-case class NumV(n: Int) extends LFAEV
-case class CloV(p: String, b: LFAE, e: Env) extends LFAEV
-case class ExprV(e: LFAE, env: Env) extends LFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class ExprV(e: Expr, env: Env) extends Value
 
-type Env = Map[String, LFAEV]
+type Env = Map[String, Value]
 ```
 
 An `ExprV` instance denotes an expression whose value is unknown. Its value is the result of evaluating `e` under `env`.
@@ -65,7 +65,7 @@ An `ExprV` instance denotes an expression whose value is unknown. Its value is t
 If an `ExprV` instance is an operand or a function being applied to an argument, then the real value of the instance is necessary. The following `strict` function calculates the value:
 
 ```scala
-def strict(v: LFAEV): LFAEV = v match {
+def strict(v: Value): Value = v match {
   case ExprV(e, env) => strict(interp(e, env))
   case _ => v
 }
@@ -75,10 +75,10 @@ An `ExprV` instance denotes a value that is the result of evaluating its express
 
 
 ```scala
-def lookup(x: String, env: Env): LFAEV =
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
-def interp(e: LFAE, env: Env): LFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = strict(interp(l, env))
@@ -115,14 +115,14 @@ By storing the value of an argument and using the value again, the interpreter b
 
 ```scala
 case class ExprV(
-  e: LFAE, env: Env, var v: Option[LFAEV]
-) extends LFAEV
+  e: Expr, env: Env, var v: Option[Value]
+) extends Value
 ```
 
 The definition of the `ExprV` class has changed. Field `v` is mutable. When the value of the expression is unknown, `v` equals `None`. After the value is calculated once, `v` equals a `Some` instance containing the value. To use the value again, reading the value of `v` is enough. No redundant evaluations happen. The `strict` function requires the following changes:
 
 ```scala
-def strict(v: LFAEV): LFAEV = v match {
+def strict(v: Value): Value = v match {
   case ev @ ExprV(e, env, None) =>
     val cache = strict(interp(e, env))
     ev.v = Some(cache)
@@ -144,8 +144,8 @@ One may use a default parameter value for the `ExprV` class instead of revising 
 
 ```scala
 case class ExprV(
-  e: LFAE, env: Env, var v: Option[LFAEV] = None
-) extends LFAEV
+  e: Expr, env: Env, var v: Option[Value] = None
+) extends Value
 ```
 
 In this case, passing only two arguments for a new `ExprV` instance initializes field `v` to `None` automatically. Hence, changing only `strict` function suffices. The `interp` function remains the same.
@@ -388,23 +388,23 @@ The converse of the proposition is false. Some expressions yield results under o
 Making some revision to the LFAE interpreter allows call by name for function applications. The existing interpreter evaluates an argument when it appears as a function of a function application or an operand of an addition or a subtraction. Under the call-by-name semantics, an interpreter must evaluate an argument when the corresponding parameter occurs.
 
 ```scala
-sealed trait LFAE
-case class Num(n: Int) extends LFAE
-case class Add(l: LFAE, r: LFAE) extends LFAE
-case class Sub(l: LFAE, r: LFAE) extends LFAE
-case class Id(x: String) extends LFAE
-case class Fun(x: String, b: LFAE) extends LFAE
-case class App(f: LFAE, a: LFAE) extends LFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 ```
 
 The abstract syntax remains the same.
 
 ```scala
-sealed trait LFAEV
-case class NumV(n: Int) extends LFAEV
-case class CloV(p: String, b: LFAE, e: Env) extends LFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-case class Expr(e: LFAE, env: Env)
+case class Expr(e: Expr, env: Env)
 type Env = Map[String, Expr]
 ```
 
@@ -414,7 +414,7 @@ The previous interpreter needs the `ExprV` class to represent a delayed evaluati
 def lookup(x: String, env: Env): Expr =
   env.getOrElse(x, throw new Exception)
 
-def interp(e: LFAE, env: Env): LFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
