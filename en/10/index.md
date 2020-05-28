@@ -1,10 +1,10 @@
-The article defines F1WAE by adding *first-order functions* to WAE. First-order functions cannot take functions as arguments or return functions. The articles have followed the same pattern, extending a language by defining syntax and semantics, since the previous one. This article and later articles omit tedious details unless complex concepts appear.
+The article defines F1VAE by adding *first-order functions* to VAE. First-order functions cannot take functions as arguments or return functions. The articles have followed the same pattern, extending a language by defining syntax and semantics, since the previous one. This article and later articles omit tedious details unless complex concepts appear.
 
-F1WAE covered by the article differs from that of the lecture. The lecture defines function definitions and expressions of F1WAE while the article additionally defines programs of F1WAE. Defining programs makes the language complete but is not the main topic of the article. Please focus on the syntax and semantics of calling first-order functions.
+F1VAE covered by the article differs from that of the lecture. The lecture defines function definitions and expressions of F1VAE while the article additionally defines programs of F1VAE. Defining programs makes the language complete but is not the main topic of the article. Please focus on the syntax and semantics of calling first-order functions.
 
 ## Syntax
 
-The following is the abstract syntax of F1WAE:
+The following is the abstract syntax of F1VAE:
 
 \[
 \begin{array}{lrcl}
@@ -18,19 +18,19 @@ The following is the abstract syntax of F1WAE:
 && | & x \\
 && | & f(e) \\
 \text{Value} & v & ::= & n \\
-\text{Function Definition} & F & ::= & f(x)=e \\
+\text{Function Definition} & d & ::= & f(x)=e \\
 \text{Program} & P & ::= & e \\
-&& | & F;P
+&& | & d;P
 \end{array}
 \]
 
-Expressions of F1WAE are function applications in addition to those of WAE. \(f(e)\) is a function application, which applies a function named \(f\) to a value denoted by \(e\).
+Expressions of F1VAE are function applications in addition to those of VAE. \(f(e)\) is a function application, which applies a function named \(f\) to a value denoted by \(e\).
 
-The name, the name of a parameter, and a body expression defines a function. Metavariable \(F\) and \(f\) respectively range over function definitions and function names.
+The name, the name of a parameter, and a body expression defines a function. Metavariable \(d\) and \(f\) respectively range over function definitions and function names.
 
 A program is either an expression or the pair of a function definition and a program. In other words, it is an expression following an arbitrary number of function definitions. Metavariable \(P\) ranges over programs.
 
-The following is an example of an F1WAE program:
+The following is an example of an F1VAE program:
 
 \[
 \begin{array}{l}
@@ -54,7 +54,7 @@ Evaluating an expression requires not only values denoted by variables but also 
 
 \[
 \begin{array}{lrcl}
-\text{Function Environment} & \phi & \in & \mathit{Id}\hookrightarrow (\mathit{Id}\times\text{Expression})
+\text{Function Environment} & \Lambda & \in & \mathit{Id}\hookrightarrow (\mathit{Id}\times\text{Expression})
 \end{array}
 \]
 
@@ -62,95 +62,95 @@ A function environment is a partial function from identifiers to pairs of identi
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Function Environment}\times\text{Expression}\times\text{Value}\]
 
-An environment and a function environment are essential to evaluate an expression. \(\Rightarrow\) is a relation over four sets. \(\sigma;\phi\vdash e\Rightarrow v\) implies that evaluating \(e\) under \(\sigma\) and \(\phi\) yields \(v\).
+An environment and a function environment are essential to evaluate an expression. \(\Rightarrow\) is a relation over four sets. \(\sigma,\Lambda\vdash e\Rightarrow v\) implies that evaluating \(e\) under \(\sigma\) and \(\Lambda\) yields \(v\).
 
 \[
 \frac
 {
-  f\in\mathit{Domain}(\phi) \quad
-  \phi(f)=(x,e') \quad
-  \sigma;\phi\vdash e\Rightarrow v' \quad
-  \lbrack x\mapsto v'\rbrack;\phi\vdash e'\Rightarrow v
+  f\in\mathit{Domain}(\Lambda) \quad
+  \Lambda(f)=(x,e') \quad
+  \sigma,\Lambda\vdash e\Rightarrow v' \quad
+  \lbrack x\mapsto v'\rbrack,\Lambda\vdash e'\Rightarrow v
 }
-{ \sigma;\phi\vdash f(e)\Rightarrow v }
+{ \sigma,\Lambda\vdash f(e)\Rightarrow v }
 \]
 
-The inference rule defines the semantics of a function application. An environment used by a function body is an environment existing when the function is defined but not called. Function definitions do not belong to the scopes of the binding occurrences of any variables. Therefore, programs define every function under the empty environment. The rule uses \(\lbrack x\mapsto v'\rbrack\) instead of \(\sigma\lbrack x\mapsto v'\rbrack\) to evaluate \(e'\), the body of a function. On the other hand, the scope of the binding occurrence of every function name equals an entire program. A whole program is under the same function environment. The rule uses \(\phi\) to evaluate both \(e\) and \(e'\).
+The inference rule defines the semantics of a function application. An environment used by a function body is an environment existing when the function is defined but not called. Function definitions do not belong to the scopes of the binding occurrences of any variables. Therefore, programs define every function under the empty environment. The rule uses \(\lbrack x\mapsto v'\rbrack\) instead of \(\sigma\lbrack x\mapsto v'\rbrack\) to evaluate \(e'\), the body of a function. On the other hand, the scope of the binding occurrence of every function name equals an entire program. A whole program is under the same function environment. The rule uses \(\Lambda\) to evaluate both \(e\) and \(e'\).
 
-The other rules equal those of WAE except they need function environments.
-
-\[
-\sigma;\phi\vdash n\Rightarrow n
-\]
+The other rules equal those of VAE except they need function environments.
 
 \[
-\frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
-{ \sigma;\phi\vdash e_1+e_2\Rightarrow n_1+n_2 }
+\sigma,\Lambda\vdash n\Rightarrow n
 \]
 
 \[
 \frac
-{ \sigma;\phi\vdash e_1\Rightarrow n_1 \quad \sigma;\phi\vdash e_2\Rightarrow n_2 }
-{ \sigma;\phi\vdash e_1-e_2\Rightarrow n_1-n_2 }
+{ \sigma,\Lambda\vdash e_1\Rightarrow n_1 \quad \sigma,\Lambda\vdash e_2\Rightarrow n_2 }
+{ \sigma,\Lambda\vdash e_1+e_2\Rightarrow n_1+n_2 }
+\]
+
+\[
+\frac
+{ \sigma,\Lambda\vdash e_1\Rightarrow n_1 \quad \sigma,\Lambda\vdash e_2\Rightarrow n_2 }
+{ \sigma,\Lambda\vdash e_1-e_2\Rightarrow n_1-n_2 }
 \]
 
 \[
 \frac
 {
-  \sigma;\phi\vdash e_1\Rightarrow v_1 \quad
-  \sigma\lbrack x\mapsto v_1\rbrack;\phi\vdash e_2\Rightarrow v_2
+  \sigma,\Lambda\vdash e_1\Rightarrow v_1 \quad
+  \sigma\lbrack x\mapsto v_1\rbrack,\Lambda\vdash e_2\Rightarrow v_2
 }
-{ \sigma;\phi\vdash \textsf{val}\ x=e_1\ \textsf{in}\ e_2\Rightarrow v_2 }
+{ \sigma,\Lambda\vdash \textsf{val}\ x=e_1\ \textsf{in}\ e_2\Rightarrow v_2 }
 \]
 
 \[
 \frac
 { x\in\mathit{Domain}(\sigma) }
-{ \sigma;\phi\vdash x\Rightarrow \sigma(x)}
+{ \sigma,\Lambda\vdash x\Rightarrow \sigma(x)}
 \]
 
 The semantics of a program is a relation over function environments, programs, and values. The semantics of an expression has already used \(\Rightarrow\), but using \(\Rightarrow\) for also the semantics of a program retains clarity and thus can be abused for convenience.
 
 \[\Rightarrow\subseteq\text{Function Environment}\times\text{Program}\times\text{Value}\]
 
-\(\phi\vdash P\Rightarrow v\) implies that evaluating \(P\) under \(\phi\) yields \(v\).
+\(\Lambda\vdash P\Rightarrow v\) implies that evaluating \(P\) under \(\Lambda\) yields \(v\).
 
 \[
 \frac
-{ \emptyset;\phi\vdash e\Rightarrow v }
-{ \phi\vdash e\Rightarrow v }
+{ \emptyset,\Lambda\vdash e\Rightarrow v }
+{ \Lambda\vdash e\Rightarrow v }
 \]
 
 Evaluating a program without function definitions equals evaluating its expression.
 
 \[
 \frac
-{ \phi\lbrack f\mapsto(x,e)\rbrack\vdash P\Rightarrow v }
-{ \phi\vdash f(x)=e;P\Rightarrow v }
+{ \Lambda\lbrack f\mapsto(x,e)\rbrack\vdash P\Rightarrow v }
+{ \Lambda\vdash f(x)=e;P\Rightarrow v }
 \]
 
 Evaluating a program that is the pair of a function definition and a program equals evaluating the latter program under a function environment containing the function definition.
 
 ## Implementing an Interpreter
 
-The following Scala code expresses the abstract syntax of F1WAE:
+The following Scala code expresses the abstract syntax of F1VAE:
 
 ```scala
-sealed trait F1WAE
-case class Num(n: Int) extends F1WAE
-case class Add(l: F1WAE, r: F1WAE) extends F1WAE
-case class Sub(l: F1WAE, r: F1WAE) extends F1WAE
-case class With(x: String, i: F1WAE, b: F1WAE) extends F1WAE
-case class Id(x: String) extends F1WAE
-case class App(f: String, a: F1WAE) extends F1WAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Val(x: String, i: Expr, b: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class App(f: String, a: Expr) extends Expr
 ```
 
-Dictionaries encode both an environment and a function environment. The keys and the values of an environment are strings and integers respectively. The keys and the values of a function environment are strings and pairs of strings and expressions of F1WAE respectively.
+Dictionaries encode both an environment and a function environment. The keys and the values of an environment are strings and integers respectively. The keys and the values of a function environment are strings and pairs of strings and expressions of F1VAE respectively.
 
 ```scala
 type Env = Map[String, Int]
-type FEnv = Map[String, (String, F1WAE)]
+type FEnv = Map[String, (String, Expr)]
 ```
 
 Function `lookup` finds a value denoted by an identifier from an environment. Function `lookupFD` finds a function denoted by an identifier from a function environment.
@@ -159,18 +159,18 @@ Function `lookup` finds a value denoted by an identifier from an environment. Fu
 def lookup(x: String, env: Env): Int =
   env.getOrElse(x, throw new Exception)
 
-def lookupFD(f: String, fEnv: FEnv): (String, F1WAE) =
+def lookupFD(f: String, fEnv: FEnv): (String, Expr) =
   fEnv.getOrElse(f, throw new Exception)
 ```
 
 Function `interp` takes an expression, an environment, and a function environment as arguments and calculates a value denoted by the expression.
 
 ```scala
-def interp(e: F1WAE, env: Env, fEnv: FEnv): Int = e match {
+def interp(e: Expr, env: Env, fEnv: FEnv): Int = e match {
   case Num(n) => n
   case Add(l, r) => interp(l, env, fEnv) + interp(r, env, fEnv)
   case Sub(l, r) => interp(l, env, fEnv) - interp(r, env, fEnv)
-  case With(x, i, b) =>
+  case Val(x, i, b) =>
     interp(b, env + (x -> interp(i, env, fEnv)), fEnv)
   case Id(x) => lookup(x, env)
   case App(f, a) =>
@@ -188,7 +188,7 @@ The following is an example of calling `interp`:
 // twice(x) = x + x;
 // val x = 1 in twice(id(x))
 interp(
-  With("x", Num(1),
+  Val("x", Num(1),
     App("twice",
       App("id", Id("x"))
     )
@@ -234,17 +234,18 @@ The following inference rule defines the semantics of a function application usi
 \[
 \frac
 {
-  \phi(f)=(x,e') \quad
-  \sigma;\phi\vdash e\Rightarrow v' \quad
-  \sigma\lbrack x\mapsto v'\rbrack;\phi\vdash e'\Rightarrow v
+  f\in\mathit{Domain}(\Lambda) \quad
+  \Lambda(f)=(x,e') \quad
+  \sigma,\Lambda\vdash e\Rightarrow v' \quad
+  \sigma\lbrack x\mapsto v'\rbrack,\Lambda\vdash e'\Rightarrow v
 }
-{ \sigma;\phi\vdash f(e)\Rightarrow v }
+{ \sigma,\Lambda\vdash f(e)\Rightarrow v }
 \]
 
 Revising the `App` case of the `interp` function makes the interpreter use dynamic scope.
 
 ```scala
-def interp(e: F1WAE, env: Env, fEnv: FEnv): Int = e match {
+def interp(e: Expr, env: Env, fEnv: FEnv): Int = e match {
   ...
   case App(f, a) =>
     val (x, e) = lookupFD(f, fEnv)
@@ -268,3 +269,4 @@ int main() {
 ## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article.
+I thank ‘Zebra’ (‘얼룩말’) for pointing out the incorrect inference rule.
