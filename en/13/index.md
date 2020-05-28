@@ -1,4 +1,4 @@
-The article defines RCFAE featuring recursive functions.
+The article defines RFAE featuring recursive functions.
 
 ## CFAE
 
@@ -51,26 +51,24 @@ It seems the following CFAE expression is equivalent to the above code:
 
 However, it is wrong since the scope of the binding occurrence of \(factorial\) includes \(\cdots\) but excludes the lambda abstraction. Identifier \(factorial\) in the lambda expression is free. CFAE disallows defining recursive functions.
 
-## RCFAE
+## RFAE
 
-RCFAE adds recursive functions to CFAE.
+RFAE adds recursive functions to CFAE.
 
 ### Syntax
 
-The below is the abstract syntax of RCFAE. It omits features common to CFAE.
+The below is the abstract syntax of RFAE. It omits features common to CFAE.
 
 \[
 \begin{array}{lrcl}
 \text{Expression} & e & ::= & \cdots \\
-&& | & \mu x.\lambda x.e
+&& | & {\sf def}\ x(x)=e\ {\sf in}\ e
 \end{array}
 \]
 
-\(\mu x_1.\lambda x_2.e\) defines a recursive function. \(x_1\) is the name of a function, and \(e\) can refer to \(x_1\). For example, the following is a factorial function:
+\({\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2\) defines a recursive function. \(x_1\) is the name of a function, and both \(e_1\) and \(e_2\) can refer to \(x_1\). For example, the following is a factorial function:
 
-\[\mu factorial.\lambda n.\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\]
-
-Any expressions other than \(e\) cannot refer to \(x_1\). Recursive functions are anonymous as well. \(x_1\) takes a similar role to `this` or `self` of object-oriented languages. Objects use the keywords to denote themselves. They are available inside objects but not outside objects.
+\[{\sf def}\ factorial(n)=\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\ {\sf in}\ factorial\ 10\]
 
 ### Semantics
 
@@ -78,13 +76,16 @@ The following defines the semantics of recursive functions:
 
 \[
 \frac
-{ \sigma'=\sigma\lbrack x_1\mapsto\langle\lambda x_2.e,\sigma'\rangle\rbrack }
-{ \sigma\vdash \mu x_1.\lambda x_2.e\Rightarrow \langle\lambda x_2.e,\sigma'\rangle}
+{ \sigma'=\sigma\lbrack x_1\mapsto\langle\lambda x_2.e_1,\sigma'\rangle\rbrack \quad
+  \sigma'\vdash e_2\Rightarrow v
+}
+{ \sigma\vdash {\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2\Rightarrow v}
 \]
 
 The closure of a recursive function is similar to that of a lambda abstraction but does not store the environment of the moment. Instead, it stores an environment obtained by adding that the name of the function denotes the closure to the environment. Calling a closure evaluates the body of the closure under the environment of the closure so that recursive calls are valid.
 
-The below proof tree proves that the factorial of one is one.
+The below proof trees prove that the factorial of one is one. The proof splits
+into three trees for readability.
 
 \[
 \begin{array}{rcl}
@@ -101,14 +102,43 @@ Assume the above.
 \[
 \frac
 {
-  \begin{array}{c}
-  \large{
+  \Large
   \frac
-  {\sigma_1=\lbrack f\mapsto\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle\rbrack}
-  {\emptyset\vdash\mu f.\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle}}\quad
-  \emptyset\vdash 1\Rightarrow 1 \\
+  { f\in\mathit{Domain}(\sigma_2) }
+  { \sigma_2\vdash f\Rightarrow \langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
+  \quad
   \frac
-  { \LARGE{
+  {
+    \frac
+    { n\in\mathit{Domain}(\sigma_2) }
+   { \sigma_2\vdash n\Rightarrow 1 } \quad
+    \sigma_2\vdash 1\Rightarrow 1
+  }
+  { \sigma_2\vdash n-1\Rightarrow 0 } \quad
+  \frac
+  {
+    \frac
+    { n\in\mathit{Domain}(\sigma_3) }
+    { \sigma_3\vdash n\Rightarrow 0 } \quad
+    \sigma_3\vdash 1\Rightarrow 1
+  }
+  { \sigma_3\vdash \textsf{if0}\ n\ 1\ (n\times(f\ (n-1))) \Rightarrow 1 }
+}
+{ \sigma_2\vdash f\ (n-1)\Rightarrow 1 }
+\]
+
+\[
+\frac
+{
+  \Large
+  \frac
+  { f\in\mathit{Domain}(\sigma_1)}
+  { \sigma_1\vdash f\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
+  \quad
+  {\normalsize \emptyset\vdash 1\Rightarrow 1}
+  \quad
+  \frac
+  { 
     \frac
     { n\in\mathit{Domain}(\sigma_2) }
     { \sigma_2\vdash n\Rightarrow 1 } \quad
@@ -117,72 +147,57 @@ Assume the above.
       \frac
       { n\in\mathit{Domain}(\sigma_2) }
       { \sigma_2\vdash n\Rightarrow 1 } \quad
-      \frac
-      {
-        \LARGE{\begin{array}{c}
-        \frac
-        { f\in\mathit{Domain}(\sigma_2) }
-        { \sigma_2\vdash f\Rightarrow \langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle } \\
-        \frac
-        {
-          \frac
-          { n\in\mathit{Domain}(\sigma_2) }
-         { \sigma_2\vdash n\Rightarrow 1 } \quad
-          \sigma_2\vdash 1\Rightarrow 1
-        }
-        { \sigma_2\vdash n-1\Rightarrow 0 } \\
-        \frac
-        {
-          \frac
-          { n\in\mathit{Domain}(\sigma_3) }
-          { \sigma_3\vdash n\Rightarrow 0 } \quad
-          \sigma_3\vdash 1\Rightarrow 1
-        }
-        { \sigma_3\vdash \textsf{if0}\ n\ 1\ (n\times(f\ (n-1))) \Rightarrow 1 }
-        \end{array}}
-      }
-      { \sigma_2\vdash f\ (n-1)\Rightarrow 1 }
+      \sigma_2\vdash f\ (n-1)\Rightarrow 1
     }
     { \sigma_2\vdash (n\times(f\ (n-1)))\Rightarrow 1 }
-  }}
-  {\Large{\sigma_2\vdash\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow 1} }
-  \end{array}
+  }
+  {\sigma_2\vdash\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow 1 }
+}
+{ \sigma_1\vdash f\ 1\Rightarrow 1 }
+\]
+
+\[
+\frac
+{
+  \sigma_1=\lbrack f\mapsto\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle\rbrack
+  \quad
+  \sigma_1\vdash f\ 1\Rightarrow 1
 }
 {\emptyset\vdash
-(\mu f.\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))))\ 1
+{\sf def}\ f(n)=\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\ {\sf in}\ f\ 1
 \Rightarrow 1
 }
 \]
 
 ### Implementing an Interpreter
 
-The following Scala code implements the abstract syntax and environments of RCFAE:
+The following Scala code implements the abstract syntax and environments of RFAE:
 
 ```scala
-sealed trait RCFAE
-case class Num(n: Int) extends RCFAE
-case class Add(l: RCFAE, r: RCFAE) extends RCFAE
-case class Sub(l: RCFAE, r: RCFAE) extends RCFAE
-case class Mul(l: RCFAE, r: RCFAE) extends RCFAE
-case class Id(x: String) extends RCFAE
-case class Fun(x: String, b: RCFAE) extends RCFAE
-case class App(f: RCFAE, a: RCFAE) extends RCFAE
-case class If0(c: RCFAE, t: RCFAE, f: RCFAE) extends RCFAE
-case class Rec(f: String, x: String, b: RCFAE) extends RCFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Mul(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class If0(c: Expr, t: Expr, f: Expr) extends Expr
+case class Rec(f: String, x: String, b: Expr, e: Expr) extends Expr
 
-sealed trait RCFAEV
-case class NumV(n: Int) extends RCFAEV
-case class CloV(p: String, b: RCFAE, var e: Env) extends RCFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, var e: Env) extends Value
 
-type Env = Map[String, RCFAEV]
-def lookup(x: String, env: Env): RCFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 `If0` instnaces corresponds to conditional expressions; `Rec` instances corresponds to recursive functions. `CloV` instances, which are closures, have mutable environments because adding themselves to the environments requires the environments mutable.
 
 ```scala
-def interp(e: RCFAE, env: Env): RCFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -206,10 +221,11 @@ def interp(e: RCFAE, env: Env): RCFAEV = e match {
       if (interp(c, env) == NumV(0)) t else f,
       env
     )
-  case Rec(f, x, b) =>
-    val c = CloV(x, b, env)
-    c.e += f -> c
-    c
+  case Rec(f, x, b, e) =>
+    val cloV = CloV(x, b, env)
+    val nenv = env + (f -> cloV)
+    cloV.e = nenv
+    interp(e, nenv)
 }
 ```
 
@@ -218,19 +234,18 @@ The `If0` case evaluates the true branch if the condition equals `NumV(0)` and t
 The following calculates the factorial of three by calling the `interp` function:
 
 ```scala
-// (mu f.lambda n.if0 n 1 (n * (f (n-1)))) 3
+// def f(n) = if0 n 1 (n * (f (n-1))) in f(3)
 interp(
-  App(
-    Rec("f", "n",
-      If0(Id("n"),
-          Num(1),
-          Mul(
-            Id("n"),
-            App(Id("f"), Sub(Id("n"), Num(1)))
-          )
-      )
+  Rec(
+    "f", "n",
+    If0(Id("n"),
+        Num(1),
+        Mul(
+          Id("n"),
+          App(Id("f"), Sub(Id("n"), Num(1)))
+        )
     ),
-    Num(3)
+    App(Id("f"), Num(3))
   ),
   Map.empty
 )
@@ -244,7 +259,8 @@ As lambda calculus is Turing complete, recursive functions are encodable with la
 \[
 \begin{array}{rcl}
 Z&\equiv&\lambda f.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\\
-\mathit{encode}(\mu f.\lambda x.e)&=&Z\ \lambda f.\lambda x.e
+\mathit{encode}({\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2)&=&
+(\lambda x_1.e_2)\ (Z\ \lambda x_1.\lambda x_2.e_1)
 \end{array}
 \]
 
@@ -276,7 +292,7 @@ f\ (\lambda v.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)
 \end{array}
 \]
 
-Via the fixed point combinator, a factorial function is implementable without using a recursive function of RCFAE.
+Via the fixed point combinator, a factorial function is implementable without using a recursive function of RFAE.
 
 ```scala
 // lambda f.(lambda x.f lambda v.x x v) (lambda x.f lambda v.x x v)

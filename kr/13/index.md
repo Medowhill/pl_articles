@@ -1,4 +1,4 @@
-이번 글에서는 재귀 함수를 정의할 수 있는 RCFAE를 정의한다.
+이번 글에서는 재귀 함수를 정의할 수 있는 RFAE를 정의한다.
 
 ## CFAE
 
@@ -51,26 +51,24 @@ def factorial(n: Int): Int =
 
 그러나, 이 식은 올바르지 않다. \(factorial\)의 묶는 등장의 영역은 \(\cdots\) 부분만 포함하기 때문에, 함수를 정의할 때는 \(factorial\)을 사용할 수 없으며, 람다 요약 안에 있는 \(factorial\)은 묶인 등장이 아닌 자유 식별자이다. 따라서, CFAE에서는 재귀 함수를 정의할 수 없다.
 
-## RCFAE
+## RFAE
 
-RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
+RFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 
 ### 문법
 
-다음은 RCFAE의 요약 문법이다. CFAE와 비교하여 추가된 부분만 정의하였다.
+다음은 RFAE의 요약 문법이다. CFAE와 비교하여 추가된 부분만 정의하였다.
 
 \[
 \begin{array}{lrcl}
 \text{Expression} & e & ::= & \cdots \\
-&& | & \mu x.\lambda x.e
+&& | & {\sf def}\ x(x)=e\ {\sf in}\ e
 \end{array}
 \]
 
-\(\mu x_1.\lambda x_2.e\)는 재귀 함수를 정의한다. \(x_1\)은 \(e\)에서 사용할 수 있는, 함수 자신의 이름이다. 예를 들면, 계승 함수는 다음과 같이 정의할 수 있다.
+\({\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2\)는 재귀 함수를 정의한다. \(x_1\)은 함수의 이름으로, \(e_1\)과 \(e_2\) 모두에서 사용할 수 있다. 예를 들면, 계승 함수는 다음과 같이 정의하고 사용할 수 있다.
 
-\[\mu factorial.\lambda n.\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\]
-
-\(x_1\)은 함수를 정의하는 식 밖에서는 사용할 수 없다. 따라서, 재귀 함수도 익명 함수이다. 객체지향언어에서 객체가 자기 자신을 부르는 이름인 `this`나 `self`와 유사하다고 이해할 수 있다. 객체 안에서는 자신을 지칭하기 위해 `this`나 `self` 같은 키워드를 사용할 수 있지만, 객체 밖에서는 사용할 수 없다.
+\[{\sf def}\ factorial(n)=\textsf{if0}\ n\ 1\ (n\times(factorial\ (n-1)))\ {\sf in}\ factorial\ 10\]
 
 ### 의미
 
@@ -78,13 +76,16 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 
 \[
 \frac
-{ \sigma'=\sigma\lbrack x_1\mapsto\langle\lambda x_2.e,\sigma'\rangle\rbrack }
-{ \sigma\vdash \mu x_1.\lambda x_2.e\Rightarrow \langle\lambda x_2.e,\sigma'\rangle}
+{ \sigma'=\sigma\lbrack x_1\mapsto\langle\lambda x_2.e_1,\sigma'\rangle\rbrack \quad
+  \sigma'\vdash e_2\Rightarrow v
+}
+{ \sigma\vdash {\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2\Rightarrow v}
 \]
 
 람다 요약을 사용하여 만든 클로저와 비슷하지만, 현재 환경을 클로저에 저장하는 대신, 현재 환경에 함수의 이름이 클로저를 가리킨다는 정보를 추가한 환경을 저장한다. 클로저를 호출하면, 클로저의 몸통은 클로저의 환경 아래에서 계산되므로, 클로저 몸통에서 문제없이 재귀 호출을 할 수 있다.
 
-아래의 증명 나무는 1의 계승이 1임을 증명한다.
+아래의 증명 나무는 1의 계승이 1임을 증명한다. 가독성을 위해 세 부분으로
+나누었다.
 
 \[
 \begin{array}{rcl}
@@ -101,14 +102,43 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
 \[
 \frac
 {
-  \begin{array}{c}
-  \large{
+  \Large
   \frac
-  {\sigma_1=\lbrack f\mapsto\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle\rbrack}
-  {\emptyset\vdash\mu f.\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle}}\quad
-  \emptyset\vdash 1\Rightarrow 1 \\
+  { f\in\mathit{Domain}(\sigma_2) }
+  { \sigma_2\vdash f\Rightarrow \langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
+  \quad
   \frac
-  { \LARGE{
+  {
+    \frac
+    { n\in\mathit{Domain}(\sigma_2) }
+   { \sigma_2\vdash n\Rightarrow 1 } \quad
+    \sigma_2\vdash 1\Rightarrow 1
+  }
+  { \sigma_2\vdash n-1\Rightarrow 0 } \quad
+  \frac
+  {
+    \frac
+    { n\in\mathit{Domain}(\sigma_3) }
+    { \sigma_3\vdash n\Rightarrow 0 } \quad
+    \sigma_3\vdash 1\Rightarrow 1
+  }
+  { \sigma_3\vdash \textsf{if0}\ n\ 1\ (n\times(f\ (n-1))) \Rightarrow 1 }
+}
+{ \sigma_2\vdash f\ (n-1)\Rightarrow 1 }
+\]
+
+\[
+\frac
+{
+  \Large
+  \frac
+  { f\in\mathit{Domain}(\sigma_1)}
+  { \sigma_1\vdash f\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
+  \quad
+  {\normalsize \emptyset\vdash 1\Rightarrow 1}
+  \quad
+  \frac
+  { 
     \frac
     { n\in\mathit{Domain}(\sigma_2) }
     { \sigma_2\vdash n\Rightarrow 1 } \quad
@@ -117,72 +147,57 @@ RCFAE는 CFAE에 재귀 함수를 추가한 언어이다.
       \frac
       { n\in\mathit{Domain}(\sigma_2) }
       { \sigma_2\vdash n\Rightarrow 1 } \quad
-      \frac
-      {
-        \LARGE{\begin{array}{c}
-        \frac
-        { f\in\mathit{Domain}(\sigma_2) }
-        { \sigma_2\vdash f\Rightarrow \langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle } \\
-        \frac
-        {
-          \frac
-          { n\in\mathit{Domain}(\sigma_2) }
-         { \sigma_2\vdash n\Rightarrow 1 } \quad
-          \sigma_2\vdash 1\Rightarrow 1
-        }
-        { \sigma_2\vdash n-1\Rightarrow 0 } \\
-        \frac
-        {
-          \frac
-          { n\in\mathit{Domain}(\sigma_3) }
-          { \sigma_3\vdash n\Rightarrow 0 } \quad
-          \sigma_3\vdash 1\Rightarrow 1
-        }
-        { \sigma_3\vdash \textsf{if0}\ n\ 1\ (n\times(f\ (n-1))) \Rightarrow 1 }
-        \end{array}}
-      }
-      { \sigma_2\vdash f\ (n-1)\Rightarrow 1 }
+      \sigma_2\vdash f\ (n-1)\Rightarrow 1
     }
     { \sigma_2\vdash (n\times(f\ (n-1)))\Rightarrow 1 }
-  }}
-  {\Large{\sigma_2\vdash\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow 1} }
-  \end{array}
+  }
+  {\sigma_2\vdash\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\Rightarrow 1 }
+}
+{ \sigma_1\vdash f\ 1\Rightarrow 1 }
+\]
+
+\[
+\frac
+{
+  \sigma_1=\lbrack f\mapsto\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle\rbrack
+  \quad
+  \sigma_1\vdash f\ 1\Rightarrow 1
 }
 {\emptyset\vdash
-(\mu f.\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))))\ 1
+{\sf def}\ f(n)=\textsf{if0}\ n\ 1\ (n\times(f\ (n-1)))\ {\sf in}\ f\ 1
 \Rightarrow 1
 }
 \]
 
 ### 인터프리터 구현
 
-다음은 RCFAE의 요약 문법과 환경을 Scala 코드로 표현한 것이다.
+다음은 RFAE의 요약 문법과 환경을 Scala 코드로 표현한 것이다.
 
 ```scala
-sealed trait RCFAE
-case class Num(n: Int) extends RCFAE
-case class Add(l: RCFAE, r: RCFAE) extends RCFAE
-case class Sub(l: RCFAE, r: RCFAE) extends RCFAE
-case class Mul(l: RCFAE, r: RCFAE) extends RCFAE
-case class Id(x: String) extends RCFAE
-case class Fun(x: String, b: RCFAE) extends RCFAE
-case class App(f: RCFAE, a: RCFAE) extends RCFAE
-case class If0(c: RCFAE, t: RCFAE, f: RCFAE) extends RCFAE
-case class Rec(f: String, x: String, b: RCFAE) extends RCFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Mul(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class If0(c: Expr, t: Expr, f: Expr) extends Expr
+case class Rec(f: String, x: String, b: Expr, e: Expr) extends Expr
 
-sealed trait RCFAEV
-case class NumV(n: Int) extends RCFAEV
-case class CloV(p: String, b: RCFAE, var e: Env) extends RCFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, var e: Env) extends Value
 
-type Env = Map[String, RCFAEV]
-def lookup(x: String, env: Env): RCFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 `If0`은 조건식, `Rec`은 재귀 함수에 해당한다. `CloV`가 가지고 있는 환경은 수정 가능하다. 환경에 클로저 자신이 저장되기 위해서는 환경을 수정 가능하게 정의해야 한다.
 
 ```scala
-def interp(e: RCFAE, env: Env): RCFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -206,10 +221,11 @@ def interp(e: RCFAE, env: Env): RCFAEV = e match {
       if (interp(c, env) == NumV(0)) t else f,
       env
     )
-  case Rec(f, x, b) =>
-    val c = CloV(x, b, env)
-    c.e += f -> c
-    c
+  case Rec(f, x, b, e) =>
+    val cloV = CloV(x, b, env)
+    val nenv = env + (f -> cloV)
+    cloV.e = nenv
+    interp(e, nenv)
 }
 ```
 
@@ -218,19 +234,18 @@ def interp(e: RCFAE, env: Env): RCFAEV = e match {
 다음은 `interp` 함수를 호출하여 3의 계승을 구한 것이다.
 
 ```scala
-// (mu f.lambda n.if0 n 1 (n * (f (n-1)))) 3
+// def f(n) = if0 n 1 (n * (f (n-1))) in f(3)
 interp(
-  App(
-    Rec("f", "n",
-      If0(Id("n"),
-          Num(1),
-          Mul(
-            Id("n"),
-            App(Id("f"), Sub(Id("n"), Num(1)))
-          )
-      )
+  Rec(
+    "f", "n",
+    If0(Id("n"),
+        Num(1),
+        Mul(
+          Id("n"),
+          App(Id("f"), Sub(Id("n"), Num(1)))
+        )
     ),
-    Num(3)
+    App(Id("f"), Num(3))
   ),
   Map.empty
 )
@@ -244,7 +259,8 @@ interp(
 \[
 \begin{array}{rcl}
 Z&\equiv&\lambda f.(\lambda x.f\ \lambda v.x\ x\ v)\ (\lambda x.f\ \lambda v.x\ x\ v)\\
-\mathit{encode}(\mu f.\lambda x.e)&=&Z\ \lambda f.\lambda x.e
+\mathit{encode}({\sf def}\ x_1(x_2)=e_1\ {\sf in}\ e_2)&=&
+(\lambda x_1.e_2)\ (Z\ \lambda x_1.\lambda x_2.e_1)
 \end{array}
 \]
 
