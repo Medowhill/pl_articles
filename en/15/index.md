@@ -1,6 +1,6 @@
 The last article defines BFAE, which features mutable boxes. Like BFAE, some functional languages, including OCaml, allow programmers to use mutable spaces that require explicit creation, modification, and unboxing but not mutable variables. On the other hand, variables of many languages are mutable. The article defines MFAE, which features mutable variables.
 
-The lecture defines BMFAE, which is MFAE with mutable boxes. The last article has already dealt with boxes so that one can easily add boxes to MFAE to define BMFAE. This article focuses on only variables. I recommend students to define BMFAE by themselves as practice after reading the article.
+MFAE defined by the lecture provides mutable boxes. The last article has already dealt with boxes so that one can easily add boxes to MFAE of this article. This article focuses on only variables. I recommend students to define MFAE with boxes by themselves as practice after reading the article.
 
 ## Syntax
 
@@ -111,26 +111,26 @@ Evaluation of the right-hand side yields a value and a store. A value at the add
 The following Scala code implements the abstract syntax, environments, and stores of MFAE:
 
 ```scala
-sealed trait MFAE
-case class Num(n: Int) extends MFAE
-case class Add(l: MFAE, r: MFAE) extends MFAE
-case class Sub(l: MFAE, r: MFAE) extends MFAE
-case class Id(x: String) extends MFAE
-case class Fun(x: String, b: MFAE) extends MFAE
-case class App(f: MFAE, a: MFAE) extends MFAE
-case class Set(x: String, e: MFAE) extends MFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class Set(x: String, e: Expr) extends Expr
 
-sealed trait MFAEV
-case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, MFAEV]
-def storeLookup(a: Addr, sto: Sto): MFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
@@ -141,7 +141,7 @@ The `Set` class corresponds to an assign expression.
 The `Num`, `Add`, `Sub`, and `Fun` cases of the `interp` function equal to the interpreter of BFAE.
 
 ```scala
-def interp(e: MFAE, env: Env, sto: Sto): (MFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Add(l, r) =>
     val (NumV(n), ls) = interp(l, env, sto)
@@ -184,31 +184,31 @@ The below shows the whole code at once.
 <details><summary>See the code</summary>
 
 ```scala
-sealed trait MFAE
-case class Num(n: Int) extends MFAE
-case class Add(l: MFAE, r: MFAE) extends MFAE
-case class Sub(l: MFAE, r: MFAE) extends MFAE
-case class Id(x: String) extends MFAE
-case class Fun(x: String, b: MFAE) extends MFAE
-case class App(f: MFAE, a: MFAE) extends MFAE
-case class Set(x: String, e: MFAE) extends MFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class Set(x: String, e: Expr) extends Expr
 
-sealed trait MFAEV
-case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, MFAEV]
-def storeLookup(a: Addr, sto: Sto): MFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 
-def interp(e: MFAE, env: Env, sto: Sto): (MFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Add(l, r) =>
     val (NumV(n), ls) = interp(l, env, sto)

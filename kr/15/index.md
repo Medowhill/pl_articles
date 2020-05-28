@@ -1,6 +1,6 @@
 지난 글에서 정의한 BFAE는 수정 가능한 상자를 제공했다. OCaml 같은 일부 함수형 언어는 BFAE처럼 수정 가능한 변수 없이, 생성, 수정, 읽기를 모두 명시적으로 해야 하는 수정 가능한 공간만을 제공한다. 그러나, 많은 프로그래밍 언어에서는 변수의 값을 바로 수정할 수 있다. 이번 글에서는 수정 가능한 변수를 제공하는 MFAE를 정의한다.
 
-수업에서는 수정 가능한 상자와 수정 가능한 변수를 모두 제공하는 BMFAE를 정의한다. 지난 글에서 이미 상자를 다루었기에, MFAE에 상자를 추가하여 BMFAE를 만드는 것은 어렵지 않다. 이 글에서는 변수에 집중하기 위하여 상자를 제외하고 MFAE만 다루니, 직접 BMFAE를 처음부터 끝까지 정의해 보는 것은 좋은 연습이 될 것이다.
+수업에서 정의한 MFAE는 수정 가능한 상자와 수정 가능한 변수를 모두 제공한다. 지난 글에서 이미 상자를 다루었기에, 상자가 없는 MFAE에 상자를 추가하는 것은 어렵지 않다. 이 글에서는 변수에 집중하기 위하여 상자를 제외하니, 직접 상자가 있는 MFAE를 처음부터 끝까지 정의해 보는 것은 좋은 연습이 될 것이다.
 
 ## 문법
 
@@ -110,26 +110,26 @@ MFAE의 환경은 식별자에서 값으로 가는 부분 함수가 아니라 �
 다음은 MFAE의 요약 문법, 환경, 저장소를 Scala 코드로 표현한 것이다.
 
 ```scala
-sealed trait MFAE
-case class Num(n: Int) extends MFAE
-case class Add(l: MFAE, r: MFAE) extends MFAE
-case class Sub(l: MFAE, r: MFAE) extends MFAE
-case class Id(x: String) extends MFAE
-case class Fun(x: String, b: MFAE) extends MFAE
-case class App(f: MFAE, a: MFAE) extends MFAE
-case class Set(x: String, e: MFAE) extends MFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class Set(x: String, e: Expr) extends Expr
 
-sealed trait MFAEV
-case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, MFAEV]
-def storeLookup(a: Addr, sto: Sto): MFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
@@ -140,7 +140,7 @@ def malloc(sto: Sto): Addr =
 `interp` 함수의 `Num`, `Add`, `Sub`, `Fun` 경우는 BFAE의 인터프리터를 구현할 때와 같다.
 
 ```scala
-def interp(e: MFAE, env: Env, sto: Sto): (MFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Add(l, r) =>
     val (NumV(n), ls) = interp(l, env, sto)
@@ -183,31 +183,31 @@ def interp(e: MFAE, env: Env, sto: Sto): (MFAEV, Sto) = e match {
 <details><summary>전체 코드 보기</summary>
 
 ```scala
-sealed trait MFAE
-case class Num(n: Int) extends MFAE
-case class Add(l: MFAE, r: MFAE) extends MFAE
-case class Sub(l: MFAE, r: MFAE) extends MFAE
-case class Id(x: String) extends MFAE
-case class Fun(x: String, b: MFAE) extends MFAE
-case class App(f: MFAE, a: MFAE) extends MFAE
-case class Set(x: String, e: MFAE) extends MFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class Set(x: String, e: Expr) extends Expr
 
-sealed trait MFAEV
-case class NumV(n: Int) extends MFAEV
-case class CloV(p: String, b: MFAE, e: Env) extends MFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
 type Env = Map[String, Addr]
 def lookup(x: String, env: Env): Addr =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, MFAEV]
-def storeLookup(a: Addr, sto: Sto): MFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 
-def interp(e: MFAE, env: Env, sto: Sto): (MFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Add(l, r) =>
     val (NumV(n), ls) = interp(l, env, sto)
