@@ -1,4 +1,4 @@
-AE defined by the last article features only integers, sums, and differences. This article defines WAE by adding local variables to AE.
+AE defined by the last article features only integers, sums, and differences. This article defines VAE by adding local variables to AE.
 
 ## Identifiers
 
@@ -35,13 +35,13 @@ def f(x: Int): Int = {
 
 The code is an example of shadowing. Both `x`'s in `def f(x: Int): Int` and `def g(x: Int): Int` are binding occurrences. The occurrence of `x` at the end of the second line is a bound occurrence. It belongs to the scopes of the two binding occurrences at the same time. As having a smaller scope than the first binding occurrence, the second binding occurrence binds the bound occurrence. The bound occurrence denotes an argument passed to `g`. On the other hand, `x` in `g(x)` belongs to only the scope of the first binding occurrence of `x`. The first binding occurrence binds it, and it denotes an argument passed to `f`.
 
-## WAE
+## VAE
 
-Expressions of WAE are arithmetic expressions that can define immutable local variables and refer to variables.
+Expressions of VAE are arithmetic expressions that can define immutable local variables and refer to variables.
 
 ### Syntax
 
-The following is the abstract syntax of WAE:
+The following is the abstract syntax of VAE:
 
 \[
 \begin{array}{lrcl}
@@ -62,11 +62,11 @@ Metavariable \(x\) ranges over variables, which belong to set \(\mathit{Id}\). \
 
 Metavariable \(e\) ranges over expressions. Expression \(\textsf{val}\ x=e_1\ \textsf{in}\ e_2\) declares a local variable. The occurrence of \(x\) is a binding occurrence. \(x\) refers to a value denoted by \(e_1\). The scope of the occurrence covers entire \(e_2\) but not \(e_1\). Expression \(x\) is either a bound occurrence of \(x\) or a free identifier. If it is a bound occurrence, it denotes a value associated with the identifier. For example, the first occurrence of \(x\) in \(\textsf{val}\ x=1\ \textsf{in}\ x\) binds the second occurrence of \(x\). On the other hand, the second \(x\) in \(\textsf{val}\ x=x\ \textsf{in}\ 1\) is a free identifier.
 
-Metavariable \(v\) ranges over values. Values of WAE are integers as those of AE are.
+Metavariable \(v\) ranges over values. Values of VAE are integers as those of AE are.
 
 ### Semantics
 
-The natural semantics of AE defines the semantics of integers, sums, and differences. The natural semantics of WAE additionally requires the semantics of binding and bound occurrences. Consider \(\textsf{val}\ x=1\ \textsf{in}\ x\). The following Scala expression expresses the same thing:
+The natural semantics of AE defines the semantics of integers, sums, and differences. The natural semantics of VAE additionally requires the semantics of binding and bound occurrences. Consider \(\textsf{val}\ x=1\ \textsf{in}\ x\). The following Scala expression expresses the same thing:
 
 ```scala
 {
@@ -77,7 +77,7 @@ The natural semantics of AE defines the semantics of integers, sums, and differe
 
 It denotes `1`. Since the binding occurrence associates `x` with `1`, the bound occurrence denotes `1`. The value denoted by the entire expression equals `1`, the value of the bound occurrence.
 
-\(\textsf{val}\ x=1\ \textsf{in}\ x\) is evaluated in the same manner. The value denoted by the whole expression equals the value denoted by \(x\), the body of the expression. However, it is not possible to evaluate \(x\) without any information. A value associated with \(x\) by the binding occurrence is necessary. WAE newly defines *environments* to store such information. An environment is a dictionary of finite size; its keys are identifiers, and its values are values of WAE. Mathematically, it is a *partial function* from \(\mathit{Id}\) to \(\text{Value}\).
+\(\textsf{val}\ x=1\ \textsf{in}\ x\) is evaluated in the same manner. The value denoted by the whole expression equals the value denoted by \(x\), the body of the expression. However, it is not possible to evaluate \(x\) without any information. A value associated with \(x\) by the binding occurrence is necessary. VAE newly defines *environments* to store such information. An environment is a dictionary of finite size; its keys are identifiers, and its values are values of VAE. Mathematically, it is a *partial function* from \(\mathit{Id}\) to \(\text{Value}\).
 
 \[
 \begin{array}{lrcl}
@@ -87,13 +87,13 @@ It denotes `1`. Since the binding occurrence associates `x` with `1`, the bound 
 
 Metavariable \(\sigma\) ranges over environments. Binding occurrences add information to environments, and bound occurrences use information in environments.
 
-The natural semantics of AE is a binary relation over \(\text{Expression}\) and \(\text{Value}\). The natural semantics of WAE is not a binary relation of the two sets since evaluating an expression requires an environment providing the values of identifiers in the expression. The natural semantics is a ternary relation over \(\text{Environment}\), \(\text{Expression}\), and \(\text{Value}\).
+The natural semantics of AE is a binary relation over \(\text{Expression}\) and \(\text{Value}\). The natural semantics of VAE is not a binary relation of the two sets since evaluating an expression requires an environment providing the values of identifiers in the expression. The natural semantics is a ternary relation over \(\text{Environment}\), \(\text{Expression}\), and \(\text{Value}\).
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Expression}\times\text{Value}\]
 
 \((\sigma,e,v)\in\Rightarrow\) implies that evaluating expression \(e\) under environment \(\sigma\) results in value \(v\). \(\sigma\vdash e\Rightarrow v\) replaces the notation. Intuitively, an environment and an expression are given input, and a value is output obtained by computation.
 
-Inference rules define the natural semantics of WAE.
+Inference rules define the natural semantics of VAE.
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -160,7 +160,7 @@ If an expression is an identifier, it is essential to check whether the identifi
 
 The bound occurrence of \(x\) denotes a value whom \(x\) refers to in the environment. If \(x\) is a free identifier, the premise is false, and, therefore, an expression containing a free identifier does not denote any values. It explains that executing a program with free identifiers results in an error.
 
-The following inference rules are all of the natural semantics of WAE:
+The following inference rules are all of the natural semantics of VAE:
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -195,18 +195,18 @@ The following inference rules are all of the natural semantics of WAE:
 
 ### Implementing an Interpreter
 
-The following Scala code expresses the abstract syntax of WAE:
+The following Scala code expresses the abstract syntax of VAE:
 
 ```scala
-sealed trait WAE
-case class Num(n: Int) extends WAE
-case class Add(l: WAE, r: WAE) extends WAE
-case class Sub(l: WAE, r: WAE) extends WAE
-case class With(x: String, i: WAE, b: WAE) extends WAE
-case class Id(x: String) extends WAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Val(x: String, i: Expr, b: Expr) extends Expr
+case class Id(x: String) extends Expr
 ```
 
-An identifier is an arbitrary string. `With` constructs an expression declaring a local variable; `Id` constructs an expression using a local variable.
+An identifier is an arbitrary string. `Val` constructs an expression declaring a local variable; `Id` constructs an expression using a local variable.
 
 `Map` in the Scala standard library can represent environments. `Map` creates dictionaries.
 
@@ -233,23 +233,23 @@ def lookup(x: String, env: Env): Int =
 The `lookup` function returns a value referred by an identifier, the first argument, in an environment, the second argument. It throws an exception if the environment lacks information about the identifier.
 
 ```scala
-def interp(e: WAE, env: Env): Int = e match {
+def interp(e: Expr, env: Env): Int = e match {
   case Num(n) => n
   case Add(l, r) => interp(l, env) + interp(r, env)
   case Sub(l, r) => interp(l, env) - interp(r, env)
-  case With(x, i, b) => interp(b, env + (x -> interp(i, env)))
+  case Val(x, i, b) => interp(b, env + (x -> interp(i, env)))
   case Id(x) => lookup(x, env)
 }
 ```
 
-The `Num` case equals that of the interpreter, implemented by the last article, of AE. The `Add` and `Sub` cases pass `env` as arguments. The `With` case calculates the value of `b` under an environment extended with the result of evaluating `i` under `env`. The `Id` case calls the `lookup` function to find a value denoted by an identifier.
+The `Num` case equals that of the interpreter, implemented by the last article, of AE. The `Add` and `Sub` cases pass `env` as arguments. The `Val` case calculates the value of `b` under an environment extended with the result of evaluating `i` under `env`. The `Id` case calls the `lookup` function to find a value denoted by an identifier.
 
 Calling the `interp` function with arguments \(\textsf{val}\ x=1\ \textsf{in}\ x+x\) and the empty environment yields `2`.
 
 ```scala
 // val x = 1 in x + x
 interp(
-  With("x", Num(1),
+  Val("x", Num(1),
     Add(Id("x"), Id("x"))
   ),
   Map.empty

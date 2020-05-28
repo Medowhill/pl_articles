@@ -1,4 +1,4 @@
-지난 글에서 정의한 AE는 정수, 합, 차로만 구성된 작은 언어였다. 이번 글에서는 AE에 지역 변수를 추가한 언어인 WAE를 정의한다.
+지난 글에서 정의한 AE는 정수, 합, 차로만 구성된 작은 언어였다. 이번 글에서는 AE에 지역 변수를 추가한 언어인 VAE를 정의한다.
 
 ## 식별자
 
@@ -33,13 +33,13 @@ def f(x: Int): Int = {
 
 이 코드에서는 `x`의 묶는 등장이 두 번 일어난다. `def f(x: Int): Int`의 `x`와 `def g(x: Int): Int`의 `x` 모두 묶는 등장이다. 둘째 줄 마지막에 위치한 `x`는 묶인 등장이며, 첫 묶는 등장의 영역과 둘째 묶는 등장의 영역에 동시에 속한다. 일반적으로 사용되는 언어에서는, 묶는 등장이 둘 이상의 영역에 속할 때, 더 작은 영역을 가진 묶는 등장에 연결된 대상이 묶인 등장이 나타내는 대상이다. 따라서, 둘째 줄 마지막의 `x`는 `x`의 두 번째 묶는 등장에 묶여 있고, `g`의 인자를 가리킨다. 이처럼, 작은 영역을 가진 묶는 등장이 큰 영역을 가진 묶는 등장에 우선하는 것을 *가리기*(shadowing)이라고 한다. 한편, `g(x)`의 `x`는 `x`의 첫 묶는 등장의 영역에만 속하므로, `x`의 첫 묶는 등장에 묶여 있고, `f`의 인자를 가리킨다.
 
-## WAE
+## VAE
 
-WAE는 식이 수정 불가능한 지역 변수를 정의하거나 변수를 참조할 수 있는 산술식이다.
+VAE는 식이 수정 불가능한 지역 변수를 정의하거나 변수를 참조할 수 있는 산술식이다.
 
 ### 문법
 
-다음은 WAE의 요약 문법이다.
+다음은 VAE의 요약 문법이다.
 
 \[
 \begin{array}{lrcl}
@@ -60,11 +60,11 @@ WAE는 식이 수정 불가능한 지역 변수를 정의하거나 변수를 참
 
 메타변수 \(e\)는 식을 나타낸다. 식 \(\textsf{val}\ x = e_1\ \textsf{in}\ e_2\)는 지역 변수를 선언하는 식으로, \(x\)는 묶는 등장이다. \(x\)가 가리키는 대상은 \(e_1\)을 계산했을 때 나오는 값이며, 묶는 등장의 영역은 \(e_2\) 전체이다. \(e_1\)은 묶는 등장의 영역이 아니다. 식 \(x\)는 \(x\)의 묶인 등장이거나 자유 식별자이다. 묶인 등장이라면, 이 등장을 묶은 등장에 연결된 값이 이 등장이 가리키는 값이다. \(\textsf{val}\ x = 1\ \textsf{in}\ x\)에서 \(x\)의 두 번째 등장은 묶는 등장인 첫 번째 등장에 묶여 있다. 반면, \(\textsf{val}\ x = x\ \textsf{in}\ 1\)에서 두 번째로 등장한 \(x\)는 자유 식별자이다.
 
-메타변수 \(v\)는 값을 나타낸다. AE와 마찬가지로 WAE의 값은 정숫값이다.
+메타변수 \(v\)는 값을 나타낸다. AE와 마찬가지로 VAE의 값은 정숫값이다.
 
 ### 의미
 
-AE의 자연적 의미를 정의할 때 정수, 합, 차의 의미를 정의하였다. WAE의 자연적 의미를 정의하기 위해서는 묶는 등장과 묶인 등장의 의미를 추가로 정의해야 한다. \(\textsf{val}\ x = 1\ \textsf{in}\ x\)를 생각해보자. 이를 Scala 식으로 표현하면 다음과 같다.
+AE의 자연적 의미를 정의할 때 정수, 합, 차의 의미를 정의하였다. VAE의 자연적 의미를 정의하기 위해서는 묶는 등장과 묶인 등장의 의미를 추가로 정의해야 한다. \(\textsf{val}\ x = 1\ \textsf{in}\ x\)를 생각해보자. 이를 Scala 식으로 표현하면 다음과 같다.
 
 ```scala
 {
@@ -85,13 +85,13 @@ AE의 자연적 의미를 정의할 때 정수, 합, 차의 의미를 정의하�
 
 메타변수 \(\sigma\)는 환경을 나타낸다. 묶는 등장은 환경에 정보를 추가하고, 묶인 등장은 환경에 있는 정보를 사용한다.
 
-AE의 자연적 의미는 \(\text{Expression}\)과 \(\text{Value}\)의 관계였다. WAE의 자연적 의미는 단순히 두 집합의 관계로는 표현할 수 없다. 어떤 식이 나타내는 값을 알기 위해서는 그 식에 등장하는 식별자들이 어떤 값을 가리키는지 알려주는 환경이 필요하다. 따라서, WAE의 자연적 의미는 세 집합 \(\text{Environment}\), \(\text{Expression}\), \(\text{Value}\)의 관계이다.
+AE의 자연적 의미는 \(\text{Expression}\)과 \(\text{Value}\)의 관계였다. VAE의 자연적 의미는 단순히 두 집합의 관계로는 표현할 수 없다. 어떤 식이 나타내는 값을 알기 위해서는 그 식에 등장하는 식별자들이 어떤 값을 가리키는지 알려주는 환경이 필요하다. 따라서, VAE의 자연적 의미는 세 집합 \(\text{Environment}\), \(\text{Expression}\), \(\text{Value}\)의 관계이다.
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Expression}\times\text{Value}\]
 
 \((\sigma,e,v)\in\Rightarrow\)는 환경 \(\sigma\) 아래에서 식 \(e\)를 계산한 결과가 값 \(v\)라는 것을 의미한다. 이는 \(\sigma\vdash e\Rightarrow v\)라고 표현한다. 직관적으로는, 환경과 식이 주어진 입력이고, 값이 계산해낸 출력이다.
 
-추론 규칙으로 WAE의 자연적 의미를 정의할 수 있다.
+추론 규칙으로 VAE의 자연적 의미를 정의할 수 있다.
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -158,7 +158,7 @@ v' & \text{if}\ x\neq x'\land\sigma(x')=v'
 
 식별자 \(x\)가 묶인 등장이면 환경에서 \(x\)가 가리키고 있는 값이 \(x\)가 나타내는 값이다. 자유 식별자인 경우, 전제가 만족하지 않는다. 따라서, 자유 식별자를 가지고 있는 식은 어떤 값도 나타내지 않으며, 이는 프로그램에 자유 식별자가 존재해서 실행 중에 오류가 발생하는 상황과 같다고 생각할 수 있다.
 
-아래는 WAE의 자연적 의미를 정의하는 추론 규칙을 한군데 모은 것이다.
+아래는 VAE의 자연적 의미를 정의하는 추론 규칙을 한군데 모은 것이다.
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -193,18 +193,18 @@ v' & \text{if}\ x\neq x'\land\sigma(x')=v'
 
 ### 인터프리터 구현
 
-다음은 WAE의 요약 문법을 Scala 코드로 표현한 것이다.
+다음은 VAE의 요약 문법을 Scala 코드로 표현한 것이다.
 
 ```scala
-sealed trait WAE
-case class Num(n: Int) extends WAE
-case class Add(l: WAE, r: WAE) extends WAE
-case class Sub(l: WAE, r: WAE) extends WAE
-case class With(x: String, i: WAE, b: WAE) extends WAE
-case class Id(x: String) extends WAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Val(x: String, i: Expr, b: Expr) extends Expr
+case class Id(x: String) extends Expr
 ```
 
-식별자는 임의의 문자열이다. `With`는 지역 변수 선언, `Id`는 지역 변수 사용에 해당하는 식을 만든다.
+식별자는 임의의 문자열이다. `Val`는 지역 변수 선언, `Id`는 지역 변수 사용에 해당하는 식을 만든다.
 
 환경은 Scala 표준 라이브러리의 `Map`을 사용하여 표현할 수 있다. `Map`은 사전 자료구조이다.
 
@@ -231,23 +231,23 @@ def lookup(x: String, env: Env): Int =
 `lookup` 함수는 인자로 주어진 환경에서 인자로 주어진 식별자가 가리키는 값을 찾아 결과로 낸다. 만약 환경이 식별자에 대한 정보를 가지고 있지 않다면 예외가 발생한다.
 
 ```scala
-def interp(e: WAE, env: Env): Int = e match {
+def interp(e: Expr, env: Env): Int = e match {
   case Num(n) => n
   case Add(l, r) => interp(l, env) + interp(r, env)
   case Sub(l, r) => interp(l, env) - interp(r, env)
-  case With(x, i, b) => interp(b, env + (x -> interp(i, env)))
+  case Val(x, i, b) => interp(b, env + (x -> interp(i, env)))
   case Id(x) => lookup(x, env)
 }
 ```
 
-`Num`인 경우는 AE의 인터프리터와 동일하다. `Add`와 `Sub`인 경우도 인자로 `env`를 같이 넘기는 것만 제외하면 동일하다. `With`인 경우, 환경 `env` 아래에서 `i`의 값을 계산하여 나온 결과를 사용해 환경을 확장한 다음 `b`의 값을 계산한다. `Id`인 경우, 위에서 정의한 `lookup` 함수를 호출하여 식별자가 가리키는 값을 찾는다.
+`Num`인 경우는 AE의 인터프리터와 동일하다. `Add`와 `Sub`인 경우도 인자로 `env`를 같이 넘기는 것만 제외하면 동일하다. `Val`인 경우, 환경 `env` 아래에서 `i`의 값을 계산하여 나온 결과를 사용해 환경을 확장한 다음 `b`의 값을 계산한다. `Id`인 경우, 위에서 정의한 `lookup` 함수를 호출하여 식별자가 가리키는 값을 찾는다.
 
 `interp` 함수에 식 \(\textsf{val}\ x=1\ \textsf{in}\ x+x\)와 빈 환경을 인자로 넘기면 `2`가 나온다.
 
 ```scala
 // val x = 1 in x + x
 interp(
-  With("x", Num(1),
+  Val("x", Num(1),
     Add(Id("x"), Id("x"))
   ),
   Map.empty
