@@ -3,7 +3,7 @@ import scala.sys.process.Process
 
 import java.io.{File, FileOutputStream}
 import java.text.SimpleDateFormat
-import java.util.{Calendar, Date}
+import java.util.{Calendar, Date, Locale}
 
 object Format {
   private def read(name: String): String =
@@ -25,7 +25,10 @@ object Format {
       val kr = lang == "kr"
       val timeFile = new File("time")
       val time = if (timeFile.exists) Some(read("time")) else None
-      val current = new SimpleDateFormat(dateFmt(kr)).format(new Date)
+      val current = new SimpleDateFormat(
+        dateFmt(kr),
+        if (kr) Locale.KOREAN else Locale.ENGLISH
+      ).format(new Date)
 
       val from = Source.fromFile(s"$name.md").mkString
       val mdFile = write(tempMd,
