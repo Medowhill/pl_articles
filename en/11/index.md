@@ -32,13 +32,13 @@ An environment of FAE is a partial function from identifiers to values. Note tha
 
 ## Semantics
 
-The semantics of FAE is a relation over environments, expressions, and values, as that of WAE is.
+The semantics of FAE is a relation over environments, expressions, and values, as that of VAE is.
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Expression}\times\text{Value}\]
 
 \(\sigma\vdash e\Rightarrow v\) implies that evaluating \(e\) under \(\sigma\) yields \(v\).
 
-The rules for integers, sums, differences, and variables equal those of WAE.
+The rules for integers, sums, differences, and variables equal those of VAE.
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -117,32 +117,32 @@ The following proof tree proves that \((\lambda x.\lambda y.x+y)\ 1\ 2\) yields 
 The following Scala code implements the abstract syntax and environments of FAE:
 
 ```scala
-sealed trait FAE
-case class Num(n: Int) extends FAE
-case class Add(l: FAE, r: FAE) extends FAE
-case class Sub(l: FAE, r: FAE) extends FAE
-case class Id(x: String) extends FAE
-case class Fun(x: String, b: FAE) extends FAE
-case class App(f: FAE, a: FAE) extends FAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait FAEV
-case class NumV(n: Int) extends FAEV
-case class CloV(p: String, b: FAE, e: Env) extends FAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, FAEV]
+type Env = Map[String, Value]
 ```
 
-Since a value is either an integer or a closure, `FAEV`, instead of `Int`, denotes the type of values. The `NumV` type corresponds to integers; the `CloV` type corresponds to closures. The type of environments is a map from `String` to `FAEV`, but not `Int`.
+Since a value is either an integer or a closure, `Value`, instead of `Int`, denotes the type of values. The `NumV` type corresponds to integers; the `CloV` type corresponds to closures. The type of environments is a map from `String` to `Value`, but not `Int`.
 
 ```scala
-def lookup(x: String, env: Env): FAEV =
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 The `lookup` function finds a value denoted by an identifier from an environment.
 
 ```scala
-def interp(e: FAE, env: Env): FAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -160,7 +160,7 @@ def interp(e: FAE, env: Env): FAEV = e match {
 }
 ```
 
-The `Num` case creates a `NumV` instance. Both `Add` and `Sub` cases check whether values are integral, respectively calculate the sum or the difference, and create `NumV` instances. The `Id` case equals that of WAE. The `Fun` case constructs a `CloV` instance. The `App` case obtains a closure by evaluating the function, calculates the argument, adds the argument to the environment of the closure, and evaluates the body of the closure.
+The `Num` case creates a `NumV` instance. Both `Add` and `Sub` cases check whether values are integral, respectively calculate the sum or the difference, and create `NumV` instances. The `Id` case equals that of VAE. The `Fun` case constructs a `CloV` instance. The `App` case obtains a closure by evaluating the function, calculates the argument, adds the argument to the environment of the closure, and evaluates the body of the closure.
 
 Passing \((\lambda x.\lambda y.x+y)\ 1\ 2\) and the empty environment to `interp` results in `NumV(3)`.
 
@@ -182,7 +182,7 @@ interp(
 
 ## Type Errors
 
-Free identifiers are the only reasons for run-time errors of WAE and F1WAE. On the other hand, FAE expressions can result in run-time errors even though they do not contain any free identifiers.
+Free identifiers are the only reasons for run-time errors of VAE and F1VAE. On the other hand, FAE expressions can result in run-time errors even though they do not contain any free identifiers.
 
 \[1 + \lambda x.x\]
 
@@ -198,11 +198,11 @@ Syntactic methods can hardly prevent type errors. Such solutions restrict langua
 
 A *type system* is the most popular method to avoid type errors before executions. Type systems prove that particular programs never cause type errors at run time without executing them. Since they are the semantics of programs before run time, *static semantics* is another name of them. To distinguish 'semantics,' whom the previous articles and the current article focus on, from static semantics, *dynamic semantics* means 'semantics,' which defines the run-time behaviors of programs. Type systems are out of the scope of the article, and later articles discuss type systems in detail.
 
-## Encoding WAE with FAE
+## Encoding VAE with FAE
 
 If one can transform every code of a language into code of another language without changing its meaning, the latter can express everything the former expresses. *Encoding* is rewriting a code written in a language with another language.
 
-WAE is encodable with FAE; FAE expresses everything WAE expresses; FAE is at least as *expressive* as WAE. Precisely, FAE is more expressive than WAE. The below \(\mathit{encode}\) function takes an expression of WAE as an argument and returns an expression of FAE; it encodes WAE with FAE.
+VAE is encodable with FAE; FAE expresses everything VAE expresses; FAE is at least as *expressive* as VAE. Precisely, FAE is more expressive than VAE. The below \(\mathit{encode}\) function takes an expression of VAE as an argument and returns an expression of FAE; it encodes VAE with FAE.
 
 \[
 \begin{array}{l}

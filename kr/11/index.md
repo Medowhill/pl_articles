@@ -28,17 +28,17 @@ FAE의 값은 정수이거나 *클로저*(closure)이다. 클로저는 람다 �
 
 \(\lambda y.x+y\)라는 람다 요약 자체는 \(x\)라는 자유 식별자를 가지고 있다. 그러나, 실제 실행 시에는 람다 요약이 계산될 때 환경에 \(x\)가 \(1\)이라는 정보가 저장되어 있기에, \(\lambda y.x+y\)를 계산하여 얻은 클로저의 환경에도 \(x\)가 \(1\)이라는 정보가 포함되어 있다. 클로저를 호출하여 몸통을 계산할 때는 클로저의 환경을 사용하므로, \(x+y\)를 오류 없이 계산할 수 있다. 뒤에서 FAE의 의미를 정의함으로써 람다 요약과 함수 적용이 어떻게 작동하는지 명확하게 나타낼 것이다.
 
-FAE의 환경은 WAE나 F1WAE의 환경과 마찬가지로 식별자에서 값으로 가는 부분 함수이다. 다만, 값이 정수만 가능한 것이 아니라, 클로저도 될 수 있다는 차이가 있다.
+FAE의 환경은 VAE나 F1VAE의 환경과 마찬가지로 식별자에서 값으로 가는 부분 함수이다. 다만, 값이 정수만 가능한 것이 아니라, 클로저도 될 수 있다는 차이가 있다.
 
 ## 의미
 
-FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이다.
+FAE의 의미는 VAE의 의미와 마찬가지로 환경, 식, 값의 관계이다.
 
 \[\Rightarrow\subseteq\text{Environment}\times\text{Expression}\times\text{Value}\]
 
 \(\sigma\vdash e\Rightarrow v\)는 \(\sigma\) 아래에서 \(e\)를 계산하면 결과가 \(v\)임을 나타낸다.
 
-정수, 합, 차, 변수의 의미는 WAE의 의미와 동일하다.
+정수, 합, 차, 변수의 의미는 VAE의 의미와 동일하다.
 
 \[
 \sigma\vdash n\Rightarrow n
@@ -117,32 +117,32 @@ FAE의 의미는 WAE의 의미와 마찬가지로 환경, 식, 값의 관계이�
 다음은 FAE의 요약 문법과 환경을 Scala 코드로 표현한 것이다.
 
 ```scala
-sealed trait FAE
-case class Num(n: Int) extends FAE
-case class Add(l: FAE, r: FAE) extends FAE
-case class Sub(l: FAE, r: FAE) extends FAE
-case class Id(x: String) extends FAE
-case class Fun(x: String, b: FAE) extends FAE
-case class App(f: FAE, a: FAE) extends FAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait FAEV
-case class NumV(n: Int) extends FAEV
-case class CloV(p: String, b: FAE, e: Env) extends FAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, FAEV]
+type Env = Map[String, Value]
 ```
 
-값이 정수뿐 아니라 클로저도 될 수 있기 때문에, 값을 나타내는 `FAEV` 타입을 정의하였다. `NumV` 타입은 정숫값, `CloV` 타입은 클로저에 해당한다. 환경 역시 값이 정수가 아닌 `FAEV` 타입인 사전이다.
+값이 정수뿐 아니라 클로저도 될 수 있기 때문에, 값을 나타내는 `Value` 타입을 정의하였다. `NumV` 타입은 정숫값, `CloV` 타입은 클로저에 해당한다. 환경 역시 값이 정수가 아닌 `Value` 타입인 사전이다.
 
 ```scala
-def lookup(x: String, env: Env): FAEV =
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 ```
 
 `lookup` 함수는 환경에서 식별자가 가리키는 값을 찾는다.
 
 ```scala
-def interp(e: FAE, env: Env): FAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -160,7 +160,7 @@ def interp(e: FAE, env: Env): FAEV = e match {
 }
 ```
 
-`Num`인 경우 `NumV` 객체를 만든다. `Add`와 `Sub`인 경우에는 값이 `NumV` 타입인지 확인한 후 정숫값을 꺼내서 계산한 뒤 다시 `NumV` 객체를 만든다. `Id`인 경우는 WAE일 때와 같다. `Fun`인 경우 `CloV` 객체를 만든다. `App`인 경우 함수 부분을 계산해서 클로저를 얻은 뒤 인자를 계산한다. 클로저의 환경에 인자의 값을 추가하고 클로저의 몸통을 계산한다.
+`Num`인 경우 `NumV` 객체를 만든다. `Add`와 `Sub`인 경우에는 값이 `NumV` 타입인지 확인한 후 정숫값을 꺼내서 계산한 뒤 다시 `NumV` 객체를 만든다. `Id`인 경우는 VAE일 때와 같다. `Fun`인 경우 `CloV` 객체를 만든다. `App`인 경우 함수 부분을 계산해서 클로저를 얻은 뒤 인자를 계산한다. 클로저의 환경에 인자의 값을 추가하고 클로저의 몸통을 계산한다.
 
 `interp`에 \((\lambda x.\lambda y.x + y)\ 1\ 2\)와 빈 환경을 인자로 넘기면 `NumV(3)`이 결과로 나온다.
 
@@ -182,7 +182,7 @@ interp(
 
 ## 타입 오류
 
-WAE나 F1WAE에서 실행 중에 오류가 발생하는 이유는 자유 식별자뿐이다. 반면, FAE에서는 자유 식별자가 없어도 실행 중에 오류가 발생할 수 있다.
+VAE나 F1VAE에서 실행 중에 오류가 발생하는 이유는 자유 식별자뿐이다. 반면, FAE에서는 자유 식별자가 없어도 실행 중에 오류가 발생할 수 있다.
 
 \[1 + \lambda x.x\]
 
@@ -198,11 +198,11 @@ WAE나 F1WAE에서 실행 중에 오류가 발생하는 이유는 자유 식별�
 
 타입 오류를 실행 이전에 방지하는 가장 널리 사용되는 좋은 방법은 *타입 체계*(type system)이다. 타입 체계를 통해서 프로그램을 실행하지 않고도 특정 프로그램이 타입 오류를 절대 발생시키지 않음을 증명할 수 있다. 타입 체계는 프로그램을 실행하기 이전에 코드에 적용되는 의미이기 때문에 *정적 의미*(static semantics)라고도 부른다. 정적 의미와 구분하기 위해서, 지금까지 의미라고 부른, 프로그램을 실행한 결과를 정의하는 의미는 *동적 의미*(dynamic semantics)라고도 부른다. 타입 체계는 이 글의 관심 대상은 아니며, 나중 글에서 자세히 다룰 것이다.
 
-## FAE로 WAE 인코딩 하기
+## FAE로 VAE 인코딩 하기
 
 한 언어의 코드를 문법적인 과정을 사용하여 다른 언어의 코드로 변환하여 같은 결과를 내게 만들 수 있다면, 두 번째 언어는 적어도 첫 번째 언어가 표현하는 모든 것을 표현할 수 있다. 코드를 같은 의미를 가진 다른 언어의 코드로 다시 쓰는 것을 *인코딩*(encoding)이라고 한다.
 
-WAE는 FAE로 인코딩 될 수 있다. 따라서, FAE는 WAE가 표현하는 것을 모두 표현할 수 있으며, FAE의 *표현력*(expressivity)은 WAE의 표현력과 같거나 더 높다고 할 수 있다. (물론, FAE의 표현력이 더 높다.) 아래의 \(\mathit{encode}\) 함수는 WAE의 코드를 인자로 받아 FAE의 코드를 결과로 낸다. 즉, WAE를 FAE로 인코딩 하는 함수이다.
+VAE는 FAE로 인코딩 될 수 있다. 따라서, FAE는 VAE가 표현하는 것을 모두 표현할 수 있으며, FAE의 *표현력*(expressivity)은 VAE의 표현력과 같거나 더 높다고 할 수 있다. (물론, FAE의 표현력이 더 높다.) 아래의 \(\mathit{encode}\) 함수는 VAE의 코드를 인자로 받아 FAE의 코드를 결과로 낸다. 즉, VAE를 FAE로 인코딩 하는 함수이다.
 
 \[
 \begin{array}{l}
@@ -215,7 +215,7 @@ WAE는 FAE로 인코딩 될 수 있다. 따라서, FAE는 WAE가 표현하는 �
 \end{array}
 \]
 
-대부분 과정은 간단하며, WAE의 지역 변수 선언을 FAE의 람다 요약과 함수 적용을 사용하여 인코딩 하는 부분이 중요하다. 앞으로 나올 예시에서 언어에 정의되지 않은 WAE의 지역 변수 선언이 등장한다면, 이는 예시를 간단하게 만들기 위한 것으로, 실제로는 람다 요약과 함수 적용을 나타낸다고 이해하면 된다.
+대부분 과정은 간단하며, VAE의 지역 변수 선언을 FAE의 람다 요약과 함수 적용을 사용하여 인코딩 하는 부분이 중요하다. 앞으로 나올 예시에서 언어에 정의되지 않은 VAE의 지역 변수 선언이 등장한다면, 이는 예시를 간단하게 만들기 위한 것으로, 실제로는 람다 요약과 함수 적용을 나타낸다고 이해하면 된다.
 
 코드를 간단하게 만들기 위한 목표라는 맥락에서 보았을 때, 복잡한 언어를 단순하지만 표현력이 같거나 더 높은 언어로 인코딩 하는 것은 프로그래머를 위한 여러 문법적 설탕이 존재하는 언어의 코드에서 문법적 설탕을 없애는 과정으로 생각할 수 있다. 문법적 설탕을 없애는 과정을 통해서, 프로그래머에게 편의를 제공함과 동시에 인터프리터나 컴파일러의 구현을 단순하게 만들 수 있다. 또한, 프로그래밍 언어 연구에서도 한 언어를 다른 언어로 인코딩 하여 증명을 단순하게 만들거나, 보이고자 하는 성질을 직접적으로 증명할 필요 없이 이미 증명된 사실을 바로 사용할 수 있다.
 
