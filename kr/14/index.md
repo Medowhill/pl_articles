@@ -145,41 +145,41 @@ BFAE의 의미를 정의하려면, 먼저 수정 가능한 저장 공간을 정�
 다음은 BFAE의 요약 문법, 환경, 저장소를 Scala 코드로 표현한 것이다.
 
 ```scala
-sealed trait BFAE
-case class Num(n: Int) extends BFAE
-case class Add(l: BFAE, r: BFAE) extends BFAE
-case class Sub(l: BFAE, r: BFAE) extends BFAE
-case class Id(x: String) extends BFAE
-case class Fun(x: String, b: BFAE) extends BFAE
-case class App(f: BFAE, a: BFAE) extends BFAE
-case class NewBox(e: BFAE) extends BFAE
-case class SetBox(b: BFAE, e: BFAE) extends BFAE
-case class OpenBox(b: BFAE) extends BFAE
-case class Seqn(l: BFAE, r: BFAE) extends BFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class NewBox(e: Expr) extends Expr
+case class SetBox(b: Expr, e: Expr) extends Expr
+case class OpenBox(b: Expr) extends Expr
+case class Seqn(l: Expr, r: Expr) extends Expr
 
-sealed trait BFAEV
-case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
-case class BoxV(a: Addr) extends BFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class BoxV(a: Addr) extends Value
 
-type Env = Map[String, BFAEV]
-def lookup(x: String, env: Env): BFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, BFAEV]
-def storeLookup(a: Addr, sto: Sto): BFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 ```
 
-`NewBox`는 상자 생성, `SetBox`는 상자 수정, `OpenBox`는 상자 열기, `Seqn`은 나열식에 해당한다. `BoxV`는 값이 주소인 경우이다. `Addr`은 주소의 타입으로 여기서는 간단하게 `Int`를 사용한다. `Sto`는 저장소의 타입으로 열쇠 타입이 `Addr`이고 값 타입이 `BFAEV`인 사전이다. `lookup`은 주어진 환경에서 값을 찾고, `storeLookup`은 주어진 저장소에서 값을 찾는다. `malloc`은 주어진 저장소에서 사용 중이지 않은 주소를 찾는 함수이다.
+`NewBox`는 상자 생성, `SetBox`는 상자 수정, `OpenBox`는 상자 열기, `Seqn`은 나열식에 해당한다. `BoxV`는 값이 주소인 경우이다. `Addr`은 주소의 타입으로 여기서는 간단하게 `Int`를 사용한다. `Sto`는 저장소의 타입으로 열쇠 타입이 `Addr`이고 값 타입이 `Value`인 사전이다. `lookup`은 주어진 환경에서 값을 찾고, `storeLookup`은 주어진 저장소에서 값을 찾는다. `malloc`은 주어진 저장소에서 사용 중이지 않은 주소를 찾는 함수이다.
 
 `interp` 함수는 식, 환경, 저장소를 인자로 받고 값과 저장소의 순서쌍을 결과로 낸다.
 
 ```scala
-def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match { ... }
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match { ... }
 ```
 
 추론 규칙을 설명한 순서에 맞춰 패턴 대조의 각 경우를 보겠다.
@@ -242,35 +242,35 @@ case OpenBox(e) =>
 
 <details><summary>전체 코드 보기</summary>
 ```scala
-sealed trait BFAE
-case class Num(n: Int) extends BFAE
-case class Add(l: BFAE, r: BFAE) extends BFAE
-case class Sub(l: BFAE, r: BFAE) extends BFAE
-case class Id(x: String) extends BFAE
-case class Fun(x: String, b: BFAE) extends BFAE
-case class App(f: BFAE, a: BFAE) extends BFAE
-case class NewBox(e: BFAE) extends BFAE
-case class SetBox(b: BFAE, e: BFAE) extends BFAE
-case class OpenBox(b: BFAE) extends BFAE
-case class Seqn(l: BFAE, r: BFAE) extends BFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class NewBox(e: Expr) extends Expr
+case class SetBox(b: Expr, e: Expr) extends Expr
+case class OpenBox(b: Expr) extends Expr
+case class Seqn(l: Expr, r: Expr) extends Expr
 
-sealed trait BFAEV
-case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
-case class BoxV(a: Addr) extends BFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class BoxV(a: Addr) extends Value
 
-type Env = Map[String, BFAEV]
-def lookup(x: String, env: Env): BFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, BFAEV]
-def storeLookup(a: Addr, sto: Sto): BFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 
-def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Id(x) => (lookup(x, env), sto)
   case Fun(x, b) => (CloV(x, b, env), sto)

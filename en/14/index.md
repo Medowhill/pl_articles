@@ -145,41 +145,41 @@ The subexpression of an expression opening a box has to yield an address. A valu
 The following Scala code implements the abstract syntax, environments, and stores of BFAE:
 
 ```scala
-sealed trait BFAE
-case class Num(n: Int) extends BFAE
-case class Add(l: BFAE, r: BFAE) extends BFAE
-case class Sub(l: BFAE, r: BFAE) extends BFAE
-case class Id(x: String) extends BFAE
-case class Fun(x: String, b: BFAE) extends BFAE
-case class App(f: BFAE, a: BFAE) extends BFAE
-case class NewBox(e: BFAE) extends BFAE
-case class SetBox(b: BFAE, e: BFAE) extends BFAE
-case class OpenBox(b: BFAE) extends BFAE
-case class Seqn(l: BFAE, r: BFAE) extends BFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class NewBox(e: Expr) extends Expr
+case class SetBox(b: Expr, e: Expr) extends Expr
+case class OpenBox(b: Expr) extends Expr
+case class Seqn(l: Expr, r: Expr) extends Expr
 
-sealed trait BFAEV
-case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
-case class BoxV(a: Addr) extends BFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class BoxV(a: Addr) extends Value
 
-type Env = Map[String, BFAEV]
-def lookup(x: String, env: Env): BFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, BFAEV]
-def storeLookup(a: Addr, sto: Sto): BFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 ```
 
-The `NewBox` class corresponds to creating a box; the `SetBox` class corresponds to modifying a box; the `OpenBox` class corresponds to opening a box; the `Seqn` class corresponds to sequencing expressions. `BoxV` instances model values that are addresses. `Addr` denotes the type of an address and is `Int`. `Sto` is the type of a store and is a map from `Addr` to `BFAEV`. The `lookup` function finds a value from a given environment; the `storeLookup` function finds from a given store. The `malloc` function computes an address unused by a given store.
+The `NewBox` class corresponds to creating a box; the `SetBox` class corresponds to modifying a box; the `OpenBox` class corresponds to opening a box; the `Seqn` class corresponds to sequencing expressions. `BoxV` instances model values that are addresses. `Addr` denotes the type of an address and is `Int`. `Sto` is the type of a store and is a map from `Addr` to `Value`. The `lookup` function finds a value from a given environment; the `storeLookup` function finds from a given store. The `malloc` function computes an address unused by a given store.
 
 `interp` takes an expression, an environment, and a store as arguments and returns the pair of a value and a store.
 
 ```scala
-def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match { ... }
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match { ... }
 ```
 
 I discuss the cases of the pattern matching in the same order as the inference rules.
@@ -242,35 +242,35 @@ I have covered all the cases. The following shows the whole code at once:
 
 <details><summary>See the code</summary>
 ```scala
-sealed trait BFAE
-case class Num(n: Int) extends BFAE
-case class Add(l: BFAE, r: BFAE) extends BFAE
-case class Sub(l: BFAE, r: BFAE) extends BFAE
-case class Id(x: String) extends BFAE
-case class Fun(x: String, b: BFAE) extends BFAE
-case class App(f: BFAE, a: BFAE) extends BFAE
-case class NewBox(e: BFAE) extends BFAE
-case class SetBox(b: BFAE, e: BFAE) extends BFAE
-case class OpenBox(b: BFAE) extends BFAE
-case class Seqn(l: BFAE, r: BFAE) extends BFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class NewBox(e: Expr) extends Expr
+case class SetBox(b: Expr, e: Expr) extends Expr
+case class OpenBox(b: Expr) extends Expr
+case class Seqn(l: Expr, r: Expr) extends Expr
 
-sealed trait BFAEV
-case class NumV(n: Int) extends BFAEV
-case class CloV(p: String, b: BFAE, e: Env) extends BFAEV
-case class BoxV(a: Addr) extends BFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class BoxV(a: Addr) extends Value
 
-type Env = Map[String, BFAEV]
-def lookup(x: String, env: Env): BFAEV =
+type Env = Map[String, Value]
+def lookup(x: String, env: Env): Value =
   env.getOrElse(x, throw new Exception)
 
 type Addr = Int
-type Sto = Map[Addr, BFAEV]
-def storeLookup(a: Addr, sto: Sto): BFAEV =
+type Sto = Map[Addr, Value]
+def storeLookup(a: Addr, sto: Sto): Value =
   sto.getOrElse(a, throw new Exception)
 def malloc(sto: Sto): Addr =
   sto.keys.maxOption.getOrElse(0) + 1
 
-def interp(e: BFAE, env: Env, sto: Sto): (BFAEV, Sto) = e match {
+def interp(e: Expr, env: Env, sto: Sto): (Value, Sto) = e match {
   case Num(n) => (NumV(n), sto)
   case Id(x) => (lookup(x, env), sto)
   case Fun(x, b) => (CloV(x, b, env), sto)
