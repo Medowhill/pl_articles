@@ -6,7 +6,7 @@ Evaluating an expression that is not a value requires one or more steps of compu
 
 Let \(E\) denote a step of computation. A step of computation and \(E\) are informal concepts. The article introduces them for intuitive explanations. Evaluating expression \(e\) requires multiple steps of computation, which are from \(E_1\) to \(E_n\). Consider \((1+2)+3\). \(E_1\) is adding \(1\) and \(2\); \(E_2\) is adding \(3\) to the result of \(E_1\). \(E_2\) depends on the result of \(E_1\). The order cannot change.
 
-Multiple steps of computation can be divided into two parts: the former and latter parts. Assume steps from \(E_1\) to \(E_n\). For some \(i\) between \(1\) and \(n\), the former includes the steps from \(E_1\) to \(E_i\), and the latter includes the steps from \(E_{i+1}\) to \(E_n\). The latter relies on the result of the former. A subexpression evaluated by the former is a redex, which mean a reducible expression. The latter part, which finishes the evaluation with the value of the redex, is a continuation. Let the steps from \(E_1\) to \(E_i\) evaluate \(e'\), which is a subexpression of \(e\). \(e'\) is the redex. Computation proceeded by the steps from \(E_{i+1}\) to \(E_n\) is the continuation. As an example, consider \((1+2)+e\) again. Let \(1+2\) be a redex. The continuation is adding \(3\) to the result of the redex.
+Multiple steps of computation can be divided into two parts: the former and latter parts. Assume steps from \(E_1\) to \(E_n\). For some \(i\) between \(1\) and \(n\), the former includes the steps from \(E_1\) to \(E_i\), and the latter includes the steps from \(E_{i+1}\) to \(E_n\). The latter relies on the result of the former. A subexpression evaluated by the former is a redex, which mean a reducible expression. The latter part, which finishes the evaluation with the value of the redex, is a continuation. Let the steps from \(E_1\) to \(E_i\) evaluate \(e'\), which is a subexpression of \(e\). \(e'\) is the redex. Computation proceeded by the steps from \(E_{i+1}\) to \(E_n\) is the continuation. As an example, consider \((1+2)+3\) again. Let \(1+2\) be a redex. The continuation is adding \(3\) to the result of the redex.
 
 Consider another example: \((1+2)-(3+4)\). Let the former part and the latter part respectively be adding \(1\) and \(2\) and subtracting \(3+4\) from the result of the former part. \(1+2\) is a redex. Subtracting \(3+4\) from the result of the continuation. \(1+2\) produces \(3\). Continuing the evaluation equals evaluating \(3-(3+4)\). It follows from what the continuation is. The new expression can be divided into a redex and a continuation again. Computing \(3+4\) allows subtracting the result from \(3\) and finishing the evaluation. A redex is \(3+4\), and the continuation is subtracting the result of the redex from \(3\). \(3+4\) yields \(7\). Continuing the evaluation is evaluating \(3-7\). It can be divided as well. The expression itself is the only redex. The continuation is doing nothing. \(3-7\) results in \(-4\). There is no more computation to do. The evaluation finishes, and its result is \(-4\). The following table summarizes the process:
 
@@ -173,7 +173,7 @@ The expression is equivalent to `f(factorial(n - 1))`. Since the result of `k(fa
 
 Another explanation is possible. Let a redex be the factorial of `n` and `k` refer to the continuation. The factorial of `n` equals multiplying the factorial of `n - 1` by `n`. Therefore, the evaluation can be divided with another way: a redex is the factorial of `n - 1`; the continuation is multiplying the result by `n` and passing the result of the multiplication to `k`. The explanation also leads to `factorialC(n - 1, x => k(n * x))`.
 
-Programs using continuation-passing style never use the result of a function call. They pass any additional computation as continuations. `n * factorial(n - 1)` differs from the style because it uses the result of the function call. The continuation of ` factorial(n - 1)` is multiplying `n` by the result. On the other hand, continuation-passing style always explicitly express the current continuation and passes the continuation as an argument. `factorialC(n - 1, x => k(n * x))` implies that the continuation of computing the factorial of `n - 1` is `x => k(n * x)`. Since the expression explicitly passes the continuation, it follows the style.
+Programs using continuation-passing style never use the result of a function call. They pass any additional computation as continuations. `n * factorial(n - 1)` differs from the style because it uses the result of the function call. The continuation of ` factorial(n - 1)` is multiplying `n` by the result. On the other hand, continuation-passing style always explicitly expresses the current continuation and passes the continuation as an argument. `factorialC(n - 1, x => k(n * x))` implies that the continuation of computing the factorial of `n - 1` is `x => k(n * x)`. Since the expression explicitly passes the continuation, it follows the style.
 
 Changing the return type of every function to `Unit` allows checking whether a program is using continuation-passing style.
 
@@ -247,7 +247,7 @@ case Fun(x, b) => k(CloV(x, b, env))
 
 Consider the explanation of the first section of the article. Let \(e\) and \(k\) respectively denote a redex and the continuation. \(k\) is a function. The evaluation equals passing the result of \(e\) to \(k\), which is evaluating \(k\ e\).
 
-Let \(k\) be the continuation of \(e_1+e_2\). The whole evaluation equals \(k(e_1+e_2)\). \(e_1+e_2\) is equivalent to \(\lambda v_1.v_1+e_2)e_1\). \(k((\lambda v_1.v_1+e_2)e_1)\) replaces \(k(e_1+e_2)\). \), and \(k((\lambda v_1.v_1+e_2)e_1)\) equals \(\lambda v_1.k(v_1+e_2))e_1\). Focus on \(v_1+e_2\). It is equivalent to \(\lambda v_2.v_1+v_2)e_2\). \(k(v_1+e_2)\) becomes \(k((\lambda v_2.v_1+v_2)e_2)\), which is \((\lambda v_2.k(v_1+v_2))e_2\). Replacing \(k(v_1+e_2)\) with \((\lambda v_2.k(v_1+v_2))e_2\) in \(\lambda v_1.k(v_1+e_2))e_1\) produces \((\lambda v_1.(\lambda v_2.k(v_1+v_2))e_2)e_1\). Therefore, the evaluation is newly divided into redex \(e_1\) and continuation \(\lambda v_1.(\lambda v_2.k(v_1+v_2))e_2\). The body of the continuation is \((\lambda v_2.k(v_1+v_2))e_2\), which can be divided into redex \(e_2\) and continuation \(\lambda v_2.k(v_1+v_2)\). The following summarizes the transformation:
+Let \(k\) be the continuation of \(e_1+e_2\). The whole evaluation equals \(k(e_1+e_2)\). \(e_1+e_2\) is equivalent to \((\lambda v_1.v_1+e_2)e_1\). \(k((\lambda v_1.v_1+e_2)e_1)\) replaces \(k(e_1+e_2)\), and \(k((\lambda v_1.v_1+e_2)e_1)\) equals \((\lambda v_1.k(v_1+e_2))e_1\). Focus on \(v_1+e_2\). It is equivalent to \((\lambda v_2.v_1+v_2)e_2\). \(k(v_1+e_2)\) becomes \(k((\lambda v_2.v_1+v_2)e_2)\), which is \((\lambda v_2.k(v_1+v_2))e_2\). Replacing \(k(v_1+e_2)\) with \((\lambda v_2.k(v_1+v_2))e_2\) in \((\lambda v_1.k(v_1+e_2))e_1\) produces \((\lambda v_1.(\lambda v_2.k(v_1+v_2))e_2)e_1\). Therefore, the evaluation is newly divided into redex \(e_1\) and continuation \(\lambda v_1.(\lambda v_2.k(v_1+v_2))e_2\). The body of the continuation is \((\lambda v_2.k(v_1+v_2))e_2\), which can be divided into redex \(e_2\) and continuation \(\lambda v_2.k(v_1+v_2)\). The following summarizes the transformation:
 
 \[
 \begin{array}{rl}
@@ -295,18 +295,18 @@ Things to do are three steps of computation:
 
 1. Evaluate `e1` and call the result `v1`.
 2. Evaluate `e2` and call the result `v2`.
-3. Evaluate `numVAdd(v1, v2)` and pass the result of `k`.
+3. Evaluate `numVAdd(v1, v2)` and pass the result to `k`.
 
 The continuation at step 1 includes steps 2 and 3. It equals the following:
 
 1. Take `v1` as an argument.
 2. Evaluate `e2` and call the result `v2`.
-3. Evaluate `numVAdd(v1, v2)` and pass the result of `k`.
+3. Evaluate `numVAdd(v1, v2)` and pass the result to `k`.
 
 The continuation at step 2 is step 3. It equals the following:
 
 1. Take `v2` as an argument.
-2. Evaluate `numVAdd(v1, v2)` and pass the result of `k`.
+2. Evaluate `numVAdd(v1, v2)` and pass the result to `k`.
 
 Step 2 equals `k(numVAdd(v1, v2))`. The continuation is `v2 => k(numVAdd(v1, v2))`. Steps 2 and 3 of the second computation is `interp(e2, env, v2 => k(numVAdd(v1, v2)))`. The continuation of `e1` is `v1 => interp(e2, env, v2 => k(numVAdd(v1, v2)))`. The whole evaluation equals `interp(e1, env, v1 => interp(e2, env, v2 => k(numVAdd(v1, v2))))`.
 
@@ -514,13 +514,13 @@ y                     | (1 + □)                    | [x -> 1, y -> 2]
 3
 ```
 
-A single line shows the redex, the continuation, and the environment at each step. A square of a continuation is a place whom the result of the redex replaces. For example, `3 - □` equals \(\lambda v.3-v\).
+A single line shows the redex, the continuation, and the environment at each step. A square in a continuation is a place whom the result of the redex replaces. For example, `3 - □` equals \(\lambda v.3-v\).
 
-Continuation-passing style seems needless. One may think it complexify the implementation of the interpreter. It is true that continuation-passing style creates unnecessary difficulties in the implementation. The style makes every function call be a tail call. It is one benefit. If an interpreter is written in a language with tail-call optimization, continuation-passing style prevents stack overflow. However, the Scala complier optimizes only tail-recursive calls. The possibility of stack overflow remains despite the use of continuation-passing style as the article uses Scala. The next article will give a reason that this article uses continuation-passing style to implement the interpreter. The next article adds a new feature whom an interpreter using continuation-passing style can easily support to FAE.
+Continuation-passing style seems needless. One may think that it complexifies the implementation of the interpreter. It is true that continuation-passing style creates unnecessary difficulties in the implementation. The style makes every function call be a tail call. It is one benefit. If an interpreter is written in a language with tail-call optimization, continuation-passing style prevents stack overflow. However, the Scala complier optimizes only tail-recursive calls. The possibility of stack overflow remains despite the use of continuation-passing style as the article uses Scala. The next article will give a reason that this article uses continuation-passing style to implement the interpreter. The next article adds a new feature whom an interpreter using continuation-passing style can easily support to FAE.
 
 ## Small-Step Semantics
 
-This section defines semantics that explicitly shows continuations for FAE. Every hitherto article has defined semantics in big-step style. Big-step semantics is intuitive, and its inference rules give a nice clue to interpreter implementers. However, it is a bad way to formalize continuations. Its single inference rule defines the value of an expression. For instance, the big-step rule of a sum follows:
+This section defines semantics that explicitly shows continuations for FAE. Every hitherto article has defined semantics in big-step style. Big-step semantics is intuitive, and its inference rules give nice clues to interpreter implementers. However, it is a bad way to formalize continuations. Its single inference rule defines the value of an expression. For instance, the big-step rule of a sum follows:
 
 \[
 \frac
@@ -584,7 +584,7 @@ A computation stack is a stack containing remaining steps of computation. The to
 
 Repeating reduction until no more reduction is possible evaluates a state. If the computation stack is empty, reduction is impossible. If a value popped from the value stack is not an integer, both addition or subtraction are impossible so that reduction cannot happen. If the secondly-popped value is not a closure, a function application is impossible. It also makes reduction impossible. The first case and the remaining cases differ from each other. The empty stack implies the end of the evaluation. It corresponds to a normal termination of a program. On the other hand, an improper value in the value stack prevents further reduction although computation remains. It corresponds to an abnormal termination of a program due to a run-time error.
 
-\(\rightarrow^\ast\) denotes repeated reduction. \(k_1\ ||\ s_1\rightarrow^\ast k_n\ ||\ s_n\) implies \(k_1\ ||\ s_1\rightarrow k_2\ ||\ s_2\), \(k_2\ ||\ s_2\rightarrow k_3\ ||\ s_3\), …, and \(\(k_{n-1}\ ||\ s_{n-1}\rightarrow k_n\ ||\ s_n\). The following formalizes the relation:
+\(\rightarrow^\ast\) denotes repeated reduction. \(k_1\ ||\ s_1\rightarrow^\ast k_n\ ||\ s_n\) implies \(k_1\ ||\ s_1\rightarrow k_2\ ||\ s_2\), \(k_2\ ||\ s_2\rightarrow k_3\ ||\ s_3\), …, and \(k_{n-1}\ ||\ s_{n-1}\rightarrow k_n\ ||\ s_n\). The following formalizes the relation:
 
 \[k\ ||\ s\rightarrow^{\ast}k\ ||\ s\]
 
@@ -627,7 +627,7 @@ The rule for \((@)\) is more complex.
 
 To get the result of a function application, the function body must be evaluated. Big-step semantics requires a single rule to include the evaluation of the function body. On the other hand, small-step semantics differs from that. Adding the evaluation of the function body to the computation stack is enough.
 
-The only remaining case is the evaluation of an expression. If an expression is either an integer, an identifier, or a function, its value is direct. A rule must push the value into the value stack.
+The only remaining case is the evaluation of an expression. If an expression is either an integer, an identifier, or a function, its value is direct. Each rule must push the value into the value stack.
 
 \[\sigma\vdash n::k\ ||\ s\rightarrow k\ ||\ n::s\]
 
