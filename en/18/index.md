@@ -19,7 +19,7 @@ The following is the abstract syntax of KFAE. It shows an expression not existin
 
 Expression \(\textsf{vcc}\ x\ \textsf{in}\ e\) evaluates \(e\) while \(x\) denotes the current continuation. The term '\(\textsf{cc}\)' of \(\textsf{vcc}\) means the **c**urrent **c**ontinuation, which is the continuation of \(\textsf{vcc}\ x\ \textsf{in}\ e\). The scope of \(x\) equals \(e\). When a continuation denoted by \(x\) is called, the continuation replaces the continuation of that point.
 
-Consider \(1+(((\lambda v.1+v)\ 2)+3)\). \(\lambda v.1+v\) is a function that takes an argument and returns the argument increased by \(1\). Calling the function never affects the continuation. The continuation remains the same and takes the result of the function call as an argument to continue the evaluation. The continuation of \(\lambda v.1+v)\ 2\) is \(\lambda v.1+(v+3)\). The result of the function call is \(3\). Applying the continuation yields \(1+(3+3)\). The final result is \(7\).
+Consider \(1+(((\lambda v.1+v)\ 2)+3)\). \(\lambda v.1+v\) is a function that takes an argument and returns the argument increased by \(1\). Calling the function never affects the continuation. The continuation remains the same and takes the result of the function call as an argument to continue the evaluation. The continuation of \((\lambda v.1+v)\ 2\) is \(\lambda v.1+(v+3)\). The result of the function call is \(3\). Applying the continuation yields \(1+(3+3)\). The final result is \(7\).
 
 This time, consider \(1+(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3)\). The continuation of \(\textsf{vcc}\ x\ \textsf{in}\ (x\ 2)+3\) is adding the result to \(1\). The function form is \(\lambda v.1+v\). The continuation is the value of \(x\). Even though a lambda abstraction can represent a continuation, a first-class continuation differs from a function. Since \(x\) is a continuation, calling \(x\) changes the continuation of the calling expression to a continuation that is the value of \(x\). \(x\ 2\) makes \(\lambda v.1+(v+3)\), the continuation, disappears. The only remaining computation is \((\lambda v.1+v)\ 2\). Evaluating \(1+2\) produces the final result: \(3\).
 
@@ -325,7 +325,7 @@ case App(e1, e2) =>
     interp(e2, env, v2 => v1 match {
       case CloV(xv1, ev1, sigmav1) =>
         interp(ev1, sigmav1 + (xv1 -> v2), k)
-       case ContV(k) => k(v2)
+      case ContV(k) => k(v2)
     })
   )
 ```
