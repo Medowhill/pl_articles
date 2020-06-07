@@ -2,7 +2,7 @@ The article deals with *type systems*. It explains the purposes and necessity of
 
 ## Type Errors
 
-There are three sorts of FAE expressions. Small-step semantics is ideal to discuss the sorts. The article uses different small-semantics from the previous articles. This semantics reduces an expression instead of computation and value stacks. However, the article does not aim defining the reduction of an expression. The following explanations are understandable without the definition of reduction.
+There are three sorts of FAE expressions. Small-step semantics is ideal to discuss the sorts. The article uses different small-step semantics from the previous articles. This semantics reduces an expression instead of computation and value stacks. However, the article does not aim defining the reduction of an expression. The following explanations are understandable without the definition of reduction.
 
 The first sort includes expressions resulting in values.
 
@@ -353,29 +353,29 @@ Various such expressions exist. Consider \((\lambda x:\textsf{num}.x)\ (\lambda 
 The following Scala code implements the abstract syntax of TFAE:
 
 ```scala
-sealed trait TFAE
-case class Num(n: Int) extends TFAE
-case class Add(l: TFAE, r: TFAE) extends TFAE
-case class Sub(l: TFAE, r: TFAE) extends TFAE
-case class Id(x: String) extends TFAE
-case class Fun(x: String, t: TFAET, b: TFAE) extends TFAE
-case class App(f: TFAE, a: TFAE) extends TFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, t: Type, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait TFAET
-case object NumT extends TFAET
-case class ArrowT(p: TFAET, r: TFAET) extends TFAET
+sealed trait Type
+case object NumT extends Type
+case class ArrowT(p: Type, r: Type) extends Type
 
-type TEnv = Map[String, TFAET]
+type TEnv = Map[String, Type]
 ```
 
-A `TFAE` instance represents a TFAE expression. The only difference between this implementation and the implementation of FAE is field `t` of the `Fun` class. The field represents the type of a parameter. A `TFAET` instance represents a TFAE type. `NumT` corresponds to type \(\textsf{num}\). An `ArrowT` instance represents the type of a function. `TEnv` is the type of a type environment; it is a map from strings onto TFAE types.
+A `TFAE` instance represents a TFAE expression. The only difference between this implementation and the implementation of FAE is field `t` of the `Fun` class. The field represents the type of a parameter. A `Type` instance represents a TFAE type. `NumT` corresponds to type \(\textsf{num}\). An `ArrowT` instance represents the type of a function. `TEnv` is the type of a type environment; it is a map from strings onto TFAE types.
 
 The `mustSame` function compares given two types. If the types are the same, the result is the type. Otherwise, it raises an exception.
 
 The below `typeCheck` function checks the type of an expression. It takes a TFAE expression and a type environment as arguments. If type checking succeeds, the result of the function is the type of the expression. Otherwise, it raises an exception.
 
 ```scala
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   case Num(n) => NumT
   case Add(l, r) =>
     mustSame(mustSame(NumT,
@@ -450,13 +450,13 @@ typeCheck(
 The interpreter of TFAE is similar to that of FAE.
 
 ```scala
-sealed trait TFAEV
-case class NumV(n: Int) extends TFAEV
-case class CloV(p: String, b: TFAE, e: Env) extends TFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, TFAEV]
+type Env = Map[String, Value]
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -477,7 +477,7 @@ def interp(e: TFAE, env: Env): TFAEV = e match {
 Since type annotations do not take any roles at run time, closures lack type annotations.
 
 ```scala
-def run(e: TFAE): TFAEV = {
+def run(e: Expr): Value = {
   typeCheck(e, Map.empty)
   interp(e, Map.empty)
 }
@@ -533,6 +533,200 @@ run(
 
 The function returns the value of the first expression correctly. The type checker correctly rejects the second expression. It prevents the evaluation, which leads to a type error. The third expression does not cause a type error. However, the type checker rejects the expression and prevents the evaluation.
 
+## FAE and TFAE
+
+### Type Erasure
+
+According to the dynamic semantics of TFAE, parameter type annotations in lambda
+abstractions take no role at run time. They are necessary only for static type
+checking. Therefore, it is possible to erase type annotations in order to make
+code used at run time, while type annotations exist at compile time. Type
+erasure denotes such semantics, which removes type annotations from code used at
+run time.
+
+The following shows how to make an FAE counterpart of a TFAE expression via type
+erasure. \(\it erase\) is a function from a TFAE expression to an FAE
+expression.
+
+\[
+\begin{array}{rcl}
+\mathit{erase}(n) &=& n \\
+\mathit{erase}(e_1+e_2) &=& \mathit{erase}(e_1)+\mathit{erase}(e_2) \\
+\mathit{erase}(e_1-e_2) &=& \mathit{erase}(e_1)-\mathit{erase}(e_2) \\
+\mathit{erase}(x) &=& x \\
+\mathit{erase}(\lambda x:\tau.e) &=& \lambda x.\mathit{erase}(e) \\
+\mathit{erase}(e_1\ e_2) &=& \mathit{erase}(e_1)\ \mathit{erase}(e_2)
+\end{array}
+\]
+
+The only changes happen in lambda abstractions: removal of parameter type
+annotations. Integers and variables remain the same. The function is defined
+recursively for addition, subtraction, and function application.
+
+The following Scala code implements type erasure:
+
+```scala
+object FAE {
+  sealed trait Expr
+  case class Num(n: Int) extends Expr
+  case class Add(l: Expr, r: Expr) extends Expr
+  case class Sub(l: Expr, r: Expr) extends Expr
+  case class Id(x: String) extends Expr
+  case class Fun(x: String, b: Expr) extends Expr
+  case class App(f: Expr, a: Expr) extends Expr
+}
+
+def erase(e: Expr): FAE.Expr = e match {
+  case Num(n) => FAE.Num(n)
+  case Add(l, r) =>
+    FAE.Add(erase(l), erase(r))
+  case Sub(l, r) =>
+    FAE.Sub(erase(l), erase(r))
+  case Id(x) => FAE.Id(x)
+  case Fun(x, _, b) => FAE.Fun(x, erase(b))
+  case App(f, a) =>
+    FAE.App(erase(f), erase(a))
+}
+```
+
+Since the classes represeting TFAE expressions have the same names as the
+classes represeting FAE expressions, the `FAE` singleton object contains the classes for
+FAE expressions.
+
+```scala
+object FAE {
+  ...
+
+  sealed trait Value
+  case class NumV(n: Int) extends Value
+  case class CloV(p: String, b: FAE, e: Env) extends Value
+
+  type Env = Map[String, Value]
+
+  def interp(e: FAE, env: Env): Value = e match {
+    case Num(n) => NumV(n)
+    case Add(l, r) =>
+      val NumV(n) = interp(l, env)
+      val NumV(m) = interp(r, env)
+      NumV(n + m)
+    case Sub(l, r) =>
+      val NumV(n) = interp(l, env)
+      val NumV(m) = interp(r, env)
+      NumV(n - m)
+    case Id(x) => env(x)
+    case Fun(x, b) => CloV(x, b, env)
+    case App(f, a) =>
+      val CloV(x, b, fEnv) = interp(f, env)
+      interp(b, fEnv + (x -> interp(a, env)))
+  }
+}
+
+def run(e: Expr): FAE.Value = {
+  typeCheck(e, Map.empty)
+  FAE.interp(erase(e), Map.empty)
+}
+```
+
+`erase` allows a TFAE expression to be transformed to an FAE expression so
+that it is possible to reuse the existing `interp` function for FAE instead of
+defining a new `interp` function for TFAE. Parameter type annotations do not
+affect the result of evaluation. The above `run` function is the same as the
+previous `run` function except that its return type is `FAE.Value`, not
+`Value`. Even though the class is different, the result represents exactly the
+same value. The following describes this property mathematically:
+
+\[
+\forall\sigma.\forall e.\forall v.
+(\sigma\vdash e\Rightarrow v)\leftrightarrow(\mathit{erase}(\sigma)\vdash\mathit{erase}(e)\Rightarrow\mathit{erase}(v))
+\]
+
+Below defines type erasure for values and environments.
+
+\[
+\begin{array}{rcl}
+\mathit{erase}(n) &=& n \\
+\mathit{erase}(\langle\lambda x:\tau.e,\sigma\rangle) &=& \langle\lambda x.\mathit{erase}(e),\mathit{erase}(\sigma)\rangle \\
+\mathit{erase}(\lbrack x_1\mapsto v_1,\cdots,x_n\mapsto v_n\rbrack) &=&\lbrack x_1\mapsto\mathit{erase}(v_1),\cdots,x_n\mapsto\mathit{erase}(v_n)\rbrack
+\end{array}
+\]
+
+
+### Type System of FAE
+
+Can one define the type system of FAE? The only difference between FAE and TFAE
+is existence of parameter type annotations in lambda abstractions. For the other
+sorts of expressions, the inference rules of the TFAE type system work well.
+An inference rule for lambda abstractions is the last piece of the type system
+of FAE. First, consider the inference rule of TFAE again.
+
+\[
+\frac
+{ \Gamma\lbrack x:\tau_1\rbrack\vdash e:\tau_2 }
+{ \Gamma\vdash \lambda x:\tau_1.e:\tau_1\rightarrow\tau_2 }
+\]
+
+In TFAE, a lambda abstraction gives the fact that the type of its parameter is
+\(\tau_1\). The type of the body \(e\) can be computed under \(\Gamma\lbrack x:\tau_1\rbrack\)
+without any problems.
+
+On the other hand, FAE lacks parameter type annotations. Thus, the following is
+a possible choice:
+
+\[
+\frac
+{ \Gamma\lbrack x:\tau_1\rbrack\vdash e:\tau_2 }
+{ \Gamma\vdash \lambda x.e:\tau_1\rightarrow\tau_2 }
+\]
+
+Interestingly, it has exactly the same premise. Even though \(\tau_1\) is
+unknown, the premise uses \(\tau_1\). It is a completely correct rule. The
+semantics of a language does not have to give an insight into implementation.
+It is just a mathematically defined system. The above rule retains the type
+soundness of FAE and make many expressions well-typed. For example, consider
+\((\lambda x.\lambda y.x+y)\ 1\ 2\). The following proof tree proves that the
+type of the expression is \(\sf num\).
+
+\[
+\frac
+{
+  \frac
+  {{\huge
+    \frac
+    {
+      \frac
+      {
+        \frac
+        {
+          \frac
+          { x\in\mathit{Domain}(\lbrack x:\textsf{num},y:\textsf{num}\rbrack) }
+          { \lbrack x:\textsf{num},y:\textsf{num}\rbrack\vdash x:\textsf{num} } \quad
+          \frac
+          { y\in\mathit{Domain}(\lbrack x:\textsf{num},y:\textsf{num}\rbrack) }
+          { \lbrack x:\textsf{num},y:\textsf{num}\rbrack\vdash y:\textsf{num} }
+        }
+        { \lbrack x:\textsf{num},y:\textsf{num}\rbrack\vdash x+y:\textsf{num} }
+      }
+      { \lbrack x:\textsf{num}\rbrack\vdash\lambda y.x+y
+        :\textsf{num}\rightarrow\textsf{num} }
+    }
+    { \emptyset\vdash\lambda x.\lambda y.x+y
+      :\textsf{num}\rightarrow\textsf{num}\rightarrow\textsf{num} } \quad
+    {\Large \emptyset\vdash1:\textsf{num}}
+  }}
+  { {\Large \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1:\textsf{num}\rightarrow\textsf{num} }}
+  \quad \emptyset\vdash2:\textsf{num}
+}
+{ \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2:\textsf{num} }
+\]
+
+Humans can easily find that both types of \(x\) and \(y\) are \(\sf num\).
+However, it is nontrivial to make computers do the same thing. The type system
+of TFAE hints at implementation of the `typeCheck` function. However, the type
+system of FAE does not say anything about how to find the types of parameters.
+To make a type checker for TFAE, it is important to know how to recover omitted
+parameter type annotations. Such recovery is called type inference. Type
+inference is outside the scope of this article.
+
 ## Extending TFAE
 
 The type system of TFAE is sound but incomplete. How many type-safe expressions are rejected by the type system? The *normalization property* of TFAE has been proved already. It implies that evaluation of any well-typed TFAE expression terminates in a finite time. Many FAE expressions including \((\lambda x.x\ x)\ (\lambda x.x\ x)\) does not terminate. However, such expressions are ill-typed in TFAE. TFAE is not Turing-complete while lambda calculus and FAE are Turing-complete.
@@ -581,15 +775,15 @@ A lambda abstraction and a function application can express a local variable dec
 The following revision makes the interpreter to support local variable declarations:
 
 ```scala
-case class With(x: String, e: TFAE, b: TFAE) extends TFAE
+case class With(x: String, e: Expr, b: Expr) extends Expr
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case With(x, e, b) =>
     typeCheck(b, env + (x -> typeCheck(e, env)))
 }
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case With(x, e, b) =>
     interp(b, env + (x -> interp(e, env)))
@@ -679,13 +873,13 @@ The following rules define the static semantics:
 The following revision makes the interpreter to support pairs:
 
 ```scala
-case class Pair(f: TFAE, s: TFAE) extends TFAE
-case class Fst(e: TFAE) extends TFAE
-case class Snd(e: TFAE) extends TFAE
+case class Pair(f: Expr, s: Expr) extends Expr
+case class Fst(e: Expr) extends Expr
+case class Snd(e: Expr) extends Expr
 
-case class PairT(f: TFAET, s: TFAET) extends TFAET
+case class PairT(f: Type, s: Type) extends Type
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case Pair(f, s) =>
     PairT(typeCheck(f, env), typeCheck(s, env))
@@ -697,9 +891,9 @@ def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
     s
 }
 
-case class PairV(f: TFAEV, s: TFAEV) extends TFAEV
+case class PairV(f: Value, s: Value) extends Value
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case Pair(f, s) =>
     PairV(interp(f, env), interp(s, env))
@@ -780,12 +974,12 @@ The following rules define the static semantics:
 The following revision makes the interpreter to support Boolean values and conditional expressions:
 
 ```scala
-case class Bool(b: Boolean) extends TFAE
-case class If(c: TFAE, t: TFAE, f: TFAE) extends TFAE
+case class Bool(b: Boolean) extends Expr
+case class If(c: Expr, t: Expr, f: Expr) extends Expr
 
-case object BoolT extends TFAET
+case object BoolT extends Type
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case Bool(b) => BoolT
   case If(c, t, f) =>
@@ -793,9 +987,9 @@ def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
     mustSame(typeCheck(t, env), typeCheck(f, env))
 }
 
-case class BoolV(b: Boolean) extends TFAEV
+case class BoolV(b: Boolean) extends Value
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case Bool(b) => BoolV(b)
   case If(c, t, f) =>

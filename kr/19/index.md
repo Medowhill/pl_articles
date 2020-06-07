@@ -351,25 +351,25 @@ TFAE의 타입 체계는 안전하다. 안전성이 자명한 사실은 아니�
 다음은 TFAE의 요약 문법을 Scala로 구현한 것이다.
 
 ```scala
-sealed trait TFAE
-case class Num(n: Int) extends TFAE
-case class Add(l: TFAE, r: TFAE) extends TFAE
-case class Sub(l: TFAE, r: TFAE) extends TFAE
-case class Id(x: String) extends TFAE
-case class Fun(x: String, t: TFAET, b: TFAE) extends TFAE
-case class App(f: TFAE, a: TFAE) extends TFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, t: Type, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
 
-sealed trait TFAET
-case object NumT extends TFAET
-case class ArrowT(p: TFAET, r: TFAET) extends TFAET
+sealed trait Type
+case object NumT extends Type
+case class ArrowT(p: Type, r: Type) extends Type
 
-type TEnv = Map[String, TFAET]
+type TEnv = Map[String, Type]
 ```
 
-`TFAE` 인스턴스는 TFAE의 식을 표현한다. `Fun` 클래스에 매개변수 타입을 표시하는 필드 `t`가 추가된 것만 빼면 FAE와 같다. `TFAET` 인스턴스는 TFAE의 타입을 표현한다. `NumT`는 \(\textsf{num}\) 타입에 해당한다. `ArrowT` 인스턴스는 함수의 타입을 표현한다. 타입 환경 `TEnv`는 문자열을 열쇠, TFAE의 타입을 값으로 하는 사전이다.
+`TFAE` 인스턴스는 TFAE의 식을 표현한다. `Fun` 클래스에 매개변수 타입을 표시하는 필드 `t`가 추가된 것만 빼면 FAE와 같다. `Type` 인스턴스는 TFAE의 타입을 표현한다. `NumT`는 \(\textsf{num}\) 타입에 해당한다. `ArrowT` 인스턴스는 함수의 타입을 표현한다. 타입 환경 `TEnv`는 문자열을 열쇠, TFAE의 타입을 값으로 하는 사전이다.
 
 ```scala
-def mustSame(t1: TFAET, t2: TFAET): TFAET =
+def mustSame(t1: Type, t2: Type): Type =
   if (t1 == t2) t1 else throw new Exception
 ```
 
@@ -378,7 +378,7 @@ def mustSame(t1: TFAET, t2: TFAET): TFAET =
 다음 `typeCheck` 함수가 타입 검사기이다. TFAE 식과 타입 환경을 인자로 받는다. 타입 검사가 성공하면 식의 타입을 결과로 낸다. 실패하면 예외를 발생시킨다. 다만 `typeCheck` 함수가 직접 예외를 발생시키지는 않는다. `mustSame`을 호출함으로써, 같아야 할 두 타입이 다르면 예외가 발생한다.
 
 ```scala
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   case Num(n) => NumT
   case Add(l, r) =>
     mustSame(mustSame(NumT,
@@ -453,13 +453,13 @@ typeCheck(
 TFAE 인터프리터는 FAE 인터프리터와 거의 같다.
 
 ```scala
-sealed trait TFAEV
-case class NumV(n: Int) extends TFAEV
-case class CloV(p: String, b: TFAE, e: Env) extends TFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
 
-type Env = Map[String, TFAEV]
+type Env = Map[String, Value]
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -480,7 +480,7 @@ def interp(e: TFAE, env: Env): TFAEV = e match {
 요약 문법의 클로저는 표시된 매개변수 타입을 그대로 가지고 있었다. 그러나 아무런 역할도 없기 때문에 구현에서는 생략하였다.
 
 ```scala
-def run(e: TFAE): TFAEV = {
+def run(e: Expr): Value = {
   typeCheck(e, Map.empty)
   interp(e, Map.empty)
 }
@@ -560,17 +560,17 @@ TFAE의 동적 의미를 보면 람다 요약에 표시된 매개변수 타입�
 Scala 코드로는 아래처럼 쓸 수 있다.
 
 ```scala
-sealed trait FAE
 object FAE {
-  case class Num(n: Int) extends FAE
-  case class Add(l: FAE, r: FAE) extends FAE
-  case class Sub(l: FAE, r: FAE) extends FAE
-  case class Id(x: String) extends FAE
-  case class Fun(x: String, b: FAE) extends FAE
-  case class App(f: FAE, a: FAE) extends FAE
+  sealed trait Expr
+  case class Num(n: Int) extends Expr
+  case class Add(l: Expr, r: Expr) extends Expr
+  case class Sub(l: Expr, r: Expr) extends Expr
+  case class Id(x: String) extends Expr
+  case class Fun(x: String, b: Expr) extends Expr
+  case class App(f: Expr, a: Expr) extends Expr
 }
 
-def erase(e: TFAE): FAE = e match {
+def erase(e: Expr): FAE.Expr = e match {
   case Num(n) => FAE.Num(n)
   case Add(l, r) =>
     FAE.Add(erase(l), erase(r))
@@ -589,13 +589,13 @@ TFAE 식을 표현하는 클래스와 FAE 식을 표현하는 클래스의 이�
 object FAE {
   ...
 
-  sealed trait FAEV
-  case class NumV(n: Int) extends FAEV
-  case class CloV(p: String, b: FAE, e: Env) extends FAEV
+  sealed trait Value
+  case class NumV(n: Int) extends Value
+  case class CloV(p: String, b: FAE, e: Env) extends Value
 
-  type Env = Map[String, FAEV]
+  type Env = Map[String, Value]
 
-  def interp(e: FAE, env: Env): FAEV = e match {
+  def interp(e: FAE, env: Env): Value = e match {
     case Num(n) => NumV(n)
     case Add(l, r) =>
       val NumV(n) = interp(l, env)
@@ -613,13 +613,13 @@ object FAE {
   }
 }
 
-def run(e: TFAE): FAE.FAEV = {
+def run(e: Expr): FAE.Value = {
   typeCheck(e, Map.empty)
   FAE.interp(erase(e), Map.empty)
 }
 ```
 
-`erase` 함수를 구현하여 TFAE 식을 FAE 식으로 변환함으로써 `interp` 함수를 새로 만들 필요 없이 기존의 FAE를 위한 `interp` 함수를 재사용할 수 있다. 매개변수 타입 표시 여부는 실행 결과에 영향을 주지 않는다. 따라서 위 `run` 함수는 앞에서 구현한 `run` 함수와 같은 결과를 낸다. 단, `TFAEV` 객체가 아니라 `FAEV` 객체가 나온다. 클래스만 다를 뿐 나타내는 값은 완전히 같다. 이를 수식으로는 아래와 같이 적을 수 있다.
+`erase` 함수를 구현하여 TFAE 식을 FAE 식으로 변환함으로써 `interp` 함수를 새로 만들 필요 없이 기존의 FAE를 위한 `interp` 함수를 재사용할 수 있다. 매개변수 타입 표시 여부는 실행 결과에 영향을 주지 않는다. 따라서 위 `run` 함수는 앞에서 구현한 `run` 함수와 같은 결과를 낸다. 단, `Value` 객체가 아니라 `FAE.Value` 객체가 나온다. 클래스만 다를 뿐 나타내는 값은 완전히 같다. 이를 수식으로는 아래와 같이 적을 수 있다.
 
 \[
 \forall\sigma.\forall e.\forall v.
@@ -770,15 +770,15 @@ x(3)
 다음은 TFAE 인터프리터가 지역 변수 선언을 처리할 수 있게 한다.
 
 ```scala
-case class With(x: String, e: TFAE, b: TFAE) extends TFAE
+case class With(x: String, e: Expr, b: Expr) extends Expr
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case With(x, e, b) =>
     typeCheck(b, env + (x -> typeCheck(e, env)))
 }
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case With(x, e, b) =>
     interp(b, env + (x -> interp(e, env)))
@@ -887,13 +887,13 @@ TFAE에서도 같은 방식으로 순서쌍을 인코딩할 수 있을까? 첫 �
 다음은 TFAE 인터프리터가 순서쌍을 처리할 수 있게 한다.
 
 ```scala
-case class Pair(f: TFAE, s: TFAE) extends TFAE
-case class Fst(e: TFAE) extends TFAE
-case class Snd(e: TFAE) extends TFAE
+case class Pair(f: Expr, s: Expr) extends Expr
+case class Fst(e: Expr) extends Expr
+case class Snd(e: Expr) extends Expr
 
-case class PairT(f: TFAET, s: TFAET) extends TFAET
+case class PairT(f: Type, s: Type) extends Type
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case Pair(f, s) =>
     PairT(typeCheck(f, env), typeCheck(s, env))
@@ -905,9 +905,9 @@ def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
     s
 }
 
-case class PairV(f: TFAEV, s: TFAEV) extends TFAEV
+case class PairV(f: Value, s: Value) extends Value
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case Pair(f, s) =>
     PairV(interp(f, env), interp(s, env))
@@ -1006,12 +1006,12 @@ def interp(e: TFAE, env: Env): TFAEV = e match {
 다음은 TFAE 인터프리터가 불 값과 조건식을 처리할 수 있게 한다.
 
 ```scala
-case class Bool(b: Boolean) extends TFAE
-case class If(c: TFAE, t: TFAE, f: TFAE) extends TFAE
+case class Bool(b: Boolean) extends Expr
+case class If(c: Expr, t: Expr, f: Expr) extends Expr
 
-case object BoolT extends TFAET
+case object BoolT extends Type
 
-def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   ...
   case Bool(b) => BoolT
   case If(c, t, f) =>
@@ -1019,9 +1019,9 @@ def typeCheck(e: TFAE, env: TEnv): TFAET = e match {
     mustSame(typeCheck(t, env), typeCheck(f, env))
 }
 
-case class BoolV(b: Boolean) extends TFAEV
+case class BoolV(b: Boolean) extends Value
 
-def interp(e: TFAE, env: Env): TFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   ...
   case Bool(b) => BoolV(b)
   case If(c, t, f) =>
