@@ -108,7 +108,7 @@ TFAE에서 과일을 표현한 것과 같은 방법으로 리스트를 표현할
 \begin{array}{rrcl}
 \text{Type Identifier} & t & \in & \mathit{TId} \\
 \text{Expression} & e & ::= & \cdots \\
-&&|& \textsf{type}\ t=x(\tau)\ |\ x(\tau)\ \textsf{in}\ e \\
+&&|& \textsf{type}\ t=x@\tau+x@\tau\ \textsf{in}\ e \\
 &&|& e\ \textsf{match}\ x(x)\rightarrow e\ |\ x(x)\rightarrow e \\
 \text{Value} & v & ::= & \cdots \\
 &&|& x(v) \\
@@ -120,11 +120,11 @@ TFAE에서 과일을 표현한 것과 같은 방법으로 리스트를 표현할
 
 \(t\)는 타입 식별자를 나타내는 메타변수이다. 프로그래머가 정의한 타입의 이름으로 사용된다.
 
-식 \(\textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\)는 새로운 대수적 데이터 타입을 정의한다. \(t\)는 정의한 타입의 이름이다. 하나의 대수적 데이터 타입이 가지는 *형태*(variant)는 반드시 두 개이다. 이는 언어를 단순하게 만들기 위함이다. 대부분의 실제 사용되는 언어는 형태를 몇 개든 자유롭게 만들 수 있다. 형태의 개수를 늘려 언어를 정의하는 것은 쉬운 일이므로 TVFAE는 형태를 두 개만 허용하도록 하겠다. \(x_1\)과 \(x_2\)는 각 형태의 이름이다. 두 이름은 반드시 달라야 한다. \(\tau_1\)은 첫 형태가 갖는 값의 타입이고 \(\tau_2\)는 둘째 형태가 갖는 값의 타입이다. Scala 등의 언어에서는 각 형태의 값이 여러 개의 값을 가질 수 있게 한다. 위에서 본 `Banana` 값이 그 예시이다. 그러나 여러 개의 값은 순서쌍이나 튜플로 값을 묶어 하나의 값으로 표현할 수 있다. 따라서 언어를 단순하게 만들기 위해 형태가 갖는 값 역시 언제나 하나인 것으로 제한한다. 정의한 타입 \(t\)와 형태 \(x_1\), \(x_2\)는 \(e\) 안에서만 사용할 수 있다. 과일과 리스트는 다음처럼 표현된다.
+식 \(\textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\)는 새로운 대수적 데이터 타입을 정의한다. \(t\)는 정의한 타입의 이름이다. 하나의 대수적 데이터 타입이 가지는 *형태*(variant)는 반드시 두 개이다. 이는 언어를 단순하게 만들기 위함이다. 대부분의 실제 사용되는 언어는 형태를 몇 개든 자유롭게 만들 수 있다. 형태의 개수를 늘려 언어를 정의하는 것은 쉬운 일이므로 TVFAE는 형태를 두 개만 허용하도록 하겠다. \(x_1\)과 \(x_2\)는 각 형태의 이름이다. 두 이름은 반드시 달라야 한다. \(\tau_1\)은 첫 형태가 갖는 값의 타입이고 \(\tau_2\)는 둘째 형태가 갖는 값의 타입이다. Scala 등의 언어에서는 각 형태의 값이 여러 개의 값을 가질 수 있게 한다. 위에서 본 `Banana` 값이 그 예시이다. 그러나 여러 개의 값은 순서쌍이나 튜플로 값을 묶어 하나의 값으로 표현할 수 있다. 따라서 언어를 단순하게 만들기 위해 형태가 갖는 값 역시 언제나 하나인 것으로 제한한다. 정의한 형태 \(x_1\), \(x_2\)는 \(e\) 안에서만 사용할 수 있다. 한편 정의한 타입 \(t\)는 \(e\)에서 뿐 아니라 두 형태가 가지는 값의 타입을 정의할 때도 사용될 수 있다. 과일과 리스트는 다음처럼 표현된다.
 
-\[\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})\ \textsf{in}\ \cdots\]
+\[\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})\ \textsf{in}\ \cdots\]
 
-\[\textsf{type}\ List=Nil(\textsf{unit})\ |\ Cons(\textsf{num}\times List)\ \textsf{in}\ \cdots\]
+\[\textsf{type}\ List=Nil@\textsf{unit}+Cons@(\textsf{num}\times List)\ \textsf{in}\ \cdots\]
 
 값 \(x(v)\)는 \(x\)가 이름인 형태의 값이다. \(v\)는 \(x(v)\)가 가지고 있는 값이다. 따라서 반지름이 \(5\)인 사과 값은 \(Apple(5)\)이다. 또, 높이가 \(6\), 반지름이 \(2\)인 바나나 값은 \(Banana((6,2))\)이다.
 
@@ -147,10 +147,10 @@ TFAE의 동적 의미와 비교하여 추가되어야 하는 규칙들만 보겠
 \[
 \frac
 { \sigma[x_1\mapsto \langle x_1\rangle,x_2\mapsto \langle x_2\rangle]\vdash e\Rightarrow v }
-{ \sigma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\Rightarrow v }
+{ \sigma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\Rightarrow v }
 \]
 
-타입을 정의하는 식인 \(\textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\)를 계산한 결과는 그 몸통인 \(e\)를 계산한 결과와 같다. 단, \(e\)를 계산할 때 각 형태의 생성자를 사용할 수 있어야 한다. 따라서 환경에 \(x_1\)의 값이 \(\langle x_1\rangle\)이고 \(x_2\)의 값이 \(\langle x_2\rangle\)라는 정보를 추가한 채로 \(e\)를 계산해야 한다.
+타입을 정의하는 식인 \(\textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\)를 계산한 결과는 그 몸통인 \(e\)를 계산한 결과와 같다. 단, \(e\)를 계산할 때 각 형태의 생성자를 사용할 수 있어야 한다. 따라서 환경에 \(x_1\)의 값이 \(\langle x_1\rangle\)이고 \(x_2\)의 값이 \(\langle x_2\rangle\)라는 정보를 추가한 채로 \(e\)를 계산해야 한다.
 
 \[
 \frac
@@ -179,7 +179,7 @@ TFAE에서는 함수 적용에서 함수 위치에 올 수 있는 값이 클로�
 
 한편 \(e\)의 계산 결과가 \(x_2(v')\)이면 \(e_2\)를 계산해야 한다. \(e_2\)를 계산할 때 환경에 \(x_4\)의 값이 \(v'\)이라는 정보가 들어 있다.
 
-다음 증명 나무는 \(\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2\)를 계산하면 \(5\)가 나옴을 보인다.
+다음 증명 나무는 \(\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2\)를 계산하면 \(5\)가 나옴을 보인다.
 
 \[
 \begin{array}{rcl}
@@ -209,14 +209,14 @@ TFAE에서는 함수 적용에서 함수 위치에 올 수 있는 값이 클로�
     \Rightarrow 5 }
 }
 { \emptyset\vdash
-  \textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})
+  \textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})
   \ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2
   \Rightarrow 5 }
 \]
 
 ## 타입 체계
 
-TVFAE의 타입 체계를 정의하기 위해서는 타입 환경의 정의를 수정해야 한다. TFAE의 타입 환경은 변수의 타입을 저장한다. 따라서 타입 환경이 식별자에서 타입으로 가는 부분 함수였다. TVFAE의 타입 환경은 변수의 타입을 저장하는 것 말고도 할 일이 더 있다. 타입을 정의하는 식을 통해 정의된 대수적 데이터 타입의 정보를 저장해야 한다. 저장한 정보는 타입 검사 과정에서 사용된다. 어떻게 사용되는지는 뒤에서 볼 것이다. 식 \(\textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\)를 타입 검사할 때 타입 환경이 \(\Gamma\)라고 하자. \(\Gamma\)에 \(t\)의 정보를 추가한 것은 \(\Gamma\lbrack t=\{(x_1,\tau_1),(x_2,\tau_2)\}\rbrack\)이다. \(x_1\)과 \(x_2\) 사이의 순서는 중요하지 않기 때문에 집합으로 표현하였다. 이제 타입 환경의 정의역에 \(t\)가 속해야 하며 공역에는 \(\{(x_1,\tau_1),(x_2,\tau_2)\}\)가 속해야 한다. 이에 맞추어 다음처럼 타입 환경을 다시 정의하겠다. \(\mathcal{P}(A)\)는 집합 \(A\)의 *멱집합*(power set)을 의미한다.
+TVFAE의 타입 체계를 정의하기 위해서는 타입 환경의 정의를 수정해야 한다. TFAE의 타입 환경은 변수의 타입을 저장한다. 따라서 타입 환경이 식별자에서 타입으로 가는 부분 함수였다. TVFAE의 타입 환경은 변수의 타입을 저장하는 것 말고도 할 일이 더 있다. 타입을 정의하는 식을 통해 정의된 대수적 데이터 타입의 정보를 저장해야 한다. 저장한 정보는 타입 검사 과정에서 사용된다. 어떻게 사용되는지는 뒤에서 볼 것이다. 식 \(\textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\)를 타입 검사할 때 타입 환경이 \(\Gamma\)라고 하자. \(\Gamma\)에 \(t\)의 정보를 추가한 것은 \(\Gamma\lbrack t=\{(x_1,\tau_1),(x_2,\tau_2)\}\rbrack\)이다. \(x_1\)과 \(x_2\) 사이의 순서는 중요하지 않기 때문에 집합으로 표현하였다. 지금부터는 \(\{(x_1,\tau_1),(x_2,\tau_2)\}\)를 \(x_1@\tau_1+x_2@\tau_2\)라 쓰겠다. 이는 단순히 요약 문법의 표기와 일치하도록 표기 방법을 정한 것일 뿐이다. 이제 타입 환경의 정의역에 \(t\)가 속해야 하며 공역에는 \(x_1@\tau_1+x_2@\tau_2\)가 속해야 한다. 이에 맞추어 다음처럼 타입 환경을 다시 정의하겠다. \(\mathcal{P}(A)\)는 집합 \(A\)의 *멱집합*(power set)을 의미한다.
 
 \[
 \begin{array}{rrcl}
@@ -266,26 +266,26 @@ TVFAE의 타입은 임의의 타입 식별자일 수 있다. 예를 들면 타�
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
+{ \begin{array}{c}
   t\not\in\mathit{Domain}(\Gamma) \\
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_1 \quad
   \Gamma'\vdash \tau_2 \quad
   \Gamma\vdash \tau\end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
-위 규칙은 식 \(\textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\)의 타입을 정의한다. 두 형태의 이름 \(x_1\)과 \(x_2\)는 달라야 한다. 정의하는 타입 \(t\)는 이미 정의된 타입과 이름이 같을 수 없다. 이 전제가 빠진다면 타입 체계가 안전하지 않게 된다. \(e\)의 타입을 계산하기에 앞서 타입 환경에 \(t\)의 정의를 추가해야 한다. 또, \(e\)에서 생성자를 사용할 수 있어야 하므로 \(x_1\)의 타입이 \(\tau_1\rightarrow t\)이고 \(x_2\)의 타입이 \(\tau_2\rightarrow t\)라는 정보도 추가한다. 이렇게 만들어진 타입 환경이 \(\Gamma'\)이다. \(\Gamma'\) 아래에서 \(e\)의 타입은 \(\tau\)이다. 또한, \(\tau_1\)과 \(\tau_2\)가 올바른 형태인지 확인해야 한다. 이 전제가 빠져도 타입 안전성이 무너진다. 재귀적 타입 정의를 허용하기 위해서 \(\tau_1\)과 \(\tau_2\)가 올바른 형태인지 확인할 때 \(\Gamma'\)을 사용한다. 만약 \(\Gamma\)를 사용하면 재귀적이지 않은 타입만 정의할 수 있게 된다. 마지막으로 \(\tau\)가 \(\Gamma\) 아래에서 올바른 형태인지 확인한다. 이 전제가 없으면 역시 타입 안전성이 지켜지지 않는다.
+위 규칙은 식 \(\textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\)의 타입을 정의한다. 정의하는 타입 \(t\)는 이미 정의된 타입과 이름이 같을 수 없다. 이 전제가 빠진다면 타입 체계가 안전하지 않게 된다. \(e\)의 타입을 계산하기에 앞서 타입 환경에 \(t\)의 정의를 추가해야 한다. 또, \(e\)에서 생성자를 사용할 수 있어야 하므로 \(x_1\)의 타입이 \(\tau_1\rightarrow t\)이고 \(x_2\)의 타입이 \(\tau_2\rightarrow t\)라는 정보도 추가한다. 이렇게 만들어진 타입 환경이 \(\Gamma'\)이다. \(\Gamma'\) 아래에서 \(e\)의 타입은 \(\tau\)이다. 또한, \(\tau_1\)과 \(\tau_2\)가 올바른 형태인지 확인해야 한다. 이 전제가 빠져도 타입 안전성이 무너진다. 재귀적 타입 정의를 허용하기 위해서 \(\tau_1\)과 \(\tau_2\)가 올바른 형태인지 확인할 때 \(\Gamma'\)을 사용한다. 만약 \(\Gamma\)를 사용하면 재귀적이지 않은 타입만 정의할 수 있게 된다. 마지막으로 \(\tau\)가 \(\Gamma\) 아래에서 올바른 형태인지 확인한다. 이 전제가 없으면 역시 타입 안전성이 지켜지지 않는다.
 
 전제가 많아서 규칙이 복잡해 보이지만 타입 안전성을 위한 조건들을 제외하고 실제로 타입 검사를 수행하는 부분만 남기면 간단해진다.
 
 \[
 \frac
 {
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \quad
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \quad
   \Gamma'\vdash e:\tau }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
 가장 중요한 부분은 타입 환경에 정의된 타입의 정보와 생성자를 추가하는 것과 몸통의 타입을 검사하는 것이다. 그 이외의 전제는 모두 타입 안전성을 지키기 위한 조건이다. 그 전제 중 하나라도 빠지면 어떻게 타입 안전성에 문제가 생기는지는 뒤에서 다시 보겠다.
@@ -294,7 +294,7 @@ TVFAE의 타입은 임의의 타입 식별자일 수 있다. 예를 들면 타�
 \frac
 { \begin{array}{c}\Gamma\vdash e:t \quad
   t\in\mathit{Domain}(\Gamma) \quad
-  \Gamma(t)=\{(x_1,\tau_1),(x_2,\tau_2)\} \\
+  \Gamma(t)=x_1@\tau_1+x_2@\tau_2 \\
   \Gamma[x_3:\tau_1]\vdash e_1:\tau \quad
   \Gamma[x_4:\tau_2]\vdash e_2:\tau\end{array} }
 { \Gamma\vdash e\ \textsf{match}\ x_1(x_3)\rightarrow e_1\ |\ x_2(x_4)\rightarrow e_2:\tau }
@@ -314,12 +314,12 @@ TVFAE의 타입은 임의의 타입 식별자일 수 있다. 예를 들면 타�
 
 타입이 올바른 형태인지 언제 검사해야 하는지 헷갈릴 수 있다. 수업에서 다루는 언어에서는, 프로그래머가 표시한 타입만 검사하면 되며 모든 프로그래머의 타입 표시를 검사해야 한다고 이해해도 문제가 없다. 그러나 모든 언어에서 성립하는 원칙은 아니다. 타입 체계를 설계한 방법에 따라 프로그래머의 타입 표시임에도 올바른 형태인지 확인할 필요가 없을 수 있다. 또, 프로그래머가 표시한 타입이 아님에도 올바른 형태인지 확인할 필요가 있을 수 있다. 타입이 올바른 형태인지 확인하는 이유는 타입 안전성을 지키기 위함이다. 따라서 타입 안전성을 증명하는 과정에서 필요한 만큼 규칙에 타입의 올바른 형태 검사를 넣어야 한다. 타입 안전성의 증명은 이 글의 수준을 벗어난다. 그러므로 모든 프로그래머의 타입 표시가 올바른 형태인지 검사하면 된다고 이해해도 무방하다. 그러나 무조건적으로 올바른 형태 검사가 필요하다고 외우기보다는 왜 올바른 형태 검사가 필요한지 이해하려는 시도가 중요하다. 이 글의 마지막 부분에서 올바른 형태 검사를 하지 않으면 어떻게 타입 안전성이 깨지는지 볼 것이다. 그 부분을 잘 이해할 수 있다면 TVFAE를 완전히 이해한 것이다.
 
-다음 증명 나무는 \(\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2\)의 타입이 \(\textsf{num}\)임을 보인다.
+다음 증명 나무는 \(\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2\)의 타입이 \(\textsf{num}\)임을 보인다.
 
 \[
 \begin{array}{rcl}
 \Gamma_1&=&\lbrack 
-Fruit=\{(Apple,\textsf{num}),(Banana,\textsf{num}\times\textsf{num})\},
+Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num}),
 Apple:\textsf{num}\rightarrow Fruit,
 Banana:(\textsf{num}\times\textsf{num})\rightarrow Fruit\rbrack \\
 \Gamma_2&=&\Gamma_1\lbrack x:\textsf{num}\rbrack \\
@@ -330,7 +330,6 @@ Banana:(\textsf{num}\times\textsf{num})\rightarrow Fruit\rbrack \\
 \[
 \frac
 { \begin{array}{c}
-  Apple\not=Banana \quad
   Fruit\not\in\mathit{Domain}(\emptyset) \quad
   \Gamma_1=\Gamma_1 \\
   \Gamma_1\vdash \textsf{num} \quad
@@ -361,14 +360,14 @@ Banana:(\textsf{num}\times\textsf{num})\rightarrow Fruit\rbrack \\
     }
     { \Gamma_3\vdash x.2:\textsf{num} } }\\
     Fruit\in\mathit{Domain}(\Gamma_1) \quad
-    \Gamma_1(Fruit)=\{(Apple,\textsf{num}),(Banana,\textsf{num}\times\textsf{num})\}
+    \Gamma_1(Fruit)=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})
     \end{array}
   }
   { \Gamma_1\vdash (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2
     :\textsf{num} }}
 }
 { \emptyset\vdash
-  \textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})
+  \textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})
   \ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x.2
   :\textsf{num} }
 \]
@@ -378,41 +377,41 @@ Banana:(\textsf{num}\times\textsf{num})\rightarrow Fruit\rbrack \\
 다음은 TVFAE의 요약 문법을 Scala로 구현한 것이다.
 
 ```scala
-sealed trait TVFAE
-case class Num(n: Int) extends TVFAE
-case class Add(l: TVFAE, r: TVFAE) extends TVFAE
-case class Sub(l: TVFAE, r: TVFAE) extends TVFAE
-case class Id(x: String) extends TVFAE
-case class Fun(x: String, t: TVFAET, b: TVFAE) extends TVFAE
-case class App(f: TVFAE, a: TVFAE) extends TVFAE
-case class WithType(
-  t: String, v1: String, vt1: TVFAET,
-  v2: String, vt2: TVFAET, b: TVFAE
-) extends TVFAE
-case class Cases(
-  e: TVFAE, v1: String, x1: String, e1: TVFAE,
-  v2: String, x2: String, e2: TVFAE
-) extends TVFAE
+sealed trait Expr
+case class Num(n: Int) extends Expr
+case class Add(l: Expr, r: Expr) extends Expr
+case class Sub(l: Expr, r: Expr) extends Expr
+case class Id(x: String) extends Expr
+case class Fun(x: String, t: Type, b: Expr) extends Expr
+case class App(f: Expr, a: Expr) extends Expr
+case class TypeDef(
+  t: String, v1: String, vt1: Type,
+  v2: String, vt2: Type, b: Expr
+) extends Expr
+case class Match(
+  e: Expr, v1: String, x1: String, e1: Expr,
+  v2: String, x2: String, e2: Expr
+) extends Expr
 
-sealed trait TVFAET
-case object NumT extends TVFAET
-case class ArrowT(p: TVFAET, r: TVFAET) extends TVFAET
-case class IdT(t: String) extends TVFAET
+sealed trait Type
+case object NumT extends Type
+case class ArrowT(p: Type, r: Type) extends Type
+case class IdT(t: String) extends Type
 
-def mustSame(t1: TVFAET, t2: TVFAET): TVFAET =
+def mustSame(t1: Type, t2: Type): Type =
   if (t1 == t2) t1 else throw new Exception
 ```
 
-`TVFAE` 인스턴스는 TVFAE 식을 표현한다. `WithType` 인스턴스는 타입을 정의하는 식을 나타내고 `Cases` 인스턴스는 패턴 대조 식을 나타낸다. `IdT` 인스턴스는 타입으로서의 타입 식별자를 나타낸다. 타입 식별자는 임의의 문자열이다.
+`Expr` 인스턴스는 TVFAE 식을 표현한다. `TypeDef` 인스턴스는 타입을 정의하는 식을 나타내고 `Match` 인스턴스는 패턴 대조 식을 나타낸다. `IdT` 인스턴스는 타입으로서의 타입 식별자를 나타낸다. 타입 식별자는 임의의 문자열이다.
 
 ```scala
 case class TEnv(
-  vars: Map[String, TVFAET] = Map(),
-  tbinds: Map[String, Map[String, TVFAET]] = Map()
+  vars: Map[String, Type] = Map(),
+  tbinds: Map[String, Map[String, Type]] = Map()
 ) {
-  def +(x: String, t: TVFAET): TEnv =
+  def +(x: String, t: Type): TEnv =
     TEnv(vars + (x -> t), tbinds)
-  def +(x: String, m: Map[String, TVFAET]): TEnv =
+  def +(x: String, m: Map[String, Type]): TEnv =
     TEnv(vars, tbinds + (x -> m))
   def contains(x: String): Boolean =
     tbinds.contains(x)
@@ -446,7 +445,7 @@ env.contains("Fruit")
 `typeCheck` 함수를 정의하기 전에 타입이 올바른 형태인지 확인하는 `validType` 함수를 정의하겠다. `validType` 함수는 타입 환경과 타입을 인자로 받는다. 만약 그 타입이 주어진 타입 환경 아래에서 올바른 형태면 그 타입을 그대로 결과로 내고 잘못된 형태면 예외를 발생시킨다.
 
 ```scala
-def validType(t: TVFAET, env: TEnv): TVFAET = t match {
+def validType(t: Type, env: TEnv): Type = t match {
   case NumT => t
   case ArrowT(p, r) =>
     ArrowT(validType(p, env), validType(r, env))
@@ -459,9 +458,8 @@ def validType(t: TVFAET, env: TEnv): TVFAET = t match {
 이제 `typeCheck` 함수에 추가되어야 하는 코드를 보겠다.
 
 ```scala
- case WithType(t, v1, vt1, v2, vt2, b) =>
+ case TypeDef(t, v1, vt1, v2, vt2, b) =>
   if (env.contains(t)) throw new Exception
-  if (v1 == v2) throw new Exception
   val nenv = env +
     (t, Map(v1 -> vt1, v2 -> vt2)) +
     (v1, ArrowT(vt1, IdT(t))) +
@@ -473,21 +471,20 @@ def validType(t: TVFAET, env: TEnv): TVFAET = t match {
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
+{ \begin{array}{c}
   t\not\in\mathit{Domain}(\Gamma) \\
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_1 \quad
   \Gamma'\vdash \tau_2 \quad
   \Gamma\vdash \tau\end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
-먼저, 정의되는 타입의 이름이 이미 타입 환경에 들어 있는지 확인한다. 들어 있다면 식을 거절한다. 두 형태의 이름이 같은 경우에도 식을 거절한다. 주어진 타입 환경에 타입과 생성자를 추가한다. 두 형태가 가지는 값의 타입은 확장된 타입 환경 아래에서 올바른 형태여야 한다. 마지막으로 몸통의 타입을 계산하고 그 타입이 처음의 타입 환경 아래에서 올바른 형태인지 확인한다. 올바른 형태이면 그 타입이 식 전체의 타입이 된다.
+먼저, 정의되는 타입의 이름이 이미 타입 환경에 들어 있는지 확인한다. 들어 있다면 식을 거절한다. 주어진 타입 환경에 타입과 생성자를 추가한다. 두 형태가 가지는 값의 타입은 확장된 타입 환경 아래에서 올바른 형태여야 한다. 마지막으로 몸통의 타입을 계산하고 그 타입이 처음의 타입 환경 아래에서 올바른 형태인지 확인한다. 올바른 형태이면 그 타입이 식 전체의 타입이 된다.
 
 ```scala
-case Cases(e, v1, x1, e1, v2, x2, e2) =>
-  if (v1 == v2) throw new Exception
+case Match(e, v1, x1, e1, v2, x2, e2) =>
   val IdT(t) = typeCheck(e, env)
   val tdef = env.tbinds(t)
   mustSame(
@@ -500,13 +497,13 @@ case Cases(e, v1, x1, e1, v2, x2, e2) =>
 \frac
 { \begin{array}{c}\Gamma\vdash e:t \quad
   t\in\mathit{Domain}(\Gamma) \quad
-  \Gamma(t)=\{(x_1,\tau_1),(x_2,\tau_2)\} \\
+  \Gamma(t)=x_1@\tau_1+x_2@\tau_2 \\
   \Gamma[x_3:\tau_1]\vdash e_1:\tau \quad
   \Gamma[x_4:\tau_2]\vdash e_2:\tau\end{array} }
 { \Gamma\vdash e\ \textsf{match}\ x_1(x_3)\rightarrow e_1\ |\ x_2(x_4)\rightarrow e_2:\tau }
 \]
 
-두 형태의 이름은 달라야 한다. 먼저 패턴 대조 대상인 식의 타입을 계산한다. 그 타입은 타입 식별자여야 한다. 타입의 정보를 타입 환경에서 찾는다. 이로써 각 형태가 가지는 값의 타입이 무엇인지 알 수 있다. `e1`과 `e2`의 타입을 각각 확장된 타입 환경 아래에서 계산한다. 두 타입은 같아야 하며, 같다면 그 타입이 전체 식의 타입이다.
+먼저 패턴 대조 대상인 식의 타입을 계산한다. 그 타입은 타입 식별자여야 한다. 타입의 정보를 타입 환경에서 찾는다. 이로써 각 형태가 가지는 값의 타입이 무엇인지 알 수 있다. `e1`과 `e2`의 타입을 각각 확장된 타입 환경 아래에서 계산한다. 두 타입은 같아야 하며, 같다면 그 타입이 전체 식의 타입이다.
 
 ```scala
 case Fun(x, t, b) =>
@@ -531,7 +528,7 @@ case Id(x) => env.vars(x)
 다음은 `typeCheck` 함수의 전체 코드이다.
 
 ```scala
-def typeCheck(e: TVFAE, env: TEnv): TVFAET = e match {
+def typeCheck(e: Expr, env: TEnv): Type = e match {
   case Num(n) => NumT
   case Add(l, r) =>
     mustSame(mustSame(typeCheck(l, env), NumT), typeCheck(r, env))
@@ -546,9 +543,8 @@ def typeCheck(e: TVFAE, env: TEnv): TVFAET = e match {
     val t3 = typeCheck(a, env)
     mustSame(t1, t3)
     t2
-  case WithType(t, v1, vt1, v2, vt2, b) =>
+  case TypeDef(t, v1, vt1, v2, vt2, b) =>
     if (env.contains(t)) throw new Exception
-    if (v1 == v2) throw new Exception
     val nenv = env +
       (t, Map(v1 -> vt1, v2 -> vt2)) +
       (v1, ArrowT(vt1, IdT(t))) +
@@ -556,8 +552,7 @@ def typeCheck(e: TVFAE, env: TEnv): TVFAET = e match {
     validType(vt1, nenv)
     validType(vt2, nenv)
     validType(typeCheck(b, nenv), env)
-  case Cases(e, v1, x1, e1, v2, x2, e2) =>
-    if (v1 == v2) throw new Exception
+  case Match(e, v1, x1, e1, v2, x2, e2) =>
     val IdT(t) = typeCheck(e, env)
     val tdef = env.tbinds(t)
     mustSame(
@@ -567,17 +562,17 @@ def typeCheck(e: TVFAE, env: TEnv): TVFAET = e match {
 }
 ```
 
-다음은 타입 검사기를 통해 \(\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x\)의 타입을 계산한 것이다.
+다음은 타입 검사기를 통해 \(\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@\textsf{num}\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x\)의 타입을 계산한 것이다.
 
 ```scala
-// type Fruit = Apple(num) | Banana(num) in
+// type Fruit = Apple@num+Banana@num in
 //   (Apple 5) match
 //     Apple(x) -> x |
 //     Banana(x) -> x
 typeCheck(
-  WithType(
+  TypeDef(
     "Fruit", "Apple", NumT, "Banana", NumT,
-    Cases(
+    Match(
       App(Id("Apple"), Num(5)),
       "Apple", "x", Id("x"),
       "Banana", "x", Id("x")
@@ -592,35 +587,35 @@ typeCheck(
 이제 TVFAE의 인터프리터를 보겠다.
 
 ```scala
-sealed trait TVFAEV
-case class NumV(n: Int) extends TVFAEV
-case class CloV(p: String, b: TVFAE, e: Env) extends TVFAEV
-case class VarV(x: String, v: TVFAEV) extends TVFAEV
-case class ConstV(x: String) extends TVFAEV
+sealed trait Value
+case class NumV(n: Int) extends Value
+case class CloV(p: String, b: Expr, e: Env) extends Value
+case class VariantV(x: String, v: Value) extends Value
+case class ConstructorV(x: String) extends Value
 
-type Env = Map[String, TVFAEV]
+type Env = Map[String, Value]
 ```
 
-`VarV` 인스턴스는 어떤 형태의 값을 나타낸다. `ConstV` 인스턴스는 어떤 형태의 생성자를 나타낸다.
+`VariantV` 인스턴스는 어떤 형태의 값을 나타낸다. `ConstructorV` 인스턴스는 어떤 형태의 생성자를 나타낸다.
 
 ```scala
-case WithType(_, v1, _, v2, _, b) =>
-  interp(b, env + (v1 -> ConstV(v1)) + (v2 -> ConstV(v2)))
+case TypeDef(_, v1, _, v2, _, b) =>
+  interp(b, env + (v1 -> ConstructorV(v1)) + (v2 -> ConstructorV(v2)))
 ```
 
 \[
 \frac
 { \sigma[x_1\mapsto \langle x_1\rangle,x_2\mapsto \langle x_2\rangle]\vdash e\Rightarrow v }
-{ \sigma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e\Rightarrow v }
+{ \sigma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e\Rightarrow v }
 \]
 
 타입을 정의하는 식을 계산하려면 환경에 생성자를 추가하고 몸통을 계산하면 된다.
 
 ```scala
-case Cases(e, v1, x1, e1, v2, x2, e2) =>
+case Match(e, v1, x1, e1, v2, x2, e2) =>
   interp(e, env) match {
-    case VarV(`v1`, v) => interp(e1, env + (x1 -> v))
-    case VarV(`v2`, v) => interp(e2, env + (x2 -> v))
+    case VariantV(`v1`, v) => interp(e1, env + (x1 -> v))
+    case VariantV(`v2`, v) => interp(e2, env + (x2 -> v))
   }
 ```
 
@@ -644,7 +639,7 @@ case Cases(e, v1, x1, e1, v2, x2, e2) =>
 case App(f, a) => interp(f, env) match {
   case CloV(x, b, fEnv) =>
     interp(b, fEnv + (x -> interp(a, env)))
-  case ConstV(x) => VarV(x, interp(a, env))
+  case ConstructorV(x) => VariantV(x, interp(a, env))
 }
 ```
 
@@ -660,7 +655,7 @@ case App(f, a) => interp(f, env) match {
 다음은 인터프리터 전체 코드이다.
 
 ```scala
-def interp(e: TVFAE, env: Env): TVFAEV = e match {
+def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
     val NumV(n) = interp(l, env)
@@ -675,34 +670,34 @@ def interp(e: TVFAE, env: Env): TVFAEV = e match {
   case App(f, a) => interp(f, env) match {
     case CloV(x, b, fEnv) =>
       interp(b, fEnv + (x -> interp(a, env)))
-    case ConstV(x) => VarV(x, interp(a, env))
+    case ConstructorV(x) => VariantV(x, interp(a, env))
   }
-  case WithType(_, v1, _, v2, _, b) =>
-    interp(b, env + (v1 -> ConstV(v1)) + (v2 -> ConstV(v2)))
-  case Cases(e, v1, x1, e1, v2, x2, e2) =>
+  case TypeDef(_, v1, _, v2, _, b) =>
+    interp(b, env + (v1 -> ConstructorV(v1)) + (v2 -> ConstructorV(v2)))
+  case Match(e, v1, x1, e1, v2, x2, e2) =>
     interp(e, env) match {
-      case VarV(`v1`, v) => interp(e1, env + (x1 -> v))
-      case VarV(`v2`, v) => interp(e2, env + (x2 -> v))
+      case VariantV(`v1`, v) => interp(e1, env + (x1 -> v))
+      case VariantV(`v2`, v) => interp(e2, env + (x2 -> v))
     }
 }
 
-def run(e: TVFAE): TVFAEV = {
+def run(e: Expr): Value = {
   typeCheck(e, TEnv())
   interp(e, Map.empty)
 }
 ```
 
-다음은 인터프리터를 통해 \(\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x\)의 값을 계산한 것이다.
+다음은 인터프리터를 통해 \(\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@\textsf{num}\ \textsf{in}\ (Apple\ 5)\ \textsf{match}\ Apple(x)\rightarrow x\ |\ Banana(x)\rightarrow x\)의 값을 계산한 것이다.
 
 ```scala
-// type Fruit = Apple(num) | Banana(num) in
+// type Fruit = Apple@num+Banana@num in
 //   (Apple 5) match
 //     Apple(x) -> x |
 //     Banana(x) -> x
 run(
-  WithType(
+  TypeDef(
     "Fruit", "Apple", NumT, "Banana", NumT,
-    Cases(
+    Match(
       App(Id("Apple"), Num(5)),
       "Apple", "x", Id("x"),
       "Banana", "x", Id("x")
@@ -717,14 +712,14 @@ run(
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
+{ \begin{array}{c}
   t\not\in\mathit{Domain}(\Gamma) \\
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_1 \quad
   \Gamma'\vdash \tau_2 \quad
   \Gamma\vdash \tau\end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
 \[
@@ -737,9 +732,9 @@ run(
 
 타입 체계가 안전하지 않음을 확인하기 위해서는 안전성에 대한 반례가 되는 식을 찾아야 한다. 즉, 타입 체계가 거절하지 않지만 계산 중 타입 오류가 발생하는 식을 찾아야 한다. TVFAE에서 그런 반례를 찾는 전략은 같은 이름의 타입을 두 번 정의하는 것이다. 타입의 이름은 같지만 형태의 이름이 다르거나 형태가 가지는 값의 타입이 다른 두 타입을 정의했다고 하자. 그리고 한 타입의 값을 다른 타입의 값으로 사용하면 실행 중 타입 오류가 발생한다. 타입 체계는 타입의 이름만으로 두 타입이 같은지 판단하므로 그러한 식을 거절할 수 없다. 예를 들어 다음처럼 \(Fruit\) 타입을 두 번 정의했다고 하자.
 
-\[\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num}\times\textsf{num})\ \textsf{in}\ \cdots\]
+\[\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@(\textsf{num}\times\textsf{num})\ \textsf{in}\ \cdots\]
 
-\[\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in}\ \cdots\]
+\[\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@\textsf{num}\ \textsf{in}\ \cdots\]
 
 \(Banana(5)\)가 두 번째 \(Fruit\) 타입의 값이라고 하자. 이 값을 첫 번째 \(Fruit\) 타입의 값으로 사용하여 패턴 대조를 해 보자.
 
@@ -755,21 +750,21 @@ run(
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+{ \begin{array}{c}
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_1 \quad
   \Gamma'\vdash \tau_2 \quad
   \Gamma\vdash \tau\end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
 다른 규칙은 모두 그대로이고 타입 정의 식의 타입 규칙만 위처럼 바뀌었다고 하자. 전제 \(t\not\in\mathit{Domain}(\Gamma)\)가 사라진 것이다. 타입 환경에 이름이 \(t\)인 타입이 정의되어 있어도 또 이름이 \(t\)인 타입을 정의할 수 있다. 이제 다음과 같은 식도 적당한 \(e\)에 대해 올바른 타입의 식이다.
 
 \[
 \begin{array}{l}
-\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in} \\
-\quad \textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Cherry(\textsf{num})\ \textsf{in} \\
+\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@\textsf{num}\ \textsf{in} \\
+\quad \textsf{type}\ Fruit=Apple@\textsf{num}+Cherry@\textsf{num}\ \textsf{in} \\
 \quad\quad e
 \end{array}
 \]
@@ -780,20 +775,20 @@ run(
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
+{ \begin{array}{c}
   t\not\in\mathit{Domain}(\Gamma) \\
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_2 \quad
   \Gamma\vdash \tau\end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
 다른 규칙은 모두 그대로이고 타입 정의 식의 타입 규칙만 위처럼 바뀌었다고 하자. 전제 \(\Gamma'\vdash \tau_1\)이 사라진 것이다. 타입을 정의할 때 첫 번째 형태는 가지는 값의 타입이 잘못된 형태일 수 있다. 이제 다음과 같은 식도 적당한 \(e\)에 대해 올바른 타입의 식이다.
 
 \[
 \begin{array}{l}
-\textsf{type}\ Fruit=Apple(Color)\ |\ Banana(\textsf{num})\ \textsf{in} \\
+\textsf{type}\ Fruit=Apple@Color+Banana@\textsf{num}\ \textsf{in} \\
 \quad e
 \end{array}
 \]
@@ -802,7 +797,7 @@ run(
 
 \[
 \begin{array}{l}
-\textsf{type}\ Fruit=Apple(Color)\ |\ Banana(\textsf{num})\ \textsf{in} \\
+\textsf{type}\ Fruit=Apple@Color+Banana@\textsf{num}\ \textsf{in} \\
 \quad (\lambda f:Fruit.\textsf{type}\ Color=\cdots \\
 \quad\quad \cdots \\
 \quad )\ (\textsf{type}\ Color=\cdots \\
@@ -817,28 +812,28 @@ run(
 
 \[
 \frac
-{ \begin{array}{c}x_1\not=x_2 \quad
+{ \begin{array}{c}
   t\not\in\mathit{Domain}(\Gamma) \\
-  \Gamma'=\Gamma[t=\{(x_1,\tau_1),(x_2,\tau_2)\},x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
+  \Gamma'=\Gamma[t=x_1@\tau_1+x_2@\tau_2,x_1:\tau_1\rightarrow t,x_2:\tau_2\rightarrow t] \\
   \Gamma'\vdash e:\tau \quad
   \Gamma'\vdash \tau_1 \quad
   \Gamma'\vdash \tau_2 \quad
   \end{array} }
-{ \Gamma\vdash \textsf{type}\ t=x_1(\tau_1)\ |\ x_2(\tau_2)\ \textsf{in}\ e:\tau }
+{ \Gamma\vdash \textsf{type}\ t=x_1@\tau_1+x_2@\tau_2\ \textsf{in}\ e:\tau }
 \]
 
 다른 규칙은 모두 그대로이고 타입 정의 식의 타입 규칙만 위처럼 바뀌었다고 하자. 전제 \(\Gamma\vdash \tau\)가 사라진 것이다. 타입 정의 식의 몸통의 타입이, 그 타입 정의 식에서 정의한 타입을 포함할 수 있다. 정의된 타입이, 그 타입을 사용할 수 있는 영역을 빠져나가 다른 곳에서 쓰이게 되는 것이다. 이제 다음 두 식 모두 올바른 타입의 식이다.
 
 \[
 \begin{array}{l}
-\textsf{type}\ Fruit=Apple(\textsf{num}\times\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in} \\
+\textsf{type}\ Fruit=Apple@(\textsf{num}\times\textsf{num})+Banana@\textsf{num}\ \textsf{in} \\
 \quad \lambda f:Fruit.\cdots
 \end{array}
 \]
 
 \[
 \begin{array}{l}
-\textsf{type}\ Fruit=Apple(\textsf{num})\ |\ Banana(\textsf{num})\ \textsf{in} \\
+\textsf{type}\ Fruit=Apple@\textsf{num}+Banana@\textsf{num}\ \textsf{in} \\
 \quad Apple\ 5
 \end{array}
 \]
