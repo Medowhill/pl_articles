@@ -1,4 +1,4 @@
-This article defines STFAE by adding records and subtype polymorphism to TFAE.
+This article defines STFAE by adding *records* and subtype polymorphism to TFAE.
 It defines the abstract syntax, the dynamic semantics, and the type system of
 STFAE.
 
@@ -44,7 +44,7 @@ num}\}\). The type of \(\{a=1+2,b=3+4\}\) also is \(\{a:{\sf num},b:{\sf
 num}\}\). Similarly, the type of the empty record is \(\{\}\).
 
 \(e.l\) is an expression that uses a record value. It is usually called a
-projection. If the result of \(e\) is \(\{l_1=v_1,\cdots,l_n=v_n\}\), then
+*projection*. If the result of \(e\) is \(\{l_1=v_1,\cdots,l_n=v_n\}\), then
 \(e.l\) results in \(v_i\) where \(l_i\) is equal to \(l\). The expression
 computes the value of the field \(l\) of a given record value. If \(e\) does not
 result in a record value, \(e.l\) causes a type error at run time. If \(e\)
@@ -150,7 +150,7 @@ two types. \(\tau_1<:\tau_2\) denotes that \(\tau_1\) is a subtype of
 \(\tau_2\). If \(\tau_1\) is a subtype of \(\tau_2\), then \(\tau_2\) is a
 supertype of \(\tau_1\), and a value of \(\tau_1\) can be used where a value of
 \(\tau_2\) is expected. Subtype polymorphism is a concept based on
-substitutability. The previous examples shows that a value of \(\{a:{\sf
+*substitutability*. The previous examples shows that a value of \(\{a:{\sf
 num},b:{\sf num}\}\) can appear where a value of \(\{a:{\sf num}\}\) is
 expected. Therefore, \(\{a:{\sf num},b:{\sf num}\}\) is a subtype of \(\{a:{\sf
 num}\}\), and \(\{a:{\sf num}\}\) is a supertype of \(\{a:{\sf num},b:{\sf
@@ -167,7 +167,7 @@ a single expression to have multiple types by using the subtype relation:
 { \Gamma\vdash e:\tau }
 \]
 
-The rule is usually called a subsumption rule. The rule implies that if
+The rule is usually called a *subsumption* rule. The rule implies that if
 \(\tau'\) is a type of \(e\) and \(\tau'\) is a subtype of \(\tau\), then
 \(\tau\) also is a type of \(e\). Due to the subtype polymorphism, a single
 expression can have multiple types. It is a big difference between STFAE and the
@@ -175,12 +175,12 @@ hitherto languages.
 
 ### Subtyping Rules
 
-It is time to define subtyping rules of the language. As typing rules define the
+It is time to define *subtyping rules* of the language. As typing rules define the
 types of expressions, subtyping rules define the subtype relation.
 
 #### Reflexivity
 
-The subtype relation is reflexive. A value of \(\tau\) can be used where a value
+The subtype relation is *reflexive*. A value of \(\tau\) can be used where a value
 of \(\tau\) is expected. It is trivial. Thus, every type is a subtype of itself.
 The following rule formalizes this fact:
 
@@ -190,7 +190,7 @@ By the rule, \(\{a:{\sf num}\}<:\{a:{\sf num}\}\) is true.
 
 #### Transitivity
 
-The subtype relation is transitive as well. Let \(\tau_1\) be a subtype of
+The subtype relation is *transitive* as well. Let \(\tau_1\) be a subtype of
 \(\tau_2\) and \(\tau_2\) be a subtype of \(\tau_3\). A value of \(\tau_2\) can
 appear where a value of \(\tau_3\) is expected. Also, a value of \(\tau_1\) can
 appear where a value of \(\tau_2\) is expected. Therefore, a value of \(\tau_1\)
@@ -514,7 +514,7 @@ STFAE can be easily extended with a few types.
 \end{array}
 \]
 
-\(\top\) is the top type. The top type is a supertype of every type, and every
+\(\top\) is the *top* type. The top type is a supertype of every type, and every
 type is a subtype of the top type. Every value is a value of the top type. The
 following is a subtyping rule for the top type:
 
@@ -543,7 +543,7 @@ By extending STFAE with the top type, the type of the above expression can be
 \end{array}
 \]
 
-\(\bot\) is the bottom type. The bottom type is a subtype of every type, and
+\(\bot\) is the *bottom* type. The bottom type is a subtype of every type, and
 every type is a supertype of the bottom type. The following is a subtyping rule
 for the bottom type:
 

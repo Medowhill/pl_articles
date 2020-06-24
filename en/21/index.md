@@ -182,7 +182,7 @@ types defined by programmers.
 
 An expression \({\sf type}\ t=x_1@\tau_1+x_2@\tau_2\ {\sf in}\ e\) defines a new
 algebraic data type. \(t\) is the name of the type. A single algebraic data type
-can have two variants in TVFAE. The restriction exists to make the language
+can have two *variants* in TVFAE. The restriction exists to make the language
 simple. Most real-world languages allow programmers to define any number of
 variants for a single type. It is straightforward to change the language to
 allow more than two variants. \(x_1\) and \(x_2\) are the names of the variants.
@@ -415,7 +415,7 @@ If \(\Gamma\vdash\tau\) is not provable, then \(\tau\) is ill-formed under
 
 ## Typing Rules
 
-Now, typing rules of TVFAE can be defined. Typing rules are rules defining the
+Now, *typing rules* of TVFAE can be defined. Typing rules are rules defining the
 types of expressions among inference rules consisting a type system.
 
 \[

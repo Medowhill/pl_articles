@@ -1,4 +1,4 @@
-This article defines TpolyFAE by adding parametric polymorphism to TFAE. It
+This article defines TpolyFAE by adding *parametric polymorphism* to TFAE. It
 defines the abstract syntax, the dynamic semantics, and the type system of
 TpolyFAE and implements a type checker and an interpreter of TFAE.
 
@@ -54,10 +54,10 @@ g\ \textsf{true}
 \end{array}
 \]
 
-Polymorphism resolves the problem. Polymorphism is a notion of using a single
+*Polymorphism* resolves the problem. Polymorphism is a notion of using a single
 entity as multiple types. For example, it may allow \(\lambda x.x\) to be used
 as multiple types. Multiple sorts of polymorphism exist. Parametric
-polymorphism, subtype polymorphism, and ad-hoc polymorphism are most widely
+polymorphism, *subtype polymorphism*, and *ad-hoc polymorphism* are most widely
 used. This article focuses on only parametric polymorphism. The next article
 will deal with subtype polymorphism. Overloading is one form of ad-hoc
 polymorphism, and ad-hoc polymorphism is outside the scope of the course.
@@ -176,8 +176,8 @@ x:\alpha.x,\emptyset\rangle\) under the empty environment.
 instance, since the type of \(\lambda x:\alpha.x\) is
 \(\alpha\rightarrow\alpha\), the type of \(\Lambda\alpha.\lambda x:\alpha.x\) is
 \(\forall\alpha.\alpha\rightarrow\alpha\). Types of the form
-\(\forall\alpha.\tau\) are called universal types or universally quantified
-types. Universal types bind type identifiers. In \(\forall\alpha.\tau\),
+\(\forall\alpha.\tau\) are called *universal types* or *universally quantified
+types*. Universal types bind type identifiers. In \(\forall\alpha.\tau\),
 \(\alpha\) is a binding occurrence, and its scope is \(\tau\).
 
 \(e\ [\tau]\) is a type application. If \(e\) denotes a type function, \(e\
