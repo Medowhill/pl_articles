@@ -59,7 +59,7 @@
 
 \[
 \frac
-{ \Gamma\vdash e_1:\tau_1 \quad \cdots \quad \sigma\vdash e_n:\tau_n }
+{ \Gamma\vdash e_1:\tau_1 \quad \cdots \quad \Gamma\vdash e_n:\tau_n }
 { \Gamma\vdash \{l_1=e_1,\cdots,l_n=e_n\}\Rightarrow\{l_1:\tau_1,\cdots,l_n:\tau_n\} }
 \]
 
