@@ -294,7 +294,7 @@ The rule for a lambda abstraction needs to compute the type of a closure created
 \frac
 { \Gamma\vdash e_1:\tau_1\rightarrow\tau_2 \quad
   \Gamma\vdash e_2:\tau_1 }
-{ \Gamma\vdash e_1\ e_2\Rightarrow\tau_2 }
+{ \Gamma\vdash e_1\ e_2:\tau_2 }
 \]
 
 Function application \(e_1\ e_2\) is well-typed only if \(e_1\) is a function. Let the type of \(e_1\) be \(\tau_1\rightarrow\tau_2\). The type of the argument, \(e_2\) must be \(\tau_1\). The type of the return value is \(\tau_2\) so that the type of \(e_1\ e_2\) is \(\tau_2\).

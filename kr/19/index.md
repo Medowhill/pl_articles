@@ -293,7 +293,7 @@ TFAE의 동적 의미는 FAE의 동적 의미와 거의 같다. 유일한 차이
 \frac
 { \Gamma\vdash e_1:\tau_1\rightarrow\tau_2 \quad
   \Gamma\vdash e_2:\tau_1 }
-{ \Gamma\vdash e_1\ e_2\Rightarrow\tau_2 }
+{ \Gamma\vdash e_1\ e_2:\tau_2 }
 \]
 마지막은 함수 적용이다. \(e_1\)이 나타내는 값은 함수여야 한다. \(e_1\)의 타입을 \(\tau_1\rightarrow\tau_2\)라 하자. 인자로 들어올 값의 타입은 \(\tau_1\)이어야 한다. 동적 의미와 달리 함수 몸통의 타입을 찾는 과정은 필요 없다. 그 과정은 이미 람다 요약에 대한 규칙이 하고 있다. \(e_1\)의 타입이 \(\tau_1\rightarrow\tau_2\)이므로 \(\tau_1\) 타입의 인자를 넘겨 몸통을 계산하면 그 결과는 \(\tau_2\) 타입이라는 사실이 보장된다. 따라서 \(e_1\ e_2\)의 타입은 \(\tau_2\)이다.
 
