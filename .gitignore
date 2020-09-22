@@ -7,3 +7,6 @@ htmls/*_*_*
 */*/*.js
 */*/*.css
 */*/Makefile
+*.log
+*.aux
+*.pdf

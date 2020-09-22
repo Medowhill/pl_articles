@@ -246,7 +246,7 @@
 [^1]: The Python Language Reference 3.8.5, 6.7 Binary arithmetic operations,
 [https://docs.python.org/3/reference/expressions.html](https://docs.python.org/3/reference/expressions.html)
 
-a_expr ::= m_expr | a_expr “+” m_expr | a_expr “-” m_expr
+> a_expr ::= m_expr | a_expr “+” m_expr | a_expr “-” m_expr
 
 앞에서 본 것과 달리 비말단 기호를 표시하는 데 홑화살괄호가 사용되지 않았다는
 차이가 있다. m_expr의 정의를 생략하기는 했지만 “1”이 m_expr의 원소라는 사실을
