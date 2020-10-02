@@ -135,7 +135,7 @@ Assume the above.
   { f\in\mathit{Domain}(\sigma_1)}
   { \sigma_1\vdash f\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
   \quad
-  {\normalsize \emptyset\vdash 1\Rightarrow 1}
+  {\normalsize \sigma_1\vdash 1\Rightarrow 1}
   \quad
   \frac
   { 
@@ -339,3 +339,4 @@ interp(
 ## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article.
+I also thank "pi" for finding a wrong environment in a proof tree.

@@ -135,7 +135,7 @@ RFAE는 CFAE에 재귀 함수를 추가한 언어이다.
   { f\in\mathit{Domain}(\sigma_1)}
   { \sigma_1\vdash f\Rightarrow\langle\lambda n.\textsf{if0}\ n\ 1\ (n\times(f\ (n-1))),\sigma_1\rangle }
   \quad
-  {\normalsize \emptyset\vdash 1\Rightarrow 1}
+  {\normalsize \sigma_1\vdash 1\Rightarrow 1}
   \quad
   \frac
   { 
@@ -338,4 +338,5 @@ interp(
 
 ## 감사의 말
 
-글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다. 증명 나무에서 틀린
+부분을 찾아 주신 pi님께 감사드립니다.
