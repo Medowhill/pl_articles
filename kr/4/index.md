@@ -415,7 +415,7 @@ def product(l: List): Int = list_foldRight(l, 1, _ * _)
 
 ```scala
   list_foldRight(List(a, b, .., y, z), n, f)
-= f(a, f(b, .. f(y, f(n, z)) .. ))
+= f(a, f(b, .. f(y, f(z, n)) .. ))
 
   list_foldRight(List(1, 2, 3), 0, +)
 = +(1, +(2, +(3, 0)))
@@ -630,4 +630,4 @@ def getAndDiv100(l: List, n: Int): Option =
 
 ## 감사의 말
 
-글을 확인하고 의견을 주신 류석영 교수님, Scala 세미나를 준비할 때 의견 주신 모든 분과 Scala 세미나에 참석하신 모든 분께 감사드립니다. 잘못된 코드 예시를 지적해주신 ‘seyoon’님께 감사드립니다.
+글을 확인하고 의견을 주신 류석영 교수님, Scala 세미나를 준비할 때 의견 주신 모든 분과 Scala 세미나에 참석하신 모든 분께 감사드립니다. 잘못된 코드를 지적해주신 ‘seyoon’님과 ‘kslksks’님께 감사드립니다.

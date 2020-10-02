@@ -410,7 +410,7 @@ The following gives an intuitive interpretation of the function:
 
 ```scala
   list_foldRight(List(a, b, .., y, z), n, f)
-= f(a, f(b, .. f(y, f(n, z)) .. ))
+= f(a, f(b, .. f(y, f(z, n)) .. ))
 
   list_foldRight(List(1, 2, 3), 0, +)
 = +(1, +(2, +(3, 0)))
@@ -617,4 +617,4 @@ Option types are powerful tools to handle erroneous cases in a functional way. F
 
 ## Acknowledgments
 
-I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar. I thank 'seyoon' for pointing out an incorrect code example.
+I thank professor Ryu for giving feedback on the article. I also thank students who gave feedback on the seminar or participated in the seminar. I thank 'seyoon' and 'kslksks' for pointing out incorrect code.
