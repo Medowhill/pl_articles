@@ -738,7 +738,7 @@ FAE의 상태는 계산 스택과 값 스택의 순서쌍이다. 다음은 계�
 
 \[
 \begin{array}{lrcr}
-& \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2)::\square &||& \blacksquare \\
+& \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2::\square &||& \blacksquare \\
 \rightarrow & \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1::\emptyset\vdash2::(@)::\square &||& \blacksquare \\
 \rightarrow & \emptyset\vdash\lambda x.\lambda y.x+y::\emptyset\vdash 1::(@)::\emptyset\vdash2::(@)::\square &||& \blacksquare \\
 \rightarrow & \emptyset\vdash 1::(@)::\emptyset\vdash2::(@)::\square &||& \langle\lambda x.\lambda y.x+y,\emptyset\rangle::\blacksquare \\
@@ -767,4 +767,4 @@ FAE의 상태는 계산 스택과 값 스택의 순서쌍이다. 다음은 계�
 
 ## 감사의 말
 
-글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다. 오타를 알려주신 “BJ 9”님께 감사드립니다.

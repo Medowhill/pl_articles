@@ -734,7 +734,7 @@ The following are examples of reduction according to the small-step semantics.
 
 \[
 \begin{array}{lrcr}
-& \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2)::\square &||& \blacksquare \\
+& \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1\ 2::\square &||& \blacksquare \\
 \rightarrow & \emptyset\vdash(\lambda x.\lambda y.x+y)\ 1::\emptyset\vdash2::(@)::\square &||&     \blacksquare \\
 \rightarrow & \emptyset\vdash\lambda x.\lambda y.x+y::\emptyset\vdash 1::(@)::\emptyset\vdash2::(@ )::\square &||& \blacksquare \\
 \rightarrow & \emptyset\vdash 1::(@)::\emptyset\vdash2::(@)::\square &||& \langle\lambda x.\lambda y.x+y,\emptyset\rangle::\blacksquare \\
@@ -763,4 +763,4 @@ A redex is \(e_1+e_2\); the continuation is \(k\ ||\ s\), which is \(\lambda  v.
 
 ## Acknowledgments
 
-I thank professor Ryu for giving feedback on the article.
+I thank professor Ryu for giving feedback on the article and “BJ 9” for finding a typo.
