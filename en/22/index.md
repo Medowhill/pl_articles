@@ -412,7 +412,7 @@ The following rules define equivalence of types:
 
 \[
 \frac
-{ \tau\equiv\tau'\lbrack\alpha\leftarrow\alpha'\rbrack }
+{ \tau\equiv\tau'\lbrack\alpha'\leftarrow\alpha\rbrack }
 { \forall\alpha.\tau\equiv\forall\alpha'.\tau' }
 \]
 
@@ -587,7 +587,7 @@ def validType(t: Type, env: TEnv): Type = t match {
   case IdT(t) =>
     if (env.contains(t)) IdT(t)
     else throw new Exception
-  case ForallT(a, t) => validType(t, env + a)
+  case ForallT(a, t) => ForallT(a, validType(t, env + a))
 }
 ```
 
@@ -725,6 +725,17 @@ the environment captured by the type function value to acquire the final result.
 The following is the entire of the `interp` and `run` functions:
 
 ```scala
+def subst(e: Expr, a: String, t: Type): Expr = e match {
+  case Num(n) => Num(n)
+  case Add(l, r) => Add(subst(l, a, t), subst(r, a, t))
+  case Sub(l, r) => Sub(subst(l, a, t), subst(r, a, t))
+  case Id(x) => Id(x)
+  case Fun(x, t0, b) => Fun(x, subst(t0, a, t), subst(b, a, t))
+  case App(f, arg) => App(subst(f, a, t), subst(arg, a, t))
+  case TFun(a0, b) => if (a0 == a) TFun(a0, b) else TFun(a0, subst(b, a, t))
+  case TApp(f, t0) => TApp(subst(f, a, t), subst(t0, a, t))
+}
+
 def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
@@ -776,3 +787,4 @@ run(
 ## Acknowledgments
 
 I thank professor Ryu for giving feedback on the article.
+I thank 'pi' for pointing out incorrect things in the article.

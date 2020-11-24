@@ -317,7 +317,7 @@ TVFAE의 타입 규칙과 마찬가지로 람다 요약의 타입 규칙은 매�
 
 \[
 \frac
-{ \tau\equiv\tau'\lbrack\alpha\leftarrow\alpha'\rbrack }
+{ \tau\equiv\tau'\lbrack\alpha'\leftarrow\alpha\rbrack }
 { \forall\alpha.\tau\equiv\forall\alpha'.\tau' }
 \]
 
@@ -472,7 +472,7 @@ def validType(t: Type, env: TEnv): Type = t match {
   case IdT(t) =>
     if (env.contains(t)) IdT(t)
     else throw new Exception
-  case ForallT(a, t) => validType(t, env + a)
+  case ForallT(a, t) => ForallT(a, validType(t, env + a))
 }
 ```
 
@@ -607,6 +607,17 @@ case TApp(f, t) =>
 다음은 인터프리터 전체 코드이다.
 
 ```scala
+def subst(e: Expr, a: String, t: Type): Expr = e match {
+  case Num(n) => Num(n)
+  case Add(l, r) => Add(subst(l, a, t), subst(r, a, t))
+  case Sub(l, r) => Sub(subst(l, a, t), subst(r, a, t))
+  case Id(x) => Id(x)
+  case Fun(x, t0, b) => Fun(x, subst(t0, a, t), subst(b, a, t))
+  case App(f, arg) => App(subst(f, a, t), subst(arg, a, t))
+  case TFun(a0, b) => if (a0 == a) TFun(a0, b) else TFun(a0, subst(b, a, t))
+  case TApp(f, t0) => TApp(subst(f, a, t), subst(t0, a, t))
+}
+
 def interp(e: Expr, env: Env): Value = e match {
   case Num(n) => NumV(n)
   case Add(l, r) =>
@@ -656,4 +667,5 @@ run(
 
 ## 감사의 말
 
-글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다. 글에서 잘못된 점을 찾아
+주신 pi님께 감사드립니다.
