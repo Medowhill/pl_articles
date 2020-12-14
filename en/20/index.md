@@ -96,7 +96,7 @@ The following proof tree proves that the type of \({\sf def}\ f(n:{\sf num}):{\s
   {
     \frac
     {n\in\mathit{Domain}(\Gamma_1)}
-    {\vdash n:\textsf{num}} \quad
+    {\Gamma_1\vdash n:\textsf{num}} \quad
     \Gamma_1\vdash 0:\textsf{num} \quad
     \frac
     {
@@ -315,4 +315,5 @@ run(
 
 ## Acknowledgments
 
-I thank professor Ryu for giving feedback on the article.
+I thank professor Ryu for giving feedback on the article. I also thank ‘요셉’
+for finding a typo.

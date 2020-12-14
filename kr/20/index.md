@@ -110,7 +110,7 @@ RFAE의 추론 규칙과 거의 같다. 유일한 차이점은 재귀 함수에 
   {
     \frac
     {n\in\mathit{Domain}(\Gamma_1)}
-    {\vdash n:\textsf{num}} \quad
+    {\Gamma_1\vdash n:\textsf{num}} \quad
     \Gamma_1\vdash 0:\textsf{num} \quad
     \frac
     {
@@ -388,4 +388,5 @@ run(
 
 ## 감사의 말
 
-글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다.
+글을 확인하고 의견을 주신 류석영 교수님께 감사드립니다. 오타를 찾아 주신
+‘요셉’님께 감사드립니다.
