@@ -248,7 +248,7 @@ def typeCheck(e: Expr, env: TEnv): Type = e match {
 다음은 타입 검사기를 사용하여 \({\sf def}\ f(n:{\sf num}):{\sf num}={\sf if0}\ n\ 0\ (n+(f\ (n-1)))\ {\sf in}\ f\ 3\)의 타입을 계산한 것이다.
 
 ```scala
-// def f(x: num): num = if0 n 0 (n + (f (n-1))); 3
+// def f(x: num): num = if0 n 0 (n + (f (n-1))); f(3)
 typeCheck(
   Rec(
     "f", "n", NumT, NumT,

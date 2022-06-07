@@ -729,7 +729,7 @@ case Fun(x, t, b) =>
 
 \[
 \frac
-{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
@@ -951,7 +951,7 @@ The following rules are parts of the current type system:
 
 \[
 \frac
-{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
@@ -1061,7 +1061,7 @@ Consider the following rule:
 
 \[
 \frac
-{ \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 

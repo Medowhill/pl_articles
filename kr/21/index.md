@@ -513,7 +513,7 @@ case Fun(x, t, b) =>
 
 \[
 \frac
-{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
@@ -724,7 +724,7 @@ run(
 
 \[
 \frac
-{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\vdash\tau \quad \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
@@ -844,7 +844,7 @@ run(
 
 \[
 \frac
-{ \Gamma\lbrack x:\tau\rbrack\vdash \tau' }
+{ \Gamma\lbrack x:\tau\rbrack\vdash e:\tau' }
 { \Gamma\vdash \lambda x:\tau.e:\tau\rightarrow\tau' }
 \]
 
