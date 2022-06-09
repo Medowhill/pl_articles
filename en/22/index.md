@@ -603,7 +603,7 @@ case TFun(a, b) =>
 \frac
 { \alpha\not\in\mathit{Domain}(\Gamma) \quad 
   \Gamma\lbrack\alpha\rbrack\vdash e:\tau }
-{ \Gamma\vdash \lambda \alpha.e:\forall\alpha.\tau }
+{ \Gamma\vdash \Lambda \alpha.e:\forall\alpha.\tau }
 \]
 
 The type parameter of a type function must not be in the type environment. The

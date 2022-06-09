@@ -488,7 +488,7 @@ case TFun(a, b) =>
 \frac
 { \alpha\not\in\mathit{Domain}(\Gamma) \quad 
   \Gamma\lbrack\alpha\rbrack\vdash e:\tau }
-{ \Gamma\vdash \lambda \alpha.e:\forall\alpha.\tau }
+{ \Gamma\vdash \Lambda \alpha.e:\forall\alpha.\tau }
 \]
 
 타입 함수의 타입 매개변수는 타입 환경에 들어 있지 않은 타입 식별자여야 한다. 타입 환경에 타입 식별자를 추가한 뒤 몸통의 타입을 계산한다. 타입 매개변수와 몸통의 타입으로 전칭 타입을 만든다.
